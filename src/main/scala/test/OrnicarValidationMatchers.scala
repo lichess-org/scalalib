@@ -1,11 +1,11 @@
 package ornicar.scalalib.test
 
 import org.specs2.matcher.{ Matcher, MustMatchers }
-import ornicar.scalalib.Validation
+import ornicar.scalalib.OrnicarValidation
 
-trait ValidationMatchers
+trait OrnicarValidationMatchers
     extends ScalazValidationMatchers
-    with Validation
+    with OrnicarValidation
     with MustMatchers {
 
   def haveFailures(nb: Int): Matcher[Valid[_]] =

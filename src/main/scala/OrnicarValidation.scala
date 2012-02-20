@@ -3,7 +3,7 @@ package ornicar.scalalib
 import util.control.Exception.allCatch
 import scalaz.{ Validation ⇒ ScalazValidation, Semigroup, Apply, NonEmptyList }
 
-trait Validation
+trait OrnicarValidation
     extends scalaz.Validations
     with scalaz.Semigroups
     with scalaz.Options
