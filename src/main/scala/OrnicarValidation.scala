@@ -14,15 +14,7 @@ trait OrnicarValidation
   type Valid[A] = Validation[Failures, A]
 
   implicit def eitherToValidation[E, B](either: Either[E, B]): Valid[B] =
-    validation(either.left map {
-      case e: Throwable       ⇒ e.getMessage wrapNel
-      case m: NonEmptyList[_] ⇒ m map (_.toString)
-      case s                  ⇒ s.toString wrapNel
-    })
-
-  implicit def richString(str: String) = new {
-    def toFailures: Failures = str wrapNel
-  }
+    validation(either.left map makeFailures)
 
   implicit def richValidation[E, A](validation: Validation[E, A]) = new {
 
@@ -32,6 +24,14 @@ trait OrnicarValidation
       case Success(s) ⇒ Success(s)
       case Failure(s) ⇒ Failure(f(s))
     }
+
+    def toValid: Valid[A] = mapFail(makeFailures)
+  }
+
+  def makeFailures(e: Any): Failures = e match {
+    case e: Throwable       ⇒ e.getMessage wrapNel
+    case m: NonEmptyList[_] ⇒ m map (_.toString)
+    case s                  ⇒ s.toString wrapNel
   }
 
   def unsafe[A](op: ⇒ A)(implicit handle: Throwable ⇒ String = _.getMessage): Valid[A] =
