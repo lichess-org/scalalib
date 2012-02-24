@@ -1,7 +1,7 @@
 package ornicar.scalalib
 
 import util.control.Exception.allCatch
-import scalaz.{ Validation ⇒ ScalazValidation, Semigroup, Apply, NonEmptyList }
+import scalaz.{ Validation ⇒ ScalazValidation, Success, Failure, Semigroup, Apply, NonEmptyList }
 
 trait OrnicarValidation
     extends scalaz.Validations
@@ -29,8 +29,16 @@ trait OrnicarValidation
     def toFailures: Failures = stringToFailures(str)
   }
 
-  implicit def richValidation[A](validation: Valid[A]) = new {
-    def and[B](f: Valid[A ⇒ B])(implicit a: Apply[Valid]): Valid[B] = validation <*> f
+  implicit def richScalazValidation[E, A](validation: ScalazValidation[E, A]) = new {
+
+    def and[B](f: ScalazValidation[E, A ⇒ B])
+    (implicit a: Apply[({ type λ[α] = ScalazValidation[E, α] })#λ])
+    : ScalazValidation[E, B] = validation <*> f
+
+    def mapFail[F](f: E => F): ScalazValidation[F, A] = validation match {
+      case Success(s) => Success(s)
+      case Failure(s) => Failure(f(s))
+    }
   }
 
   def unsafe[A](op: ⇒ A)(implicit handle: Throwable ⇒ Failures = throwableToFailures): Valid[A] =
