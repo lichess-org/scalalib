@@ -2,23 +2,15 @@ package ornicar.scalalib.test
 
 import org.specs2.matcher._
 import org.specs2.execute.{ Failure ⇒ SpecFailure, Success ⇒ SpecSuccess, Result ⇒ SpecResult }
-import scalaz.{ Success, Failure }
-import scalaz.Validation
+import scalaz.{ Validation, Success, Failure }
 
 trait ScalazValidationMatchers extends MatchersImplicits {
-
-  /** success matcher for a Validation */
-  def beSuccessful[E, A]: Matcher[Validation[E, A]] = (v: Validation[E, A]) ⇒ (v.fold(_ ⇒ false, _ ⇒ true), v + " successful", v + " is not successfull")
-
-  /** failure matcher for a Validation */
-  def beAFailure[E, A]: Matcher[Validation[E, A]] = (v: Validation[E, A]) ⇒ (v.fold(_ ⇒ true, _ ⇒ false), v + " is a failure", v + " is not a failure")
 
   /** success matcher for a Validation with a specific value */
   def succeedWith[E, A](a: ⇒ A) = validationWith[E, A](Success(a))
 
-  def beSuccess[A] = new SuccessMatcher[A]
-
-  class SuccessMatcher[A] extends Matcher[Validation[_, A]] {
+  /** success matcher for a Validation */
+  def beSuccess[A] = new Matcher[Validation[_, A]] {
     def apply[S <: Validation[_, A]](value: Expectable[S]) = {
       result(value.value.isSuccess,
         value.description + " is Success",
@@ -43,9 +35,11 @@ trait ScalazValidationMatchers extends MatchersImplicits {
     }
   }
 
-  def beFailure[E] = new FailureMatcher[E]
+  /** failure matcher for a Validation with a specific value */
+  def failWith[E, A](e: ⇒ E) = validationWith[E, A](Failure(e))
 
-  class FailureMatcher[E] extends Matcher[Validation[E, _]] {
+  /** failure matcher for a Validation */
+  def beFailure[E] = new Matcher[Validation[E, _]] {
     def apply[S <: Validation[E, _]](value: Expectable[S]) = {
       result(value.value.isFailure,
         value.description + " is Failure",
@@ -69,9 +63,6 @@ trait ScalazValidationMatchers extends MatchersImplicits {
       }
     }
   }
-
-  /** failure matcher for a Validation with a specific value */
-  def failWith[E, A](e: ⇒ E) = validationWith[E, A](Failure(e))
 
   private def validationWith[E, A](f: ⇒ Validation[E, A]): Matcher[Validation[E, A]] = (v: Validation[E, A]) ⇒ {
     val expected = f
