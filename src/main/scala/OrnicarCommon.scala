@@ -9,23 +9,19 @@ trait OrnicarCommon {
    * See http://hacking-scala.posterous.com/side-effecting-without-braces
    */
   implicit def addKcombinator[A](any: A) = new {
-    def kCombinator(sideEffect: A => Unit): A = {
+    def kCombinator(sideEffect: A ⇒ Unit): A = {
       sideEffect(any)
       any
     }
-    def ~(sideEffect: A => Unit): A = kCombinator(sideEffect)
+    def ~(sideEffect: A ⇒ Unit): A = kCombinator(sideEffect)
   }
 
-  // Add Map.mapKeys, similar to Map.mapValues
-  implicit def addMapKeys[A, B](m: Map[A, B]) = new {
-    def mapKeys[C](f: A => C): Map[C, B] = m map {
-      case (a, b) => (f(a), b)
+  implicit def richMap[A, B](m: Map[A, B]) = new {
+
+    // Add Map.mapKeys, similar to Map.mapValues
+    def mapKeys[C](f: A ⇒ C): Map[C, B] = m map {
+      case (a, b) ⇒ (f(a), b)
     } toMap
-  }
-
-  // Pimp regex library
-  implicit def regexToRichRegex(r: Regex) = new {
-    def matches(s: String) = r.pattern.matcher(s).matches
   }
 
   def exit(msg: Any): Nothing = {
