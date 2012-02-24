@@ -42,7 +42,7 @@ trait OrnicarValidation
   }
 
   def unsafe[A](op: ⇒ A)(implicit handle: Throwable ⇒ Failures = throwableToFailures): Valid[A] =
-    (allCatch either op).left map handle
+    eitherToValidation((allCatch either op).left map handle)
 
   def validateOption[A, B](ao: Option[A])(op: A ⇒ Valid[B]): Valid[Option[B]] =
     ao some { a ⇒ op(a) map (_.some) } none success(none)
