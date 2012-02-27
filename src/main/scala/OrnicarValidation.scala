@@ -38,7 +38,7 @@ trait OrnicarValidation
     eitherToValidation((allCatch either op).left map handle)
 
   def validateOption[A, B](ao: Option[A])(op: A ⇒ Valid[B]): Valid[Option[B]] =
-    ao some { a ⇒ op(a) map (_.some) } none success(none)
+    ao.fold(a ⇒ op(a) map some, success(none))
 
   def sequenceValid[A](as: List[Valid[A]]): Valid[List[A]] =
     as.sequence[({ type λ[α] = Valid[α] })#λ, A]
