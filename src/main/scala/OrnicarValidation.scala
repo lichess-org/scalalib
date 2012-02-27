@@ -16,9 +16,12 @@ trait OrnicarValidation
   implicit def eitherToValidation[E, B](either: Either[E, B]): Valid[B] =
     validation(either.left map makeFailures)
 
-  implicit def richValidation[E, A](validation: Validation[E, A]) = new {
+  implicit def richValid[A](valid: Valid[A]) = new {
 
-    def and[B](f: Validation[E, A ⇒ B])(implicit a: Apply[({ type λ[α] = Validation[E, α] })#λ]): Validation[E, B] = validation <*> f
+    def and[B](f: Valid[A ⇒ B])(implicit a: Apply[Valid]): Valid[B] = valid <*> f
+  }
+
+  implicit def richValidation[E, A](validation: Validation[E, A]) = new {
 
     def mapFail[F](f: E ⇒ F): Validation[F, A] = validation match {
       case Success(s) ⇒ Success(s)
