@@ -28,7 +28,7 @@ trait OrnicarValidation
       case Failure(s) ⇒ Failure(f(s))
     }
 
-    def toValid(f: E ⇒ Any = identity _): Valid[A] = mapFail(makeFailures _ compose f)
+    def toValid(implicit f: E ⇒ Any = identity _): Valid[A] = mapFail(makeFailures _ compose f)
   }
 
   def unsafe[A](op: ⇒ A)(implicit handle: Throwable ⇒ String = _.getMessage): Valid[A] =
