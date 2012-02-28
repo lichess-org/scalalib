@@ -28,13 +28,7 @@ trait OrnicarValidation
       case Failure(s) ⇒ Failure(f(s))
     }
 
-    def toValid: Valid[A] = mapFail(makeFailures)
-  }
-
-  def makeFailures(e: Any): Failures = e match {
-    case e: Throwable       ⇒ e.getMessage wrapNel
-    case m: NonEmptyList[_] ⇒ m map (_.toString)
-    case s                  ⇒ s.toString wrapNel
+    def toValid(f: E ⇒ Any = identity _): Valid[A] = mapFail(makeFailures _ compose f)
   }
 
   def unsafe[A](op: ⇒ A)(implicit handle: Throwable ⇒ String = _.getMessage): Valid[A] =
@@ -45,4 +39,10 @@ trait OrnicarValidation
 
   def sequenceValid[A](as: List[Valid[A]]): Valid[List[A]] =
     as.sequence[({ type λ[α] = Valid[α] })#λ, A]
+
+  private def makeFailures(e: Any): Failures = e match {
+    case e: Throwable       ⇒ e.getMessage wrapNel
+    case m: NonEmptyList[_] ⇒ m map (_.toString)
+    case s                  ⇒ s.toString wrapNel
+  }
 }
