@@ -28,6 +28,8 @@ trait OrnicarValidation
       case Failure(s) ⇒ Failure(f(s))
     }
 
+    def flatOption[B](f: A ⇒ Option[B]): Option[B] = validation.toOption flatMap f
+
     def toValid(implicit f: E ⇒ Any = identity _): Valid[A] = mapFail(makeFailures _ compose f)
   }
 
