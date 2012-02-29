@@ -31,6 +31,8 @@ trait OrnicarValidation
     def flatOption[B](f: A ⇒ Option[B]): Option[B] = validation.toOption flatMap f
 
     def toValid(implicit f: E ⇒ Any = identity _): Valid[A] = mapFail(makeFailures _ compose f)
+
+    def toValid(v: ⇒ Any): Valid[A] = mapFail(_ => makeFailures(v))
   }
 
   def unsafe[A](op: ⇒ A)(implicit handle: Throwable ⇒ String = _.getMessage): Valid[A] =
