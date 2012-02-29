@@ -10,6 +10,15 @@ trait ScalazValidationMatchers extends MatchersImplicits {
   def succeedWith[E, A](a: ⇒ A) = validationWith[E, A](Success(a))
 
   /** success matcher for a Validation */
+  def beSuccess[A](t: ⇒ A) = new Matcher[Validation[_, A]] {
+    def apply[S <: Validation[_, A]](value: Expectable[S]) = {
+      val expected = t
+      result(value.value == Success(t),
+        value.description + " is Success with value " + expected,
+        value.description + " is not Success with value " + expected,
+        value)
+    }
+  }
   def beSuccess[A] = new Matcher[Validation[_, A]] {
     def apply[S <: Validation[_, A]](value: Expectable[S]) = {
       result(value.value.isSuccess,
@@ -39,6 +48,15 @@ trait ScalazValidationMatchers extends MatchersImplicits {
   def failWith[E, A](e: ⇒ E) = validationWith[E, A](Failure(e))
 
   /** failure matcher for a Validation */
+  def beFailure[E](t: ⇒ E) = new Matcher[Validation[E, _]] {
+    def apply[S <: Validation[E, _]](value: Expectable[S]) = {
+      val expected = t
+      result(value.value == Failure(t),
+        value.description + " is Failure with value " + expected,
+        value.description + " is not Failure with value " + expected,
+        value)
+    }
+  }
   def beFailure[E] = new Matcher[Validation[E, _]] {
     def apply[S <: Validation[E, _]](value: Expectable[S]) = {
       result(value.value.isFailure,
