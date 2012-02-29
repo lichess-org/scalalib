@@ -32,7 +32,12 @@ trait OrnicarValidation
 
     def toValid(implicit f: E ⇒ Any = identity _): Valid[A] = mapFail(makeFailures _ compose f)
 
-    def toValid(v: ⇒ Any): Valid[A] = mapFail(_ => makeFailures(v))
+    def toValid(v: ⇒ Any): Valid[A] = mapFail(_ ⇒ makeFailures(v))
+  }
+
+  implicit def richOption[A](option: Option[A]) = new {
+
+    def toValid(v: => Any): Valid[A] = eitherToValidation(option toRight v)
   }
 
   def unsafe[A](op: ⇒ A)(implicit handle: Throwable ⇒ String = _.getMessage): Valid[A] =
