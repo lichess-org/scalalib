@@ -1,10 +1,12 @@
-Stuff I need in all scala projects
+Stuff I need in most scala projects
 
-## Validation
+## Pimps
 
-Thin layer on top of scalaz validation. Uses a `NonEmptyList[String]` as validation messages.
+- Thin layer on top of scalaz Validation. Uses a `NonEmptyList[String]` as validation messages.
+- More functions for scalaz NonEmptyList
+- kCombinator, Map.mapKeys, DateTime.getSeconds
 
 ## Specs2 matchers
 
-- scalaz validation matchers
-- ornicar validation matchers
+- scalaz Validation matchers
+- scalaz IO matchers
