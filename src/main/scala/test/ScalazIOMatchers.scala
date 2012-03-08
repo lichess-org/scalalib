@@ -35,10 +35,7 @@ trait ScalazIOMatchers extends MatchersImplicits {
         value)
     }
 
-    def like(f: PartialFunction[A, MatchResult[_]]) = this and partialMatcher(f)
-
-    private def partialMatcher(
-      f: PartialFunction[A, MatchResult[_]]) = new Matcher[IO[A]] {
+    def like(f: PartialFunction[A, MatchResult[_]]) = new Matcher[IO[A]] {
 
       def apply[S <: IO[A]](value: Expectable[S]) = {
         (allCatch either { value.value.unsafePerformIO }).fold(
