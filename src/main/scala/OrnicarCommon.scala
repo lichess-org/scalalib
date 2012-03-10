@@ -22,6 +22,9 @@ trait OrnicarCommon {
     def mapKeys[C](f: A ⇒ C): Map[C, B] = m map {
       case (a, b) ⇒ (f(a), b)
     } toMap
+
+    // Add Map.filterValues, similar to Map.filterKeys
+    def filterValues(p: B ⇒ Boolean): Map[A, B] = m filter { x ⇒ p(x._2) }
   }
 
   def exit(msg: Any): Nothing = {
