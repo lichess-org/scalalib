@@ -30,8 +30,18 @@ trait ScalazIOMatchers extends MatchersImplicits {
     def apply[S <: IO[A]](value: Expectable[S]) = {
       val performed = allCatch either { value.value.unsafePerformIO }
       result(performed.isRight,
-        "IO perfoms successfully",
+        "IO performs successfully",
         "IO fails",
+        value)
+    }
+
+    def success[S <: IO[A]](value: Expectable[S]) = apply(value)
+
+    def failure[S <: IO[A]](value: Expectable[S]) = {
+      val performed = allCatch either { value.value.unsafePerformIO }
+      result(performed.isLeft,
+        "IO fails",
+        "IO perfoms successfully",
         value)
     }
 
