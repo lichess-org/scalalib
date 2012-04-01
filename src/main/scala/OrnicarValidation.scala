@@ -19,6 +19,11 @@ trait OrnicarValidation
   implicit def richValid[A](valid: Valid[A]) = new {
 
     def and[B](f: Valid[A ⇒ B])(implicit a: Apply[Valid]): Valid[B] = valid <*> f
+
+    def err: A = valid match {
+      case Success(a) ⇒ a
+      case Failure(e) ⇒ throw new RuntimeException(e.list mkString "\n")
+    }
   }
 
   implicit def richValidation[E, A](validation: Validation[E, A]) = new {
@@ -37,7 +42,7 @@ trait OrnicarValidation
 
   implicit def richOption[A](option: Option[A]) = new {
 
-    def toValid(v: => Any): Valid[A] = eitherToValidation(option toRight v)
+    def toValid(v: ⇒ Any): Valid[A] = eitherToValidation(option toRight v)
   }
 
   def unsafe[A](op: ⇒ A)(implicit handle: Throwable ⇒ String = _.getMessage): Valid[A] =
