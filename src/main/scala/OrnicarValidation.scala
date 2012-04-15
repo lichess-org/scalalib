@@ -1,7 +1,7 @@
 package ornicar.scalalib
 
 import util.control.Exception.allCatch
-import scalaz.{ Validation, Success, Failure, Semigroup, Apply, NonEmptyList }
+import scalaz.{ Validation, Success, Failure, Semigroup, Apply, NonEmptyList, effects, Show }
 
 trait OrnicarValidation
     extends scalaz.Validations
@@ -45,6 +45,10 @@ trait OrnicarValidation
     def toValid(v: ⇒ Any): Valid[A] = eitherToValidation(option toRight v)
   }
 
+  implicit def FailuresShow: Show[Failures] = new Show[Failures] {
+    def show(fs: Failures) = (fs.list mkString "\n").toList
+  }
+
   def unsafe[A](op: ⇒ A)(implicit handle: Throwable ⇒ String = _.getMessage): Valid[A] =
     eitherToValidation((allCatch either op).left map handle)
 
@@ -53,6 +57,13 @@ trait OrnicarValidation
 
   def sequenceValid[A](as: List[Valid[A]]): Valid[List[A]] =
     as.sequence[({ type λ[α] = Valid[α] })#λ, A]
+
+  def printLnFailures(failures: Failures) {
+    println(failures.shows)
+  }
+
+  def putFailures(failures: Failures): effects.IO[Unit] =
+    effects.putStrLn(failures.shows)
 
   private def makeFailures(e: Any): Failures = e match {
     case e: Throwable       ⇒ e.getMessage wrapNel
