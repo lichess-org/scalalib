@@ -1,15 +1,8 @@
 package ornicar.scalalib
 
-import scalaz.{ NonEmptyList, NonEmptyLists }
+import scalaz.NonEmptyList
 
-trait OrnicarNonEmptyLists extends NonEmptyLists {
-
-  implicit def richList[A](list: List[A]) = new {
-
-    def toNel: Option[NonEmptyList[A]] = list.headOption map { head ⇒
-      nel(head, list.tail)
-    }
-  }
+trait OrnicarNonEmptyLists {
 
   implicit def richNonEmptyList[A](neList: NonEmptyList[A]) = new {
 
