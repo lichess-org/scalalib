@@ -14,6 +14,7 @@ trait OrnicarCommon {
       any
     }
     def ~(sideEffect: A ⇒ Unit): A = kCombinator(sideEffect)
+    def pp: A = kCombinator(println)
   }
 
   implicit def richMap[A, B](m: Map[A, B]) = new {
