@@ -1,7 +1,5 @@
 package ornicar.scalalib
 
-import scala.util.matching.Regex
-
 trait OrnicarCommon {
   /**
    * K combinator implementation
