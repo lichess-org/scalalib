@@ -6,7 +6,7 @@ object ScalalibBuild extends Build {
   lazy val core = Project("core", file(".")) settings (
     organization := "com.github.ornicar",
     name := "scalalib",
-    version := "1.33",
+    version := "1.34",
     scalaVersion := "2.9.1",
     libraryDependencies ++= Seq(
       "org.scalaz" %% "scalaz-core" % "6.0.4",
