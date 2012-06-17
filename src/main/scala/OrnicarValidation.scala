@@ -42,7 +42,13 @@ trait OrnicarValidation
 
   implicit def ornicarRichOption[A](option: Option[A]) = new {
 
-    def toValid(v: ⇒ Any): Valid[A] = eitherToValidation(option toRight v)
+    def toValid(v: ⇒ Any): Valid[A] = ornicarEitherToValidation(option toRight v)
+  }
+
+  implicit def ornicarMkValid[A](a: ⇒ A) = new {
+
+    def validIf(cond: Boolean, failure: String): Valid[A] =
+      if (cond) Success(a) else Failure(failure wrapNel)
   }
 
   implicit def ornicarFailuresShow: Show[Failures] = new Show[Failures] {
@@ -50,7 +56,7 @@ trait OrnicarValidation
   }
 
   def unsafe[A](op: ⇒ A)(implicit handle: Throwable ⇒ String = _.getMessage): Valid[A] =
-    eitherToValidation((allCatch either op).left map handle)
+    ornicarEitherToValidation((allCatch either op).left map handle)
 
   def validateOption[A, B](ao: Option[A])(op: A ⇒ Valid[B]): Valid[Option[B]] =
     ao.fold(a ⇒ op(a) map some, success(none))
