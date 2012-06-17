@@ -13,10 +13,10 @@ trait OrnicarValidation
 
   type Valid[A] = Validation[Failures, A]
 
-  implicit def eitherToValidation[E, B](either: Either[E, B]): Valid[B] =
+  implicit def ornicarEitherToValidation[E, B](either: Either[E, B]): Valid[B] =
     validation(either.left map makeFailures)
 
-  implicit def richValid[A](valid: Valid[A]) = new {
+  implicit def ornicarRichValid[A](valid: Valid[A]) = new {
 
     def and[B](f: Valid[A ⇒ B])(implicit a: Apply[Valid]): Valid[B] = valid <*> f
 
@@ -26,7 +26,7 @@ trait OrnicarValidation
     }
   }
 
-  implicit def richValidation[E, A](validation: Validation[E, A]) = new {
+  implicit def ornicarRichValidation[E, A](validation: Validation[E, A]) = new {
 
     def mapFail[F](f: E ⇒ F): Validation[F, A] = validation match {
       case Success(s) ⇒ Success(s)
@@ -40,12 +40,12 @@ trait OrnicarValidation
     def toValid(v: ⇒ Any): Valid[A] = mapFail(_ ⇒ makeFailures(v))
   }
 
-  implicit def richOption[A](option: Option[A]) = new {
+  implicit def ornicarRichOption[A](option: Option[A]) = new {
 
     def toValid(v: ⇒ Any): Valid[A] = eitherToValidation(option toRight v)
   }
 
-  implicit def FailuresShow: Show[Failures] = new Show[Failures] {
+  implicit def ornicarFailuresShow: Show[Failures] = new Show[Failures] {
     def show(fs: Failures) = (fs.list mkString "\n").toList
   }
 
