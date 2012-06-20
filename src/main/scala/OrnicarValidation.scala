@@ -16,16 +16,6 @@ trait OrnicarValidation
   implicit def ornicarEitherToValidation[E, B](either: Either[E, B]): Valid[B] =
     validation(either.left map makeFailures)
 
-  implicit def ornicarRichValid[A](valid: Valid[A]) = new {
-
-    def and[B](f: Valid[A ⇒ B])(implicit a: Apply[Valid]): Valid[B] = valid <*> f
-
-    def err: A = valid match {
-      case Success(a) ⇒ a
-      case Failure(e) ⇒ throw new RuntimeException(e.list mkString "\n")
-    }
-  }
-
   implicit def ornicarRichValidation[E, A](validation: Validation[E, A]) = new {
 
     def mapFail[F](f: E ⇒ F): Validation[F, A] = validation match {
@@ -38,6 +28,20 @@ trait OrnicarValidation
     def toValid(implicit f: E ⇒ Any = identity _): Valid[A] = mapFail(makeFailures _ compose f)
 
     def toValid(v: ⇒ Any): Valid[A] = mapFail(_ ⇒ makeFailures(v))
+  }
+
+  implicit def ornicarRichValid[A](valid: Valid[A]) = new {
+
+    def and[B](f: Valid[A ⇒ B])(implicit a: Apply[Valid]): Valid[B] = valid <*> f
+
+    def err: A = valid match {
+      case Success(a) ⇒ a
+      case Failure(e) ⇒ throw new RuntimeException(e.shows)
+    }
+
+    def prefixFailuresWith(prefix: String): Valid[A] = valid mapFail { fs =>
+      fs map (prefix ++ _)
+    }
   }
 
   implicit def ornicarRichOption[A](option: Option[A]) = new {
