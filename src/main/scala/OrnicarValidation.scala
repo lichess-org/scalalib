@@ -53,6 +53,9 @@ trait OrnicarValidation
 
     def validIf(cond: Boolean, failure: String): Valid[A] =
       if (cond) Success(a) else Failure(failure wrapNel)
+
+    def validIf(cond: A => Boolean, failure: String): Valid[A] =
+      if (cond(a)) Success(a) else Failure(failure wrapNel)
   }
 
   implicit def ornicarFailuresShow: Show[Failures] = new Show[Failures] {
