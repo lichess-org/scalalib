@@ -39,9 +39,9 @@ trait OrnicarValidation
       case Failure(e) ⇒ throw new RuntimeException(e.shows)
     }
 
-    def prefixFailuresWith(prefix: String): Valid[A] = valid mapFail { fs =>
-      fs map (prefix ++ _)
-    }
+    def mapFailures[F](f: String ⇒ F) = valid mapFail (_ map f)
+
+    def prefixFailuresWith(prefix: String): Valid[A] = mapFailures(prefix ++ _)
   }
 
   implicit def ornicarRichOption[A](option: Option[A]) = new {
@@ -54,7 +54,7 @@ trait OrnicarValidation
     def validIf(cond: Boolean, failure: String): Valid[A] =
       if (cond) Success(a) else Failure(failure wrapNel)
 
-    def validIf(cond: A => Boolean, failure: String): Valid[A] =
+    def validIf(cond: A ⇒ Boolean, failure: String): Valid[A] =
       if (cond(a)) Success(a) else Failure(failure wrapNel)
   }
 
