@@ -28,7 +28,7 @@ trait OrnicarCommon {
 
   implicit def ornicarRichIdentity[A](a: A) = new {
 
-    def combine[B](o: Option[B], f: (A, B) ⇒ A): A = o match {
+    def combine[B](o: Option[B])(f: (A, B) ⇒ A): A = o match {
       case None    ⇒ a
       case Some(b) ⇒ f(a, b)
     }
