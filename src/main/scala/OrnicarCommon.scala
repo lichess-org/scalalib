@@ -26,11 +26,11 @@ trait OrnicarCommon {
     def filterValues(p: B ⇒ Boolean): Map[A, B] = m filter { x ⇒ p(x._2) }
   }
 
-  implicit def ornicarRichOption[A](o: Option[A]) = new {
+  implicit def ornicarRichIdentity[A](a: A) = new {
 
-    def combine[B](b: B, f: A ⇒ B): B = o match {
-      case None    ⇒ b
-      case Some(a) ⇒ f(a)
+    def combine[B](o: Option[B], f: (A, B) ⇒ A): A = o match {
+      case None    ⇒ a
+      case Some(b) ⇒ f(a, b)
     }
   }
 
