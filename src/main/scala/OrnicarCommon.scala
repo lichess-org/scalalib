@@ -6,7 +6,7 @@ trait OrnicarCommon {
    * Provides oneliner side effects
    * See http://hacking-scala.posterous.com/side-effecting-without-braces
    */
-  implicit def addKcombinator[A](any: A) = new {
+  implicit def ornicarAddKcombinator[A](any: A) = new {
     def kCombinator(sideEffect: A ⇒ Unit): A = {
       sideEffect(any)
       any
@@ -15,7 +15,7 @@ trait OrnicarCommon {
     def pp: A = kCombinator(println)
   }
 
-  implicit def richMap[A, B](m: Map[A, B]) = new {
+  implicit def ornicarRichMap[A, B](m: Map[A, B]) = new {
 
     // Add Map.mapKeys, similar to Map.mapValues
     def mapKeys[C](f: A ⇒ C): Map[C, B] = m map {
@@ -24,6 +24,14 @@ trait OrnicarCommon {
 
     // Add Map.filterValues, similar to Map.filterKeys
     def filterValues(p: B ⇒ Boolean): Map[A, B] = m filter { x ⇒ p(x._2) }
+  }
+
+  implicit def ornicarRichOption[A](o: Option[A]) = new {
+
+    def combine[B](b: B, f: A ⇒ B): B = o match {
+      case None    ⇒ b
+      case Some(a) ⇒ f(a)
+    }
   }
 
   def exit(msg: Any): Nothing = {
