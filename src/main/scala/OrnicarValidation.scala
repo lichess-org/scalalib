@@ -7,7 +7,8 @@ trait OrnicarValidation
     extends scalaz.Validations
     with scalaz.Options
     with scalaz.MABs
-    with scalaz.Identitys {
+    with scalaz.Identitys
+    with scalaz.Semigroups {
 
   type Failures = NonEmptyList[String]
 
@@ -77,6 +78,10 @@ trait OrnicarValidation
 
   def putFailures(failures: Failures): effects.IO[Unit] =
     effects.putStrLn(failures.shows)
+
+  // courtesy of https://github.com/jlcanela
+  implicit def ValidSemigroup[A: Semigroup]: Semigroup[Valid[A]] =
+    semigroup { (x, y) ⇒ (x |@| y)(_ |+| _) }
 
   private def makeFailures(e: Any): Failures = e match {
     case e: Throwable       ⇒ e.getMessage wrapNel
