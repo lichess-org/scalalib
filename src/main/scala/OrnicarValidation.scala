@@ -1,5 +1,7 @@
 package ornicar.scalalib
 
+import java.io.{ PrintWriter, StringWriter }
+
 import util.control.Exception.allCatch
 import scalaz.{ Validation, Success, Failure, Semigroup, Apply, NonEmptyList, effects, Show }
 
@@ -63,8 +65,8 @@ trait OrnicarValidation
     def show(fs: Failures) = (fs.list mkString "\n").toList
   }
 
-  def unsafe[A](op: ⇒ A)(implicit handle: Throwable ⇒ String = _.getMessage): Valid[A] =
-    ornicarEitherToValidation((allCatch either op).left map handle)
+  def unsafe[A](op: ⇒ A)(implicit handler: Throwable ⇒ Failures = stackTraceFailure _): Valid[A] =
+    validation((allCatch either op).left map handler)
 
   def validateOption[A, B](ao: Option[A])(op: A ⇒ Valid[B]): Valid[Option[B]] =
     ao.fold(a ⇒ op(a) map some, success(none))
@@ -87,5 +89,23 @@ trait OrnicarValidation
     case e: Throwable       ⇒ e.getMessage wrapNel
     case m: NonEmptyList[_] ⇒ m map (_.toString)
     case s                  ⇒ s.toString wrapNel
+  }
+
+  protected def stackTraceFailure(t: Throwable): Failures = {
+    val buff = new StringWriter()
+    val w = new PrintWriter(buff)
+
+    try {
+      t.printStackTrace(w)
+      w.flush()
+
+      buff.toString wrapNel
+    } catch {
+      case _ ⇒ t.getMessage wrapNel
+    } finally {
+      try {
+        w.close()
+      }
+    }
   }
 }
