@@ -2,7 +2,7 @@ package ornicar.scalalib
 
 import scalaz.NonEmptyList
 
-trait OrnicarNonEmptyLists {
+trait NonEmptyLists {
 
   implicit def richNonEmptyList[A](neList: NonEmptyList[A]) = new {
 

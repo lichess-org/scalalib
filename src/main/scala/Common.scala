@@ -1,6 +1,6 @@
 package ornicar.scalalib
 
-trait OrnicarCommon {
+trait Common {
   /**
    * K combinator implementation
    * Provides oneliner side effects

@@ -3,9 +3,9 @@ package ornicar.scalalib
 import java.io.{ PrintWriter, StringWriter }
 
 import util.control.Exception.allCatch
-import scalaz.{ Validation, Success, Failure, Semigroup, Apply, NonEmptyList, effects, Show }
+import scalaz.{ Success, Failure, Semigroup, Apply, NonEmptyList, effects, Show, Validation => ScalazValidation }
 
-trait OrnicarValidation
+trait Validation
     extends scalaz.Validations
     with scalaz.Options
     with scalaz.MABs
@@ -14,14 +14,14 @@ trait OrnicarValidation
 
   type Failures = NonEmptyList[String]
 
-  type Valid[A] = Validation[Failures, A]
+  type Valid[A] = ScalazValidation[Failures, A]
 
   implicit def ornicarEitherToValidation[E, B](either: Either[E, B]): Valid[B] =
     validation(either.left map makeFailures)
 
-  implicit def ornicarRichValidation[E, A](validation: Validation[E, A]) = new {
+  implicit def ornicarRichValidation[E, A](validation: ScalazValidation[E, A]) = new {
 
-    def mapFail[F](f: E ⇒ F): Validation[F, A] = validation match {
+    def mapFail[F](f: E ⇒ F): ScalazValidation[F, A] = validation match {
       case Success(s) ⇒ Success(s)
       case Failure(s) ⇒ Failure(f(s))
     }

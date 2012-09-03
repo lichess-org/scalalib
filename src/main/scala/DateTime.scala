@@ -1,11 +1,11 @@
 package ornicar.scalalib
 
-import org.joda.time.DateTime
+import org.joda.time.{ DateTime => JodaDateTime }
 import java.util.Date
 
-trait OrnicarDateTime {
+trait DateTime {
 
-  implicit def richDateTime(date: DateTime) = new {
+  implicit def richDateTime(date: JodaDateTime) = new {
     def getSeconds: Long = date.getMillis / 1000
     def getDate: Date = date.toDate
   }
