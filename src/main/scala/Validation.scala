@@ -1,16 +1,15 @@
 package ornicar.scalalib
 
-import java.io.{ PrintWriter, StringWriter }
-
 import util.control.Exception.allCatch
-import scalaz.{ Success, Failure, Semigroup, Apply, NonEmptyList, effects, Show, Validation => ScalazValidation }
+import scalaz.{ Success, Failure, Semigroup, Apply, NonEmptyList, effects, Show, Validation ⇒ ScalazValidation }
 
 trait Validation
     extends scalaz.Validations
     with scalaz.Options
     with scalaz.MABs
     with scalaz.Identitys
-    with scalaz.Semigroups {
+    with scalaz.Semigroups
+    with scalaz.NonEmptyLists {
 
   type Failures = NonEmptyList[String]
 
@@ -65,9 +64,6 @@ trait Validation
     def show(fs: Failures) = (fs.list mkString "\n").toList
   }
 
-  def unsafe[A](op: ⇒ A)(implicit handler: Throwable ⇒ Failures = stackTraceFailure _): Valid[A] =
-    validation((allCatch either op).left map handler)
-
   def validateOption[A, B](ao: Option[A])(op: A ⇒ Valid[B]): Valid[Option[B]] =
     ao.fold(a ⇒ op(a) map some, success(none))
 
@@ -91,21 +87,35 @@ trait Validation
     case s                  ⇒ s.toString wrapNel
   }
 
-  protected def stackTraceFailure(t: Throwable): Failures = {
-    val buff = new StringWriter()
-    val w = new PrintWriter(buff)
+  def unsafe[A](op: ⇒ A)(implicit handler: Throwable ⇒ Failures = exceptionToFailures.message): Valid[A] =
+    validation((allCatch either op).left map handler)
 
-    try {
-      t.printStackTrace(w)
-      w.flush()
+  object exceptionToFailures {
 
-      buff.toString wrapNel
-    } catch {
-      case _ ⇒ t.getMessage wrapNel
-    } finally {
+    implicit def message(t: Throwable): Failures = t.getMessage.wrapNel
+
+    implicit def stackTrace(t: Throwable): Failures = {
+
+      val buff = new java.io.StringWriter()
+      val w = new java.io.PrintWriter(buff)
+
       try {
-        w.close()
+        t.printStackTrace(w)
+        w.flush()
+
+        buff.toString wrapNel
+      }
+      catch {
+        case _ ⇒ t.getMessage wrapNel
+      }
+      finally {
+        try {
+          w.close()
+        }
       }
     }
+
+    implicit def messageAndStacktrace(t: Throwable): Failures =
+      t.getMessage <:: stackTrace(t)
   }
 }
