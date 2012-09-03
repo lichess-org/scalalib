@@ -33,9 +33,4 @@ trait Common {
       case Some(b) ⇒ f(a, b)
     }
   }
-
-  def exit(msg: Any): Nothing = {
-    println(msg)
-    sys.exit()
-  }
 }
