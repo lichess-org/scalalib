@@ -6,8 +6,8 @@ trait IO {
 
   implicit def ornicarRichIOUnit(iou: SIO[Unit]) = new {
 
-    def doIf(cond: Boolean) = if (cond) iou else SIO.ioPure
+    def doIf(cond: Boolean): SIO[Unit] = if (cond) iou else SIO.ioPure pure Unit
 
-    def doUnless(cond: Boolean) = if (cond) SIO.ioPure else iou
+    def doUnless(cond: Boolean): SIO[Unit] = if (cond) SIO.ioPure pure Unit else iou
   }
 }
