@@ -9,5 +9,7 @@ trait IO {
     def doIf(cond: Boolean): SIO[Unit] = if (cond) iou else SIO.ioPure pure Unit
 
     def doUnless(cond: Boolean): SIO[Unit] = if (cond) SIO.ioPure pure Unit else iou
+
+    def inject[A](a: A): SIO[A] = iou map (_ => a)
   }
 }
