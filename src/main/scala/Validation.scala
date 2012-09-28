@@ -92,9 +92,11 @@ trait Validation
 
   object exceptionToFailures {
 
-    implicit def message(t: Throwable): Failures = t.getMessage.wrapNel
+    def prefixedMessage(msg: String, t: Throwable): Failures = msg <:: message(t)
 
-    implicit def stackTrace(t: Throwable): Failures = {
+    def message(t: Throwable): Failures = t.getMessage.wrapNel
+
+    def stackTrace(t: Throwable): Failures = {
 
       val buff = new java.io.StringWriter()
       val w = new java.io.PrintWriter(buff)
@@ -115,7 +117,7 @@ trait Validation
       }
     }
 
-    implicit def messageAndStacktrace(t: Throwable): Failures =
+    def messageAndStacktrace(t: Throwable): Failures =
       t.getMessage <:: stackTrace(t)
   }
 }
