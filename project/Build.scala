@@ -6,7 +6,7 @@ object ScalalibBuild extends Build {
   lazy val core = Project("core", file(".")) settings (
     organization := "com.github.ornicar",
     name := "scalalib",
-    version := "3",
+    version := "3.1",
     scalaVersion := "2.10.0-RC3",
     resolvers ++= Seq(
       "sonatype" at "http://oss.sonatype.org/content/repositories/releases"),
@@ -16,10 +16,14 @@ object ScalalibBuild extends Build {
         "joda-time" % "joda-time" % "2.1",
         "org.joda" % "joda-convert" % "1.2"
       ),
-        scalacOptions := Seq("-deprecation", "-unchecked"),
-        publishTo := Some(Resolver.sftp(
-          "iliaz",
-          "scala.iliaz.com"
-        ) as ("scala_iliaz_com", Path.userHome / ".ssh" / "id_rsa"))
+        scalacOptions := Seq(
+          "-deprecation",
+          "-unchecked",
+          "-feature",
+          "-language:_"),
+          publishTo := Some(Resolver.sftp(
+            "iliaz",
+            "scala.iliaz.com"
+          ) as ("scala_iliaz_com", Path.userHome / ".ssh" / "id_rsa"))
   )
 }
