@@ -6,18 +6,20 @@ object ScalalibBuild extends Build {
   lazy val core = Project("core", file(".")) settings (
     organization := "com.github.ornicar",
     name := "scalalib",
-    version := "2.6",
-    scalaVersion := "2.9.1",
-    libraryDependencies ++= Seq(
-      "org.scalaz" %% "scalaz-core" % "6.0.4",
-      "org.specs2" %% "specs2" % "1.12",
-      "joda-time" % "joda-time" % "2.1",
-      "org.joda" % "joda-convert" % "1.2"
-    ),
-    scalacOptions := Seq("-deprecation", "-unchecked"),
-    publishTo := Some(Resolver.sftp(
-      "iliaz",
-      "scala.iliaz.com"
-    ) as ("scala_iliaz_com", Path.userHome / ".ssh" / "id_rsa"))
+    version := "3",
+    scalaVersion := "2.10.0-RC3",
+    resolvers ++= Seq(
+      "sonatype" at "http://oss.sonatype.org/content/repositories/releases"),
+      libraryDependencies ++= Seq(
+        "org.scalaz" % "scalaz-core_2.10.0-RC3" % "6.0.4",
+        "org.specs2" % "specs2_2.10.0-RC3" % "1.12.3",
+        "joda-time" % "joda-time" % "2.1",
+        "org.joda" % "joda-convert" % "1.2"
+      ),
+        scalacOptions := Seq("-deprecation", "-unchecked"),
+        publishTo := Some(Resolver.sftp(
+          "iliaz",
+          "scala.iliaz.com"
+        ) as ("scala_iliaz_com", Path.userHome / ".ssh" / "id_rsa"))
   )
 }

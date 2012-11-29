@@ -65,7 +65,7 @@ trait Validation
   }
 
   def validateOption[A, B](ao: Option[A])(op: A ⇒ Valid[B]): Valid[Option[B]] =
-    ao.fold(a ⇒ op(a) map some, success(none))
+    ao.fold(success(none[B]): Valid[Option[B]])(a ⇒ op(a) map some)
 
   def sequenceValid[A](as: List[Valid[A]]): Valid[List[A]] =
     as.sequence[({ type λ[α] = Valid[α] })#λ, A]
@@ -108,7 +108,7 @@ trait Validation
         buff.toString wrapNel
       }
       catch {
-        case _ ⇒ t.getMessage wrapNel
+        case _: Exception ⇒ t.getMessage wrapNel
       }
       finally {
         try {
