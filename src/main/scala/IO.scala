@@ -16,6 +16,8 @@ trait IO extends scalaz.Zeros {
 
   implicit def ornicarRichIOA[A](ioa: SIO[A]) = new {
 
+    def >>[B](iob: SIO[B]): SIO[B] = ioa flatMap (_ ⇒ iob)
+
     def void: SIO[Unit] = ioa map (_ ⇒ Unit)
   }
 
