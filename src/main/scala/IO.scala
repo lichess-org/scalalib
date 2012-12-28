@@ -9,16 +9,13 @@ trait IO extends scalaz.Zeros {
     val zero = SIO.ioPure pure ∅[A]
   }
 
-  implicit def ornicarRichIOUnit(iou: SIO[Unit]) = new {
-
-    def inject[A](a: A): SIO[A] = iou map (_ ⇒ a)
-  }
-
   implicit def ornicarRichIOA[A](ioa: SIO[A]) = new {
 
     def >>[B](iob: SIO[B]): SIO[B] = ioa flatMap (_ ⇒ iob)
 
     def void: SIO[Unit] = ioa map (_ ⇒ Unit)
+
+    def inject[A](a: A): SIO[A] = ioa map (_ ⇒ a)
   }
 
   implicit def ornicarRichIOZero[A : Zero](iou: SIO[A]) = new {
