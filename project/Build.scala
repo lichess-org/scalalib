@@ -6,7 +6,7 @@ object ScalalibBuild extends Build {
   lazy val core = Project("core", file(".")) settings (
     organization := "com.github.ornicar",
     name := "scalalib",
-    version := "3.2",
+    version := "3.3",
     scalaVersion := "2.10.0",
     resolvers ++= Seq(
       "sonatype" at "http://oss.sonatype.org/content/repositories/releases"),
