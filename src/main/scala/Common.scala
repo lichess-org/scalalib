@@ -15,6 +15,11 @@ trait Common {
     def zero = false
   }
 
+  implicit val ornicarIntMonoid: Monoid[Int] = new Monoid[Int] {
+    def append(f1: Int, f2: ⇒ Int) = f1 + f2
+    def zero = 0
+  }
+
   /**
    * K combinator implementation
    * Provides oneliner side effects
