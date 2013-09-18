@@ -8,18 +8,13 @@ object Zero {
 
   @inline def apply[F](implicit F: Zero[F]): Zero[F] = F
 
-  /** Make a zero into an instance. */
   def instance[A](z: A): Zero[A] = new Zero[A] {
     def zero = z
   }
 
-  def ∅[Z](implicit z: Zero[Z]): Z = z.zero
-
-  def mzero[Z](implicit z: Zero[Z]): Z = z.zero
-
   trait Syntax {
 
-    def ∅[F](implicit F: Zero[F]): F = F.zero
+    def zero[F](implicit F: Zero[F]): F = F.zero
   }
 
   trait Instances {
