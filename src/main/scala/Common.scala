@@ -20,6 +20,11 @@ trait Common {
     def zero = 0
   }
 
+  implicit val ornicarUnitMonoid: Monoid[Unit] = new Monoid[Unit] {
+    def append(f1: Unit, f2: ⇒ Unit) = ()
+    def zero = ()
+  }
+
   /**
    * K combinator implementation
    * Provides oneliner side effects
