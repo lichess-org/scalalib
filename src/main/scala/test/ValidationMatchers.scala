@@ -1,20 +1,20 @@
-package ornicar.scalalib.test
+// package ornicar.scalalib.test
 
-import org.specs2.matcher.{ Matcher, MustMatchers }
-import ornicar.scalalib.Validation
+// import org.specs2.matcher.{ Matcher, MustMatchers }
+// import ornicar.scalalib.Validation
 
-trait ValidationMatchers
-    extends ScalazValidationMatchers
-    with Validation
-    with MustMatchers {
+// trait ValidationMatchers
+//     extends ScalazValidationMatchers
+//     with Validation
+//     with MustMatchers {
 
-  def haveFailures(nb: Int): Matcher[Valid[_]] =
-    beFailure.like {
-      case e ⇒ e.list.size mustEqual nb
-    }
+//   def haveFailures(nb: Int): Matcher[Valid[_]] =
+//     beFailure.like {
+//       case e ⇒ e.list.size mustEqual nb
+//     }
 
-  def haveFailureMatching(m: String): Matcher[Valid[_]] =
-    beFailure.like {
-      case e ⇒ e.list must containMatch(m)
-    }
-}
+//   def haveFailureMatching(m: String): Matcher[Valid[_]] =
+//     beFailure.like {
+//       case e ⇒ e.list must containMatch(m)
+//     }
+// }
