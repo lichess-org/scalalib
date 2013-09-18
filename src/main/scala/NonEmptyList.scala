@@ -2,7 +2,7 @@ package ornicar.scalalib
 
 import scalaz.NonEmptyList
 
-trait OrnicarNonEmptyList {
+object OrnicarNonEmptyList {
 
   implicit final class ornicarNonEmptyList[A](neList: NonEmptyList[A]) {
 
