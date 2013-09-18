@@ -2,7 +2,7 @@ package ornicar.scalalib
 
 import scalaz.NonEmptyList
 
-object OrnicarNonEmptyList {
+trait OrnicarNonEmptyList {
 
   implicit final class ornicarNonEmptyList[A](neList: NonEmptyList[A]) {
 
@@ -21,3 +21,4 @@ object OrnicarNonEmptyList {
     def foldl1Nel[B >: A](f: (B, A) ⇒ B): B = ((neList.head: B) /: neList.tail) { f }
   }
 }
+object OrnicarNonEmptyList extends OrnicarNonEmptyList
