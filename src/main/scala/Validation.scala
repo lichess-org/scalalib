@@ -1,26 +1,21 @@
 package ornicar.scalalib
 
 import util.control.Exception.allCatch
-import scalaz.{ Success, Failure, Semigroup, Apply, NonEmptyList, effects, Show, Validation ⇒ ScalazValidation }
+import scalaz._
+import Scalaz._
 
-trait Validation
-    extends scalaz.Validations
-    with scalaz.Options
-    with scalaz.MABs
-    with scalaz.Identitys
-    with scalaz.Semigroups
-    with scalaz.NonEmptyLists {
+trait Validation extends ValidationFunctions {
 
   type Failures = NonEmptyList[String]
 
-  type Valid[A] = ScalazValidation[Failures, A]
+  type Valid[A] = scalaz.Validation[Failures, A]
 
   implicit def ornicarEitherToValidation[E, B](either: Either[E, B]): Valid[B] =
-    validation(either.left map makeFailures)
+    fromEither(either.left map makeFailures)
 
-  implicit def ornicarRichValidation[E, A](validation: ScalazValidation[E, A]) = new {
+  implicit def ornicarRichValidation[E, A](validation: scalaz.Validation[E, A]) = new {
 
-    def mapFail[F](f: E ⇒ F): ScalazValidation[F, A] = validation match {
+    def mapFail[F](f: E ⇒ F): scalaz.Validation[F, A] = validation match {
       case Success(s) ⇒ Success(s)
       case Failure(s) ⇒ Failure(f(s))
     }
@@ -60,8 +55,8 @@ trait Validation
       if (cond(a)) Success(a) else Failure(failure wrapNel)
   }
 
-  implicit def ornicarFailuresShow: Show[Failures] = new Show[Failures] {
-    def show(fs: Failures) = (fs.list mkString "\n").toList
+  implicit def ornicarFailuresShow: Show[Failures] = Show.show {
+    (fs: Failures) ⇒ fs.list mkString "\n"
   }
 
   def validateOption[A, B](ao: Option[A])(op: A ⇒ Valid[B]): Valid[Option[B]] =
@@ -74,12 +69,9 @@ trait Validation
     println(failures.shows)
   }
 
-  def putFailures(failures: Failures): effects.IO[Unit] =
-    effects.putStrLn(failures.shows)
-
   // courtesy of https://github.com/jlcanela
   implicit def ValidSemigroup[A: Semigroup]: Semigroup[Valid[A]] =
-    semigroup { (x, y) ⇒ (x |@| y)(_ |+| _) }
+    scalaz.Semigroup.instance { (x, y) ⇒ (x |@| y)(_ |+| _) }
 
   private def makeFailures(e: Any): Failures = e match {
     case e: Throwable       ⇒ e.getMessage wrapNel
@@ -88,7 +80,7 @@ trait Validation
   }
 
   def unsafe[A](op: ⇒ A)(implicit handler: Throwable ⇒ Failures = exceptionToFailures.message): Valid[A] =
-    validation((allCatch either op).left map handler)
+    fromEither((allCatch either op).left map handler)
 
   object exceptionToFailures {
 
