@@ -1,6 +1,6 @@
 package ornicar.scalalib
 
-import scalaz.Functor
+import scalaz.{ Functor, Monoid }
 
 trait Common {
 
@@ -8,6 +8,11 @@ trait Common {
 
     def map2[N[_], B, C](f: B ⇒ C)(implicit m: A <:< N[B], f1: Functor[M], f2: Functor[N]): M[N[C]] =
       f1.map(fa) { k ⇒ f2.map(k: N[B])(f) }
+  }
+
+  implicit val ornicarBooleanMonoid: Monoid[Boolean] = new Monoid[Boolean] {
+    def append(f1: Boolean, f2: ⇒ Boolean) = f1 || f2
+    def zero = false
   }
 
   /**
