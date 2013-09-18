@@ -2,9 +2,9 @@ package ornicar.scalalib
 
 import scalaz.NonEmptyList
 
-trait NonEmptyLists {
+trait OrnicarNonEmptyList {
 
-  implicit def richNonEmptyList[A](neList: NonEmptyList[A]) = new {
+  implicit final class ornicarNonEmptyList[A](neList: NonEmptyList[A]) {
 
     def min[B >: A](implicit cmp: Ordering[B]): A =
       neList.tail.foldLeft(neList.head) { (a, b) ⇒ if (cmp.lteq(a, b)) a else b }

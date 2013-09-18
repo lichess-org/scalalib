@@ -13,7 +13,7 @@ trait Validation extends ValidationFunctions {
   implicit def ornicarEitherToValidation[E, B](either: Either[E, B]): Valid[B] =
     fromEither(either.left map makeFailures)
 
-  implicit def ornicarRichValidation[E, A](validation: scalaz.Validation[E, A]) = new {
+  implicit final class ornicarRichValidation[E, A](validation: scalaz.Validation[E, A]) {
 
     def mapFail[F](f: E ⇒ F): scalaz.Validation[F, A] = validation match {
       case Success(s) ⇒ Success(s)
@@ -27,7 +27,7 @@ trait Validation extends ValidationFunctions {
     def toValid(v: ⇒ Any): Valid[A] = mapFail(_ ⇒ makeFailures(v))
   }
 
-  implicit def ornicarRichValid[A](valid: Valid[A]) = new {
+  implicit final class ornicarRichValid[A](valid: Valid[A]) {
 
     def and[B](f: Valid[A ⇒ B])(implicit a: Apply[Valid]): Valid[B] = valid <*> f
 
@@ -41,12 +41,12 @@ trait Validation extends ValidationFunctions {
     def prefixFailuresWith(prefix: String): Valid[A] = mapFailures(prefix ++ _)
   }
 
-  implicit def ornicarRichOption[A](option: Option[A]) = new {
+  implicit final class ornicarRichOption[A](option: Option[A]) {
 
     def toValid(v: ⇒ Any): Valid[A] = ornicarEitherToValidation(option toRight v)
   }
 
-  implicit def ornicarMkValid[A](a: ⇒ A) = new {
+  implicit final class ornicarMkValid[A](a: ⇒ A) {
 
     def validIf(cond: Boolean, failure: String): Valid[A] =
       if (cond) Success(a) else Failure(failure wrapNel)
