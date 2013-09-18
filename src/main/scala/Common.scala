@@ -10,26 +10,6 @@ trait Common {
       f1.map(fa) { k ⇒ f2.map(k: N[B])(f) }
   }
 
-  implicit val ornicarBooleanMonoid: Monoid[Boolean] = new Monoid[Boolean] {
-    def append(f1: Boolean, f2: ⇒ Boolean) = f1 || f2
-    def zero = false
-  }
-
-  implicit val ornicarIntMonoid: Monoid[Int] = new Monoid[Int] {
-    def append(f1: Int, f2: ⇒ Int) = f1 + f2
-    def zero = 0
-  }
-
-  implicit val ornicarUnitMonoid: Monoid[Unit] = new Monoid[Unit] {
-    def append(f1: Unit, f2: ⇒ Unit) = ()
-    def zero = ()
-  }
-
-  implicit def ornicarSeqMonoid[A]: Monoid[Seq[A]] = new Monoid[Seq[A]] {
-    def append(f1: Seq[A], f2: ⇒ Seq[A]) = f1 ++ f2
-    def zero: Seq[A] = Seq.empty
-  }
-
   /**
    * K combinator implementation
    * Provides oneliner side effects
