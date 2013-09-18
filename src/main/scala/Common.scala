@@ -1,6 +1,15 @@
 package ornicar.scalalib
 
+import scalaz.Functor
+
 trait Common {
+
+  implicit final class ornicarFunctor[M[_]: Functor, A](fa: M[A]) {
+
+    def map2[N[_], B, C](f: B ⇒ C)(implicit m: A <:< N[B], f1: Functor[M], f2: Functor[N]): M[N[C]] =
+      f1.map(fa) { k ⇒ f2.map(k: N[B])(f) }
+  }
+
   /**
    * K combinator implementation
    * Provides oneliner side effects
