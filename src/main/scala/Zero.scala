@@ -24,5 +24,6 @@ object Zero {
 
     implicit def MonoidZero[A](implicit m: scalaz.Monoid[A]): Zero[A] = instance(m.zero)
     implicit def OptionZero[A]: Zero[Option[A]] = instance(None)
+    implicit def SetZero[A]: Zero[Set[A]] = instance(Set.empty)
   }
 }
