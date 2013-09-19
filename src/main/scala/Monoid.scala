@@ -37,6 +37,11 @@ object OrnicarMonoid {
       def append(f1: Seq[A], f2: ⇒ Seq[A]) = f1 ++ f2
       def zero: Seq[A] = Seq.empty
     }
+
+    implicit def MapMonoid[A, B]: Monoid[Map[A, B]] = new Monoid[Map[A, B]] {
+      def append(f1: Map[A, B], f2: ⇒ Map[A, B]) = f1 ++ f2
+      def zero: Map[A, B] = Map.empty
+    }
   }
   object Instances extends Instances
 }
