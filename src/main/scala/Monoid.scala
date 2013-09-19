@@ -15,6 +15,18 @@ object OrnicarMonoid {
       def append(f1: Int, f2: ⇒ Int) = f1 + f2
       def zero = 0
     }
+    implicit val LongMonoid: Monoid[Long] = new Monoid[Long] {
+      def append(f1: Long, f2: ⇒ Long) = f1 + f2
+      def zero = 0
+    }
+    implicit val DoubleMonoid: Monoid[Double] = new Monoid[Double] {
+      def append(f1: Double, f2: ⇒ Double) = f1 + f2
+      def zero = 0
+    }
+    implicit val FloatMonoid: Monoid[Float] = new Monoid[Float] {
+      def append(f1: Float, f2: ⇒ Float) = f1 + f2
+      def zero = 0
+    }
 
     implicit val UnitMonoid: Monoid[Unit] = new Monoid[Unit] {
       def append(f1: Unit, f2: ⇒ Unit) = ()
