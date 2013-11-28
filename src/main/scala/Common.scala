@@ -22,6 +22,7 @@ trait Common {
     }
     def ~(sideEffect: A ⇒ Unit): A = kCombinator(sideEffect)
     def pp: A = kCombinator(println)
+    def pp(msg: String): A = kCombinator(a ⇒ println(s"[$msg] $a"))
   }
 
   implicit final class ornicarRichMap[A, B](m: Map[A, B]) {
