@@ -1,8 +1,8 @@
 package ornicar.scalalib
 
-import util.control.Exception.allCatch
 import scalaz._
 import Scalaz._
+import util.control.Exception.allCatch
 
 trait Validation extends ValidationFunctions {
 
@@ -103,9 +103,7 @@ trait Validation extends ValidationFunctions {
         case _: Exception ⇒ t.getMessage wrapNel
       }
       finally {
-        try {
-          w.close()
-        }
+        w.close()
       }
     }
 
