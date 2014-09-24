@@ -11,7 +11,7 @@ object ScalalibBuild extends Build {
       "sonatype" at "http://oss.sonatype.org/content/repositories/releases"),
       libraryDependencies ++= Seq(
         "org.scalaz" %% "scalaz-core" % "7.0.6",
-        "org.specs2" %% "specs2" % "2.3.12"),
+        "org.specs2" %% "specs2" % "2.4.1"),
         scalacOptions := Seq(
           "-deprecation",
           "-unchecked",
