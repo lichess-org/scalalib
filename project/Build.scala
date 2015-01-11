@@ -5,8 +5,8 @@ object ScalalibBuild extends Build {
   lazy val core = Project("core", file(".")) settings (
     organization := "com.github.ornicar",
     name := "scalalib",
-    version := "5.1",
-    scalaVersion := "2.11.4",
+    version := "5.2",
+    scalaVersion := "2.11.5",
     resolvers ++= Seq(
       "sonatype" at "http://oss.sonatype.org/content/repositories/releases"),
       libraryDependencies ++= Seq(
