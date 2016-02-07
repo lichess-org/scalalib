@@ -7,6 +7,7 @@ object ScalalibBuild extends Build {
     name := "scalalib",
     version := "5.4",
     scalaVersion := "2.11.7",
+    licenses += "MIT" -> url("http://opensource.org/licenses/MIT"),
     resolvers ++= Seq(
       "sonatype" at "http://oss.sonatype.org/content/repositories/releases",
       "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
