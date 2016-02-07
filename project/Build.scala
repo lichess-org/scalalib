@@ -6,7 +6,7 @@ object ScalalibBuild extends Build {
     organization := "com.github.ornicar",
     name := "scalalib",
     version := "5.3",
-    scalaVersion := "2.11.6",
+    scalaVersion := "2.11.7",
     resolvers ++= Seq(
       "sonatype" at "http://oss.sonatype.org/content/repositories/releases",
       "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
