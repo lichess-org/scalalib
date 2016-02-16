@@ -1,2 +1,7 @@
 target/
 boot/
+bin/
+.settings/
+.classpath
+.project
+.cache-main
