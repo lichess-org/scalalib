@@ -5,7 +5,7 @@ object ScalalibBuild extends Build {
   lazy val core = Project("core", file(".")) settings (
     organization := "com.github.ornicar",
     name := "scalalib",
-    version := "5.6",
+    version := "5.7",
     scalaVersion := "2.11.8",
     licenses += "MIT" -> url("http://opensource.org/licenses/MIT"),
     resolvers ++= Seq(

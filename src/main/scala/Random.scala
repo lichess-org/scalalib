@@ -1,17 +1,23 @@
 package ornicar.scalalib
 
-import scala.util.{ Random => ScalaRandom }
 import scala.math.round
+import scala.util.{ Random => ScalaRandom }
+
+import java.security.SecureRandom
 
 object Random {
 
-  private val chars: IndexedSeq[Char] = (('0' to '9') ++ ('a' to 'z'))
+  private val chars: IndexedSeq[Char] =
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toIndexedSeq
   private val nbChars = chars.size
-  def nextChar = chars(ScalaRandom nextInt nbChars)
-  def nextString(len: Int) = List.fill(len)(nextChar) mkString
 
-  def nextStringUppercase(len: Int) = ScalaRandom.alphanumeric.take(len).mkString
-  def nextCharUppercase = ScalaRandom.alphanumeric.head
+  def nextChar = ScalaRandom.alphanumeric.head
+  def nextString(len: Int) = ScalaRandom.alphanumeric.take(len).mkString
+
+  private val secureRandom = new SecureRandom()
+
+  def secureChar: Char = chars(secureRandom nextInt nbChars)
+  def secureString(len: Int): String = List.fill(len)(secureChar) mkString
 
   def approximatly(ratio: Float = 0.1f) = new {
 
