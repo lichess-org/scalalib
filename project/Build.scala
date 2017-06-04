@@ -5,15 +5,16 @@ object ScalalibBuild extends Build {
   lazy val core = Project("core", file(".")) settings (
     organization := "com.github.ornicar",
     name := "scalalib",
-    version := "5.7",
+    version := "6.0",
     scalaVersion := "2.11.11",
+    crossScalaVersions := Seq("2.12.2"),
     licenses += "MIT" -> url("http://opensource.org/licenses/MIT"),
     resolvers ++= Seq(
       "sonatype" at "http://oss.sonatype.org/content/repositories/releases"
     ),
     libraryDependencies ++= Seq(
       "org.scalaz" %% "scalaz-core" % "7.1.11",
-      "org.specs2" %% "specs2-core" % "3.6"),
+      "org.specs2" %% "specs2-core" % "3.9.0"),
     scalacOptions := Seq(
       "-deprecation",
       "-unchecked",
