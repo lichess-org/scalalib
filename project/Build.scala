@@ -5,7 +5,7 @@ object ScalalibBuild extends Build {
   lazy val core = Project("core", file(".")) settings (
     organization := "com.github.ornicar",
     name := "scalalib",
-    version := "6.0",
+    version := "6.1",
     scalaVersion := "2.12.2",
     crossScalaVersions := Seq("2.11.11", "2.12.2"),
     licenses += "MIT" -> url("http://opensource.org/licenses/MIT"),
@@ -13,7 +13,7 @@ object ScalalibBuild extends Build {
       "sonatype" at "http://oss.sonatype.org/content/repositories/releases"
     ),
     libraryDependencies ++= Seq(
-      "org.scalaz" %% "scalaz-core" % "7.1.11",
+      "org.scalaz" %% "scalaz-core" % "7.2.13",
       "org.specs2" %% "specs2-core" % "3.9.0"),
     scalacOptions := Seq(
       "-deprecation",
