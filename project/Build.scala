@@ -6,8 +6,8 @@ object ScalalibBuild extends Build {
     organization := "com.github.ornicar",
     name := "scalalib",
     version := "6.0",
-    scalaVersion := "2.11.11",
-    crossScalaVersions := Seq("2.12.2"),
+    scalaVersion := "2.12.2",
+    crossScalaVersions := Seq("2.11.11", "2.12.2"),
     licenses += "MIT" -> url("http://opensource.org/licenses/MIT"),
     resolvers ++= Seq(
       "sonatype" at "http://oss.sonatype.org/content/repositories/releases"
