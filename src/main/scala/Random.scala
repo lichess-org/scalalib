@@ -7,8 +7,7 @@ import java.security.SecureRandom
 
 object Random {
 
-  private val chars: IndexedSeq[Char] =
-    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toIndexedSeq
+  private val chars = ('0' to '9') ++ ('a' to 'z') ++ ('A' to 'Z') mkString
   private val nbChars = chars.size
 
   def nextChar = ScalaRandom.alphanumeric.head
@@ -17,7 +16,7 @@ object Random {
   private val secureRandom = new SecureRandom()
 
   def secureChar: Char = chars(secureRandom nextInt nbChars)
-  def secureString(len: Int): String = List.fill(len)(secureChar) mkString
+  def secureString(len: Int): String = new String(Array.fill(len)(secureChar))
 
   def approximatly(ratio: Float = 0.1f) = new {
 
