@@ -3,8 +3,16 @@ package ornicar.scalalib
 import scalaz.{ Functor, Monoid }
 
 trait Common {
+  import CommonWrappers._
 
-  implicit final class ornicarFunctor[M[_]: Functor, A](fa: M[A]) {
+  @inline implicit def toOrnicarFunctor[M[_]: Functor, A](fa: M[A]) = new ornicarFunctor(fa)
+  @inline implicit def toOrnicarAddKcombinator[A](any: A) = new ornicarAddKcombinator(any)
+  @inline implicit def toOrnicarRichMap[A, B](m: Map[A, B]) = new ornicarRichMap(m)
+  @inline implicit def toOrnicarRichIdentity[A](a: A) = new ornicarRichIdentity(a)
+}
+
+object CommonWrappers {
+  final class ornicarFunctor[M[_]: Functor, A](fa: M[A]) {
 
     def map2[N[_], B, C](f: B ⇒ C)(implicit m: A <:< N[B], f1: Functor[M], f2: Functor[N]): M[N[C]] =
       f1.map(fa) { k ⇒ f2.map(k: N[B])(f) }
@@ -15,7 +23,7 @@ trait Common {
    * Provides oneliner side effects
    * See http://hacking-scala.posterous.com/side-effecting-without-braces
    */
-  implicit final class ornicarAddKcombinator[A](any: A) {
+  final class ornicarAddKcombinator[A](private val any: A) extends AnyVal {
     def kCombinator(sideEffect: A ⇒ Unit): A = {
       sideEffect(any)
       any
@@ -25,7 +33,7 @@ trait Common {
     def pp(msg: String): A = kCombinator(a ⇒ println(s"[$msg] $a"))
   }
 
-  implicit final class ornicarRichMap[A, B](m: Map[A, B]) {
+  final class ornicarRichMap[A, B](private val m: Map[A, B]) extends AnyVal {
 
     // Add Map.mapKeys, similar to Map.mapValues
     def mapKeys[C](f: A ⇒ C): Map[C, B] = m map {
@@ -36,7 +44,7 @@ trait Common {
     def filterValues(p: B ⇒ Boolean): Map[A, B] = m filter { x ⇒ p(x._2) }
   }
 
-  implicit final class ornicarRichIdentity[A](a: A) {
+  final class ornicarRichIdentity[A](private val a: A) extends AnyVal {
 
     def combine[B](o: Option[B])(f: (A, B) ⇒ A): A = o match {
       case None    ⇒ a
