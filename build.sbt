@@ -1,7 +1,7 @@
 lazy val core = Project("core", file("."))
 organization := "com.github.ornicar"
 name := "scalalib"
-version := "6.4"
+version := "6.5"
 scalaVersion := "2.12.3"
 crossScalaVersions := Seq("2.11.11", "2.12.3")
 licenses += "MIT" -> url("http://opensource.org/licenses/MIT")
