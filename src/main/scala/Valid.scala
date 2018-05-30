@@ -37,7 +37,7 @@ trait Validation extends ValidTypes {
   def sequenceValid[A](as: List[Valid[A]]): Valid[List[A]] =
     as.sequence[({ type λ[α] = Valid[α] })#λ, A]
 
-  def printLnFailures(failures: Failures) {
+  def printLnFailures(failures: Failures): Unit = {
     println(failures.shows)
   }
 
