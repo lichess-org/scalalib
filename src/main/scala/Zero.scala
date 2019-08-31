@@ -24,7 +24,7 @@ object Zero {
     implicit final val stringZero: Zero[String] = z("")
     implicit final val booleanZero: Zero[Boolean] = z(false)
     implicit final val intZero: Zero[Int] = z(0)
-    implicit final val longZero: Zero[Long] = z(0l)
+    implicit final val longZero: Zero[Long] = z(0L)
     implicit final val doubleZero: Zero[Double] = z(0d)
     implicit final val floatZero: Zero[Float] = z(0f)
     implicit final val unitZero: Zero[Unit] = z(())
