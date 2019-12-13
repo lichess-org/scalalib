@@ -3,7 +3,6 @@ organization := "com.github.ornicar"
 name := "scalalib"
 version := "6.8"
 scalaVersion := "2.13.1"
-crossScalaVersions := Seq("2.11.12", "2.13.1")
 licenses += "MIT" -> url("http://opensource.org/licenses/MIT")
 libraryDependencies ++= Seq("org.scalaz" %% "scalaz-core" % "7.2.29")
 scalacOptions := Seq(
