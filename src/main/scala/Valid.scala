@@ -10,7 +10,7 @@ trait ValidTypes {
   type Valid[A] = scalaz.Validation[Failures, A]
 
   implicit def ornicarFailuresShow: Show[Failures] = Show.show {
-      _.toList mkString "\n"
+    _.toList mkString "\n"
   }
 
   private[scalalib] def makeFailures(e: Any): Failures = e match {
@@ -26,10 +26,11 @@ trait ValidTypes {
 object ValidTypes extends ValidTypes
 
 trait Validation extends ValidTypes {
-  @inline implicit def toOrnicarRichValidation[E, A](v: scalaz.Validation[E, A]) = new ornicarRichValidation(v)
-  @inline implicit def toOrnicarRichValid[A](v: Valid[A]) = new ornicarRichValid(v)
+  @inline implicit def toOrnicarRichValidation[E, A](v: scalaz.Validation[E, A]) =
+    new ornicarRichValidation(v)
+  @inline implicit def toOrnicarRichValid[A](v: Valid[A])   = new ornicarRichValid(v)
   @inline implicit def toOrnicarRichOption[A](o: Option[A]) = new ornicarRichOption(o)
-  @inline implicit def toOrnicarMkValid[A](a: => A) = new ornicarMkValid(a)
+  @inline implicit def toOrnicarMkValid[A](a: => A)         = new ornicarMkValid(a)
 
   def validateOption[A, B](ao: Option[A])(op: A => Valid[B]): Valid[Option[B]] =
     ao.fold(success(none[B]): Valid[Option[B]])(a => op(a) map some)
@@ -42,7 +43,9 @@ trait Validation extends ValidTypes {
 
   // courtesy of https://github.com/jlcanela
   @inline implicit def ValidSemigroup[A: Semigroup]: Semigroup[Valid[A]] =
-    scalaz.Semigroup.instance { (x, y) => (x |@| y)(_ |+| _) }
+    scalaz.Semigroup.instance { (x, y) =>
+      (x |@| y)(_ |+| _)
+    }
 
   def unsafe[A](op: => A)(implicit handler: Throwable => Failures = exceptionToFailures.message): Valid[A] =
     fromEither((allCatch either op).left map handler)
@@ -56,18 +59,16 @@ trait Validation extends ValidTypes {
     def stackTrace(t: Throwable): Failures = {
 
       val buff = new java.io.StringWriter()
-      val w = new java.io.PrintWriter(buff)
+      val w    = new java.io.PrintWriter(buff)
 
       try {
         t.printStackTrace(w)
         w.flush()
 
         buff.toString wrapNel
-      }
-      catch {
+      } catch {
         case _: Exception => t.getMessage wrapNel
-      }
-      finally {
+      } finally {
         w.close()
       }
     }

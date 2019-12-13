@@ -1,19 +1,24 @@
 lazy val core = Project("core", file("."))
 organization := "com.github.ornicar"
 name := "scalalib"
-version := "6.7"
-scalaVersion := "2.12.9"
-crossScalaVersions := Seq("2.11.12", "2.12.9", "2.13.0")
+version := "6.8"
+scalaVersion := "2.13.1"
+crossScalaVersions := Seq("2.11.12", "2.13.1")
 licenses += "MIT" -> url("http://opensource.org/licenses/MIT")
-resolvers ++= Seq(
-  "sonatype" at "http://oss.sonatype.org/content/repositories/releases"
-)
-libraryDependencies ++= Seq(
-  "org.scalaz" %% "scalaz-core" % "7.2.28")
+libraryDependencies ++= Seq("org.scalaz" %% "scalaz-core" % "7.2.29")
 scalacOptions := Seq(
-  "-deprecation",
-  "-unchecked",
+  "-language:implicitConversions",
+  "-language:postfixOps",
   "-feature",
-  "-language:_",
-  "-Xfatal-warnings")
-publishTo := Some(Resolver.file("file",  new File(sys.props.getOrElse("publishTo", ""))))
+  "-unchecked",
+  "-deprecation",
+  "-Xlint:_",
+  "-Ywarn-macros:after",
+  "-Ywarn-unused:_",
+  "-Xfatal-warnings",
+  "-Xmaxerrs",
+  "12",
+  "-Xmaxwarns",
+  "12"
+)
+publishTo := Some(Resolver.file("file", new File(sys.props.getOrElse("publishTo", ""))))
