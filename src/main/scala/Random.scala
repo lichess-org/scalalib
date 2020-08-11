@@ -21,7 +21,7 @@ object Random {
   final class Approximately(val ratio: Float = 0.1f) extends AnyVal {
 
     def apply(number: Double): Double =
-      number + (ratio * number * 2 * ScalaRandom.nextDouble) - (ratio * number)
+      number + (ratio * number * 2 * ScalaRandom.nextDouble()) - (ratio * number)
 
     def apply(number: Float): Float =
       apply(number.toDouble).toFloat
