@@ -1,7 +1,7 @@
 lazy val core = Project("core", file("."))
 organization := "com.github.ornicar"
 name := "scalalib"
-version := "7.0.0"
+version := "7.0.1"
 scalaVersion := "2.13.3"
 licenses += "MIT" -> url("http://opensource.org/licenses/MIT")
 libraryDependencies += "org.typelevel" %% "cats-core" % "2.1.1"
