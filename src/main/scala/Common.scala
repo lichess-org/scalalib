@@ -16,7 +16,7 @@ trait Common {
 /**
   * K combinator implementation
   * Provides oneliner side effects
-  * See http://hacking-scala.posterous.com/side-effecting-without-braces
+  * See https://web.archive.org/web/20111209063845/hacking-scala.posterous.com/side-effecting-without-braces
   */
 final class OrnicarAddKcombinator[A](private val any: A) extends AnyVal {
   def kCombinator(sideEffect: A => Unit): A = {
