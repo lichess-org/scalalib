@@ -1,5 +1,7 @@
 package ornicar.scalalib
 
+import alleycats.Zero
+
 trait OrnicarBoolean {
   @inline implicit def toOrnicarBoolean[A](b: Boolean) = new OrnicarBooleanWrapper(b)
 }

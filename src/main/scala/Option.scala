@@ -1,5 +1,7 @@
 package ornicar.scalalib
 
+import alleycats.Zero
+
 trait OrnicarOption {
   implicit final def toOrnicarOption[A](o: Option[A]) = new OrnicarOptionWrapper(o)
 }

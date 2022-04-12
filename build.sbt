@@ -1,10 +1,11 @@
 lazy val core = Project("core", file("."))
 organization := "com.github.ornicar"
 name := "scalalib"
-version := "7.0.2"
+version := "7.1.0"
 scalaVersion := "2.13.8"
 licenses += "MIT" -> url("http://opensource.org/licenses/MIT")
 libraryDependencies += "org.typelevel" %% "cats-core" % "2.7.0"
+libraryDependencies += "org.typelevel" %% "alleycats-core" % "2.7.0"
 scalacOptions := Seq(
     "-encoding",
     "utf-8",
