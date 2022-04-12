@@ -3,20 +3,18 @@ package ornicar.scalalib
 import cats.data.Validated
 
 trait Common {
-  implicit final def toOrnicarAddKcombinator[A](any: A) =
+  implicit final def toOrnicarAddKcombinator[A](any: A): OrnicarAddKcombinator[A] =
     new OrnicarAddKcombinator(any)
-  implicit final def toOrnicarMap[A, B](m: Map[A, B]) =
+  implicit final def toOrnicarMap[A, B](m: Map[A, B]): OrnicarMap[A, B] =
     new OrnicarMap(m)
-  implicit final def toOrnicarIdentity[A](a: A) =
+  implicit final def toOrnicarIdentity[A](a: A): OrnicarIdentity[A] =
     new OrnicarIdentity(a)
-  implicit final def toOrnicarValidated[E, A](a: Validated[E, A]) =
+  implicit final def toOrnicarValidated[E, A](a: Validated[E, A]): OrnicarValidated[E, A] =
     new OrnicarValidated(a)
 }
 
-/**
-  * K combinator implementation
-  * Provides oneliner side effects
-  * See https://web.archive.org/web/20111209063845/hacking-scala.posterous.com/side-effecting-without-braces
+/** K combinator implementation Provides oneliner side effects See
+  * https://web.archive.org/web/20111209063845/hacking-scala.posterous.com/side-effecting-without-braces
   */
 final class OrnicarAddKcombinator[A](private val any: A) extends AnyVal {
   def kCombinator(sideEffect: A => Unit): A = {
@@ -32,8 +30,8 @@ final class OrnicarMap[A, B](private val m: Map[A, B]) extends AnyVal {
 
   // Add Map.mapKeys, similar to Map.mapValues
   def mapKeys[C](f: A => C): Map[C, B] =
-    m map {
-      case (a, b) => (f(a), b)
+    m map { case (a, b) =>
+      (f(a), b)
     } toMap
 
   // Add Map.filterValues, similar to Map.filterKeys

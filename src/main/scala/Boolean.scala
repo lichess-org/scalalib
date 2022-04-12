@@ -3,7 +3,7 @@ package ornicar.scalalib
 import alleycats.Zero
 
 trait OrnicarBoolean {
-  @inline implicit def toOrnicarBoolean[A](b: Boolean) = new OrnicarBooleanWrapper(b)
+  @inline implicit def toOrnicarBoolean[A](b: Boolean): OrnicarBooleanWrapper = new OrnicarBooleanWrapper(b)
 }
 
 final class OrnicarBooleanWrapper(private val self: Boolean) extends AnyVal {

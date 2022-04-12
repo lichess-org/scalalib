@@ -3,7 +3,7 @@ package ornicar.scalalib
 import alleycats.Zero
 
 trait OrnicarOption {
-  implicit final def toOrnicarOption[A](o: Option[A]) = new OrnicarOptionWrapper(o)
+  implicit final def toOrnicarOption[A](o: Option[A]): OrnicarOptionWrapper[A] = new OrnicarOptionWrapper(o)
 }
 
 final class OrnicarOptionWrapper[A](private val self: Option[A]) extends AnyVal {
@@ -16,5 +16,5 @@ final class OrnicarOptionWrapper[A](private val self: Option[A]) extends AnyVal 
   // typesafe getOrElse
   def |(default: => A): A = self getOrElse default
 
-  def unary_~(implicit z: Zero[A]): A   = self getOrElse z.zero
+  def unary_~(implicit z: Zero[A]): A = self getOrElse z.zero
 }
