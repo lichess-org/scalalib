@@ -2,13 +2,6 @@ package ornicar.scalalib
 
 import alleycats.Zero
 
-trait OrnicarBoolean {
-  @inline implicit def toOrnicarBoolean[A](b: Boolean): OrnicarBooleanWrapper = new OrnicarBooleanWrapper(b)
-}
-
-final class OrnicarBooleanWrapper(private val self: Boolean) extends AnyVal {
-
+extension (self: Boolean)
   def option[A](a: => A): Option[A] = if (self) Some(a) else None
-
   def ??[A](a: => A)(implicit zero: Zero[A]): A = if (self) a else zero.zero
-}
