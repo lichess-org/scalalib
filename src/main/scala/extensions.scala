@@ -1,6 +1,14 @@
 package ornicar.scalalib
 
+import alleycats.Zero
 import cats.data.Validated
+import scala.util.matching.Regex
+
+extension (r: Regex)
+  def find(s: String): Boolean =
+    r.pattern.matcher(s).find
+  def matches(s: String): Boolean =
+    r.pattern.matcher(s).matches
 
 /** K combinator implementation Provides oneliner side effects See
   * https://web.archive.org/web/20111209063845/hacking-scala.posterous.com/side-effecting-without-braces
@@ -31,3 +39,19 @@ extension [A, B](m: Map[A, B])
 
 extension [E, A](validated: Validated[E, A])
   def flatMap[EE >: E, B](f: A => Validated[EE, B]): Validated[EE, B] = validated.andThen(f)
+
+extension [A](self: Option[A])
+
+  def ??[B: Zero](f: A => B): B = self.fold(Zero[B].zero)(f)
+
+  def ifTrue(b: Boolean): Option[A]  = self filter (_ => b)
+  def ifFalse(b: Boolean): Option[A] = self filter (_ => !b)
+
+  // typesafe getOrElse
+  def |(default: => A): A = self getOrElse default
+
+  def unary_~(implicit z: Zero[A]): A = self getOrElse z.zero
+
+extension (self: Boolean)
+  def option[A](a: => A): Option[A]             = if (self) Some(a) else None
+  def ??[A](a: => A)(implicit zero: Zero[A]): A = if (self) a else zero.zero
