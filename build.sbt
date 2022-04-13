@@ -1,4 +1,4 @@
-lazy val core = Project("core", file("."))
+lazy val scalalib = Project("scalalib", file("."))
 organization := "com.github.ornicar"
 name := "scalalib"
 version := "8.0.0"
