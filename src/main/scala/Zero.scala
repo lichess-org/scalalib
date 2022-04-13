@@ -3,18 +3,42 @@ import alleycats.Zero
 
 trait Zeros {
 
-  implicit final val stringZero: Zero[String]   = Zero("")
-  implicit final val booleanZero: Zero[Boolean] = Zero(false)
-  implicit final val intZero: Zero[Int]         = Zero(0)
-  implicit final val longZero: Zero[Long]       = Zero(0L)
-  implicit final val doubleZero: Zero[Double]   = Zero(0d)
-  implicit final val floatZero: Zero[Float]     = Zero(0f)
-  implicit final val unitZero: Zero[Unit]       = Zero(())
+  given Zero[String] with
+    def zero = ""
 
-  @inline implicit def listZero[A]: Zero[List[A]]     = Zero(List.empty[A])
-  @inline implicit def mapZero[A, B]: Zero[Map[A, B]] = Zero(Map.empty[A, B])
-  @inline implicit def optionZero[A]: Zero[Option[A]] = Zero(Option.empty[A])
-  @inline implicit def setZero[A]: Zero[Set[A]]       = Zero(Set.empty[A])
-  @inline implicit def seqZero[A]: Zero[Seq[A]]       = Zero(Seq.empty[A])
-  @inline implicit def vectorZero[A]: Zero[Vector[A]] = Zero(Vector.empty[A])
+  given Zero[Boolean] with
+    def zero = false
+
+  given Zero[Int] with
+    def zero = 0
+
+  given Zero[Long] with
+    def zero = 0L
+
+  given Zero[Double] with
+    def zero = 0d
+
+  given Zero[Float] with
+    def zero = 0f
+
+  given Zero[Unit] with
+    def zero = ()
+
+  given Zero[List[?]] with
+    def zero = List.empty
+
+  given Zero[Map[?, ?]] with
+    def zero = Map.empty
+
+  given Zero[Option[?]] with
+    def zero = Option.empty
+
+  given Zero[Set[?]] with
+    def zero = Set.empty
+
+  given Zero[Seq[?]] with
+    def zero = Seq.empty
+
+  given Zero[Vector[?]] with
+    def zero = Vector.empty
 }
