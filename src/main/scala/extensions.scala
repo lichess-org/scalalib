@@ -4,7 +4,7 @@ import alleycats.Zero
 import cats.data.Validated
 import scala.util.matching.Regex
 
-trait ScalalibExtensions {
+trait ScalalibExtensions:
   extension (r: Regex)
     def find(s: String): Boolean =
       r.pattern.matcher(s).find
@@ -15,17 +15,15 @@ trait ScalalibExtensions {
     * https://web.archive.org/web/20111209063845/hacking-scala.posterous.com/side-effecting-without-braces
     */
   extension [A](a: A)
-    def kCombinator(sideEffect: A => Unit): A = {
+    def kCombinator(sideEffect: A => Unit): A =
       sideEffect(a)
       a
-    }
     def ~(sideEffect: A => Unit): A = kCombinator(sideEffect)
     def pp: A                       = kCombinator(println)
     def pp(msg: String): A          = kCombinator(a => println(s"[$msg] $a"))
-    def combine[B](o: Option[B])(f: (A, B) => A): A = o match {
+    def combine[B](o: Option[B])(f: (A, B) => A): A = o match
       case None    => a
       case Some(b) => f(a, b)
-    }
 
   extension [A, B](m: Map[A, B])
     // Add Map.mapKeys, similar to Map.mapValues
@@ -56,6 +54,5 @@ trait ScalalibExtensions {
   extension (self: Boolean)
     def option[A](a: => A): Option[A]             = if (self) Some(a) else None
     def ??[A](a: => A)(implicit zero: Zero[A]): A = if (self) a else zero.zero
-}
 
 object ScalalibExtensions extends ScalalibExtensions

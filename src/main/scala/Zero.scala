@@ -1,7 +1,7 @@
 package ornicar.scalalib
 import alleycats.Zero
 
-trait Zeros {
+trait Zeros:
 
   given Zero[String] with
     def zero = ""
@@ -41,4 +41,3 @@ trait Zeros {
 
   given Zero[Vector[?]] with
     def zero = Vector.empty
-}

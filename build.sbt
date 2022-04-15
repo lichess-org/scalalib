@@ -11,6 +11,7 @@ scalacOptions := Seq(
   "utf-8",
   "-rewrite",
   "-source:future",
+  "-indent",
   "-explaintypes",
   "-feature",
   "-language:postfixOps"

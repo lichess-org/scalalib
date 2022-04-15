@@ -5,7 +5,7 @@ import scala.util.Random as ScalaRandom
 
 import java.security.SecureRandom
 
-object Random {
+object Random:
 
   private val chars   = ('0' to '9') ++ ('a' to 'z') ++ ('A' to 'Z') mkString
   private val nbChars = chars.size
@@ -18,7 +18,7 @@ object Random {
   def secureChar: Char               = chars(secureRandom nextInt nbChars)
   def secureString(len: Int): String = new String(Array.fill(len)(secureChar))
 
-  final class Approximately(val ratio: Float = 0.1f) extends AnyVal {
+  final class Approximately(val ratio: Float = 0.1f) extends AnyVal:
 
     def apply(number: Double): Double =
       number + (ratio * number * 2 * ScalaRandom.nextDouble()) - (ratio * number)
@@ -28,7 +28,5 @@ object Random {
 
     def apply(number: Int): Int =
       round(apply(number.toFloat))
-  }
 
   def approximately(ratio: Float = 0.1f) = new Approximately(ratio)
-}
