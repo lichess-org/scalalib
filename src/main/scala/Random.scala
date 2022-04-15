@@ -1,7 +1,7 @@
 package ornicar.scalalib
 
 import scala.math.round
-import scala.util.{ Random => ScalaRandom }
+import scala.util.Random as ScalaRandom
 
 import java.security.SecureRandom
 
