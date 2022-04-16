@@ -10,7 +10,7 @@ scalacOptions := Seq(
   "-encoding",
   "utf-8",
   "-rewrite",
-  "-source:future",
+  "-source:future-migration",
   "-indent",
   "-explaintypes",
   "-feature",
