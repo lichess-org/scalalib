@@ -3,7 +3,7 @@ organization := "com.github.ornicar"
 name         := "scalalib"
 version      := "8.1.0"
 scalaVersion := "3.2.0"
-crossScalaVersions ++= Seq("2.13.8", "3.1.3")
+// crossScalaVersions ++= Seq("2.13.8", "3.1.3")
 licenses += "MIT"                      -> url("https://opensource.org/licenses/MIT")
 libraryDependencies += "org.typelevel" %% "cats-core"      % "2.8.0"
 libraryDependencies += "org.typelevel" %% "alleycats-core" % "2.8.0"
@@ -12,17 +12,9 @@ scalacOptions := Seq(
   "utf-8",
   "-explaintypes",
   "-feature",
-  "-language:postfixOps"
-  // Warnings as errors!
-  // "-Xfatal-warnings",
-) ++
-  (CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((3, _)) =>
-      Seq(
-        "-rewrite",
-        "-indent",
-        "-source:future-migration"
-      )
-    case _ => Seq()
-  })
+  "-language:postfixOps",
+  "-rewrite",
+  "-indent",
+  "-source:future-migration"
+)
 publishTo := Some(Resolver.file("file", new File(sys.props.getOrElse("publishTo", ""))))
