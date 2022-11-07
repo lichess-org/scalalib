@@ -1,21 +1,28 @@
 lazy val scalalib = Project("scalalib", file("."))
-organization                           := "com.github.ornicar"
-name                                   := "scalalib"
-version                                := "8.0.2"
-scalaVersion                           := "3.1.1"
-licenses += "MIT"                      -> url("http://opensource.org/licenses/MIT")
-libraryDependencies += "org.typelevel" %% "cats-core"      % "2.7.0"
-libraryDependencies += "org.typelevel" %% "alleycats-core" % "2.7.0"
+organization := "com.github.ornicar"
+name         := "scalalib"
+version      := "8.1.0"
+scalaVersion := "3.2.0"
+crossScalaVersions ++= Seq("2.13.8", "3.1.3")
+licenses += "MIT"                      -> url("https://opensource.org/licenses/MIT")
+libraryDependencies += "org.typelevel" %% "cats-core"      % "2.8.0"
+libraryDependencies += "org.typelevel" %% "alleycats-core" % "2.8.0"
 scalacOptions := Seq(
   "-encoding",
   "utf-8",
-  "-rewrite",
-  "-source:future-migration",
-  "-indent",
   "-explaintypes",
   "-feature",
   "-language:postfixOps"
   // Warnings as errors!
   // "-Xfatal-warnings",
-)
+) ++
+  (CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((3, _)) =>
+      Seq(
+        "-rewrite",
+        "-indent",
+        "-source:future-migration"
+      )
+    case _ => Seq()
+  })
 publishTo := Some(Resolver.file("file", new File(sys.props.getOrElse("publishTo", ""))))
