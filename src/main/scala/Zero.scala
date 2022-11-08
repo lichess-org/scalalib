@@ -24,20 +24,20 @@ trait Zeros:
   given Zero[Unit] with
     def zero = ()
 
-  given Zero[List[?]] with
+  given [A]: Zero[List[A]] with
     def zero = List.empty
 
-  given Zero[Map[?, ?]] with
+  given [A, B]: Zero[Map[A, B]] with
     def zero = Map.empty
 
-  given Zero[Option[?]] with
+  given [A]: Zero[Option[A]] with
     def zero = Option.empty
 
-  given Zero[Set[?]] with
+  given [A]: Zero[Set[A]] with
     def zero = Set.empty
 
-  given Zero[Seq[?]] with
+  given [A]: Zero[Seq[A]] with
     def zero = Seq.empty
 
-  given Zero[Vector[?]] with
+  given [A]: Zero[Vector[A]] with
     def zero = Vector.empty
