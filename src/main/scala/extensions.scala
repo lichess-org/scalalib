@@ -49,10 +49,11 @@ trait ScalalibExtensions:
     // typesafe getOrElse
     def |(default: => A): A = self getOrElse default
 
-    def unary_~(implicit z: Zero[A]): A = self getOrElse z.zero
+    def unary_~(using z: Zero[A]): A = self getOrElse z.zero
+    def orZero(using z: Zero[A]): A  = self getOrElse z.zero
 
   extension (self: Boolean)
-    def option[A](a: => A): Option[A]             = if (self) Some(a) else None
-    def ??[A](a: => A)(implicit zero: Zero[A]): A = if (self) a else zero.zero
+    def option[A](a: => A): Option[A]          = if (self) Some(a) else None
+    def ??[A](a: => A)(using zero: Zero[A]): A = if (self) a else zero.zero
 
 object ScalalibExtensions extends ScalalibExtensions
