@@ -1,7 +1,7 @@
 lazy val scalalib = Project("scalalib", file("."))
 organization := "com.github.ornicar"
 name         := "scalalib"
-version      := "8.1.3"
+version      := "8.1.4"
 scalaVersion := "3.2.1"
 // crossScalaVersions ++= Seq("2.13.8", "3.1.3")
 licenses += "MIT"                      -> url("https://opensource.org/licenses/MIT")
@@ -13,8 +13,9 @@ scalacOptions := Seq(
   "-explaintypes",
   "-feature",
   "-language:postfixOps",
-  "-rewrite",
   "-indent",
-  "-source:future-migration"
+  "-rewrite",
+  "-source:future-migration",
+  "-Xtarget:12"
 )
 publishTo := Some(Resolver.file("file", new File(sys.props.getOrElse("publishTo", ""))))

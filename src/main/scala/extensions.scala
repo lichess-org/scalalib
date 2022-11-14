@@ -43,8 +43,8 @@ trait ScalalibExtensions:
 
     def ??[B: Zero](f: A => B): B = self.fold(Zero[B].zero)(f)
 
-    def ifTrue(b: Boolean): Option[A]  = self filter (_ => b)
-    def ifFalse(b: Boolean): Option[A] = self filter (_ => !b)
+    def ifTrue(b: Boolean): Option[A]  = self.filter(_ => b)
+    def ifFalse(b: Boolean): Option[A] = self.filter(_ => !b)
 
     // typesafe getOrElse
     def |(default: => A): A = self getOrElse default
@@ -52,8 +52,8 @@ trait ScalalibExtensions:
     def unary_~(using z: Zero[A]): A = self getOrElse z.zero
     def orZero(using z: Zero[A]): A  = self getOrElse z.zero
 
-  extension (self: Boolean)
-    def option[A](a: => A): Option[A]          = if (self) Some(a) else None
-    def ??[A](a: => A)(using zero: Zero[A]): A = if (self) a else zero.zero
+implicit final class OrnicarBooleanWrapper(private val self: Boolean) extends AnyVal:
+  def option[A](a: => A): Option[A]             = if (self) Some(a) else None
+  def ??[A](a: => A)(implicit zero: Zero[A]): A = if (self) a else zero.zero
 
 object ScalalibExtensions extends ScalalibExtensions
