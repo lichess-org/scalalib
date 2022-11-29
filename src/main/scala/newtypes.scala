@@ -24,6 +24,7 @@ object newtypes:
       f.asInstanceOf[M[Newtype]]
     inline def from[M[_], B](inline other: TotalWrapper[B, Impl])(inline f: M[B]): M[Newtype] =
       f.asInstanceOf[M[Newtype]]
+    inline def raw[M[_]](inline f: M[Newtype]): M[Impl] = f.asInstanceOf[M[Impl]]
 
     given SameRuntime[Newtype, Impl] = new:
       def apply(a: Newtype): Impl = a.asInstanceOf[Impl]
