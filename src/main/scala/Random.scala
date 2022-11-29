@@ -1,32 +1,43 @@
 package ornicar.scalalib
 
-import scala.math.round
-import scala.util.Random as ScalaRandom
+import scala.collection.mutable.StringBuilder
 
-import java.security.SecureRandom
+val ThreadLocalRandom = new RandomApi(java.util.concurrent.ThreadLocalRandom.current)
 
-object Random:
+val SecureRandom = new RandomApi(new java.security.SecureRandom())
 
-  private val chars   = ('0' to '9') ++ ('a' to 'z') ++ ('A' to 'Z') mkString
-  private val nbChars = chars.size
+final class RandomApi(impl: java.util.Random):
 
-  def nextChar             = ScalaRandom.alphanumeric.head
-  def nextString(len: Int) = ScalaRandom.alphanumeric.take(len).mkString
+  inline def nextBoolean(): Boolean  = impl.nextBoolean()
+  inline def nextDouble(): Double    = impl.nextDouble()
+  inline def nextFloat(): Float      = impl.nextFloat()
+  inline def nextInt(): Int          = impl.nextInt()
+  inline def nextInt(n: Int): Int    = impl.nextInt(n)
+  inline def nextLong(): Long        = impl.nextLong()
+  inline def nextGaussian(): Double  = impl.nextGaussian()
+  inline def nextLong(n: Long): Long = impl.nextLong(n)
 
-  private val secureRandom = new SecureRandom()
+  def nextBytes(len: Int): Array[Byte] =
+    val bytes = new Array[Byte](len)
+    impl.nextBytes(bytes)
+    bytes
 
-  def secureChar: Char               = chars(secureRandom nextInt nbChars)
-  def secureString(len: Int): String = new String(Array.fill(len)(secureChar))
+  private val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+  private inline def nextAlphanumeric(): Char =
+    chars charAt nextInt(chars.length) // Constant time
 
-  final class Approximately(val ratio: Float = 0.1f) extends AnyVal:
+  def nextString(len: Int): String =
+    val sb = new StringBuilder(len)
+    for (_ <- 0 until len) sb += nextAlphanumeric()
+    sb.result()
 
-    def apply(number: Double): Double =
-      number + (ratio * number * 2 * ScalaRandom.nextDouble()) - (ratio * number)
+  def shuffle[T, C](xs: IterableOnce[T])(implicit bf: scala.collection.BuildFrom[xs.type, T, C]): C =
+    new scala.util.Random(impl).shuffle(xs)
 
-    def apply(number: Float): Float =
-      apply(number.toDouble).toFloat
+  def oneOf[A](vec: Vector[A]): Option[A] =
+    if vec.nonEmpty then vec lift nextInt(vec.size) else None
 
-    def apply(number: Int): Int =
-      round(apply(number.toFloat))
-
-  def approximately(ratio: Float = 0.1f) = new Approximately(ratio)
+  // odds(1) = 100% true
+  // odds(2) = 50% true
+  // odds(3) = 33% true
+  def odds(n: Int): Boolean = nextInt(n) == 0
