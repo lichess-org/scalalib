@@ -2,7 +2,8 @@ package ornicar.scalalib
 
 // thanks Anton!
 // https://github.com/indoorvivants/opaque-newtypes/blob/main/modules/core/src/main/scala/OpaqueNewtypes.scala
-trait NewTypes:
+
+object newtypes:
 
   trait SameRuntime[A, T]:
     def apply(a: A): T
@@ -61,7 +62,7 @@ trait NewTypes:
   trait OpaqueLong[A](using A =:= Long) extends TotalWrapper[A, Long]
   trait OpaqueDouble[A](using A =:= Double) extends TotalWrapper[A, Double]:
     extension (inline a: A) inline def +(inline o: Int): A = apply(raw(a) + o)
-  trait OpaqueFloat[A](using A =:= Float)   extends TotalWrapper[A, Float]
+  trait OpaqueFloat[A](using A =:= Float) extends TotalWrapper[A, Float]
 
   import scala.concurrent.duration.FiniteDuration
   trait OpaqueDuration[A](using A =:= FiniteDuration) extends TotalWrapper[A, FiniteDuration]
