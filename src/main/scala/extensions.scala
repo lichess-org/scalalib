@@ -5,6 +5,7 @@ import cats.data.Validated
 import scala.util.matching.Regex
 
 trait ScalalibExtensions:
+
   extension (r: Regex)
     def find(s: String): Boolean =
       r.pattern.matcher(s).find
@@ -21,9 +22,6 @@ trait ScalalibExtensions:
     def ~(sideEffect: A => Unit): A = kCombinator(sideEffect)
     def pp: A                       = kCombinator(println)
     def pp(msg: String): A          = kCombinator(a => println(s"[$msg] $a"))
-    def combine[B](o: Option[B])(f: (A, B) => A): A = o match
-      case None    => a
-      case Some(b) => f(a, b)
 
   extension [A, B](m: Map[A, B])
     // Add Map.mapKeys, similar to Map.mapValues
@@ -35,9 +33,6 @@ trait ScalalibExtensions:
     def filterValues(p: B => Boolean): Map[A, B] = m filter { x =>
       p(x._2)
     }
-
-  extension [E, A](validated: Validated[E, A])
-    def flatMap[EE >: E, B](f: A => Validated[EE, B]): Validated[EE, B] = validated.andThen(f)
 
   extension [A](self: Option[A])
 
