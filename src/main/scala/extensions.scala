@@ -34,6 +34,9 @@ trait ScalalibExtensions:
       p(x._2)
     }
 
+  extension [E, A](validated: Validated[E, A])
+    def flatMap[EE >: E, B](f: A => Validated[EE, B]): Validated[EE, B] = validated.andThen(f)
+
   extension [A](self: Option[A])
 
     def ??[B: Zero](f: A => B): B = self.fold(Zero[B].zero)(f)
