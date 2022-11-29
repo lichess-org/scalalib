@@ -4,7 +4,7 @@ import alleycats.Zero
 import cats.data.Validated
 import scala.util.matching.Regex
 
-trait ScalalibExtensions:
+object extensions:
 
   extension (r: Regex)
     def find(s: String): Boolean =
@@ -39,19 +39,17 @@ trait ScalalibExtensions:
 
   extension [A](self: Option[A])
 
-    def ??[B: Zero](f: A => B): B = self.fold(Zero[B].zero)(f)
+    inline def ??[B: Zero](inline f: A => B): B = self.fold(Zero[B].zero)(f)
 
-    def ifTrue(b: Boolean): Option[A]  = self.filter(_ => b)
-    def ifFalse(b: Boolean): Option[A] = self.filter(_ => !b)
+    inline def ifTrue(b: Boolean): Option[A]  = self.filter(_ => b)
+    inline def ifFalse(b: Boolean): Option[A] = self.filter(_ => !b)
 
     // typesafe getOrElse
-    def |(default: => A): A = self getOrElse default
+    inline def |(default: => A): A = self getOrElse default
 
-    def unary_~(using z: Zero[A]): A = self getOrElse z.zero
-    def orZero(using z: Zero[A]): A  = self getOrElse z.zero
+    inline def unary_~(using z: Zero[A]): A = self getOrElse z.zero
+    inline def orZero(using z: Zero[A]): A  = self getOrElse z.zero
 
 implicit final class OrnicarBooleanWrapper(private val self: Boolean) extends AnyVal:
-  def option[A](a: => A): Option[A]             = if (self) Some(a) else None
-  def ??[A](a: => A)(implicit zero: Zero[A]): A = if (self) a else zero.zero
-
-object ScalalibExtensions extends ScalalibExtensions
+  inline def option[A](a: => A): Option[A]             = if (self) Some(a) else None
+  inline def ??[A](a: => A)(implicit zero: Zero[A]): A = if (self) a else zero.zero

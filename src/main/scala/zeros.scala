@@ -1,7 +1,8 @@
 package ornicar.scalalib
+
 import alleycats.Zero
 
-trait Zeros:
+object zeros:
 
   given Zero[String] with
     def zero = ""
