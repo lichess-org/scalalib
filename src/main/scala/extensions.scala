@@ -50,6 +50,6 @@ object extensions:
     inline def unary_~(using z: Zero[A]): A = self getOrElse z.zero
     inline def orZero(using z: Zero[A]): A  = self getOrElse z.zero
 
-implicit final class OrnicarBooleanWrapper(private val self: Boolean) extends AnyVal:
-  inline def option[A](a: => A): Option[A]             = if (self) Some(a) else None
-  inline def ??[A](a: => A)(implicit zero: Zero[A]): A = if (self) a else zero.zero
+  implicit final class OrnicarBooleanWrapper(private val self: Boolean) extends AnyVal:
+    inline def option[A](a: => A): Option[A]             = if (self) Some(a) else None
+    inline def ??[A](a: => A)(implicit zero: Zero[A]): A = if (self) a else zero.zero
