@@ -42,23 +42,23 @@ object newtypes:
 
   trait OpaqueInt[A](using A =:= Int) extends TotalWrapper[A, Int]:
     extension (inline a: A)
-      inline def unary_-                                               = apply(-raw(a))
-      inline def >(inline o: Int): Boolean                             = raw(a) > o
-      inline def <(inline o: Int): Boolean                             = raw(a) < o
-      inline def >=(inline o: Int): Boolean                            = raw(a) >= o
-      inline def <=(inline o: Int): Boolean                            = raw(a) <= o
-      inline def +(inline o: Int): A                                   = apply(raw(a) + o)
-      inline def -(inline o: Int): A                                   = apply(raw(a) - o)
-      inline def atLeast(inline bot: Int): A                           = apply(math.max(raw(a), bot))
-      inline def atMost(inline top: Int): A                            = apply(math.min(raw(a), top))
-      inline def >[B](inline o: B)(using sr: IntRuntime[B]): Boolean   = >(sr(o))
-      inline def <[B](inline o: B)(using sr: IntRuntime[B]): Boolean   = <(sr(o))
-      inline def >=[B](inline o: B)(using sr: IntRuntime[B]): Boolean  = >=(sr(o))
-      inline def <=[B](inline o: B)(using sr: IntRuntime[B]): Boolean  = <=(sr(o))
-      inline def +[B](inline o: B)(using sr: IntRuntime[B]): A         = a + sr(o)
-      inline def -[B](inline o: B)(using sr: IntRuntime[B]): A         = a - sr(o)
-      inline def atLeast[B](inline bot: B)(using sr: IntRuntime[B]): A = atLeast(sr(bot))
-      inline def atMost[B](inline top: B)(using sr: IntRuntime[B]): A  = atMost(sr(top))
+      inline def unary_-                                                    = apply(-raw(a))
+      inline infix def >(inline o: Int): Boolean                            = raw(a) > o
+      inline infix def <(inline o: Int): Boolean                            = raw(a) < o
+      inline infix def >=(inline o: Int): Boolean                           = raw(a) >= o
+      inline infix def <=(inline o: Int): Boolean                           = raw(a) <= o
+      inline infix def +(inline o: Int): A                                  = apply(raw(a) + o)
+      inline infix def -(inline o: Int): A                                  = apply(raw(a) - o)
+      inline def atLeast(inline bot: Int): A                                = apply(math.max(raw(a), bot))
+      inline def atMost(inline top: Int): A                                 = apply(math.min(raw(a), top))
+      inline infix def >[B](inline o: B)(using sr: IntRuntime[B]): Boolean  = >(sr(o))
+      inline infix def <[B](inline o: B)(using sr: IntRuntime[B]): Boolean  = <(sr(o))
+      inline infix def >=[B](inline o: B)(using sr: IntRuntime[B]): Boolean = >=(sr(o))
+      inline infix def <=[B](inline o: B)(using sr: IntRuntime[B]): Boolean = <=(sr(o))
+      inline infix def +[B](inline o: B)(using sr: IntRuntime[B]): A        = a + sr(o)
+      inline infix def -[B](inline o: B)(using sr: IntRuntime[B]): A        = a - sr(o)
+      inline def atLeast[B](inline bot: B)(using sr: IntRuntime[B]): A      = atLeast(sr(bot))
+      inline def atMost[B](inline top: B)(using sr: IntRuntime[B]): A       = atMost(sr(top))
 
   trait OpaqueLong[A](using A =:= Long) extends TotalWrapper[A, Long]
   trait OpaqueDouble[A](using A =:= Double) extends TotalWrapper[A, Double]:
@@ -69,15 +69,15 @@ object newtypes:
   trait OpaqueDuration[A](using A =:= FiniteDuration) extends TotalWrapper[A, FiniteDuration]
 
   abstract class YesNo[A](using ev: Boolean =:= A):
-    val Yes: A = ev.apply(true)
-    val No: A  = ev.apply(false)
+    val Yes: A = true
+    val No: A  = false
 
     inline def from[M[_]](inline a: M[Boolean]): M[A] = a.asInstanceOf[M[A]]
 
     given SameRuntime[A, Boolean] = SameRuntime(_ == Yes)
     given SameRuntime[Boolean, A] = SameRuntime(if _ then Yes else No)
 
-    inline def apply(inline b: Boolean): A = ev.apply(b)
+    inline def apply(inline b: Boolean): A = b
 
     extension (inline a: A)
       inline def value: Boolean        = a == Yes

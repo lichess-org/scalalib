@@ -19,9 +19,9 @@ object extensions:
     def kCombinator(sideEffect: A => Unit): A =
       sideEffect(a)
       a
-    def ~(sideEffect: A => Unit): A = kCombinator(sideEffect)
-    def pp: A                       = kCombinator(println)
-    def pp(msg: String): A          = kCombinator(a => println(s"[$msg] $a"))
+    infix def ~(sideEffect: A => Unit): A = kCombinator(sideEffect)
+    def pp: A                             = kCombinator(println)
+    infix def pp(msg: String): A          = kCombinator(a => println(s"[$msg] $a"))
 
   extension [A, B](m: Map[A, B])
     // Add Map.mapKeys, similar to Map.mapValues
@@ -39,17 +39,17 @@ object extensions:
 
   extension [A](self: Option[A])
 
-    inline def ??[B: Zero](inline f: A => B): B = self.fold(Zero[B].zero)(f)
+    inline infix def ??[B: Zero](inline f: A => B): B = self.fold(Zero[B].zero)(f)
 
     inline def ifTrue(b: Boolean): Option[A]  = self.filter(_ => b)
     inline def ifFalse(b: Boolean): Option[A] = self.filter(_ => !b)
 
     // typesafe getOrElse
-    inline def |(default: => A): A = self getOrElse default
+    inline infix def |(default: => A): A = self getOrElse default
 
     inline def unary_~(using z: Zero[A]): A = self getOrElse z.zero
     inline def orZero(using z: Zero[A]): A  = self getOrElse z.zero
 
   implicit final class OrnicarBooleanWrapper(private val self: Boolean) extends AnyVal:
-    inline def option[A](a: => A): Option[A]             = if (self) Some(a) else None
-    inline def ??[A](a: => A)(implicit zero: Zero[A]): A = if (self) a else zero.zero
+    inline def option[A](a: => A): Option[A]                   = if (self) Some(a) else None
+    inline infix def ??[A](a: => A)(implicit zero: Zero[A]): A = if (self) a else zero.zero
