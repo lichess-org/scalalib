@@ -34,6 +34,8 @@ object extensions:
       p(x._2)
     }
 
+  extension [A](as: Iterable[A]) def mapBy[B](f: A => B): Map[B, A] = as.view.map { a => f(a) -> a }.toMap
+
   extension [E, A](validated: Validated[E, A])
     def flatMap[EE >: E, B](f: A => Validated[EE, B]): Validated[EE, B] = validated.andThen(f)
 
