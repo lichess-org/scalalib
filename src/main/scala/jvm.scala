@@ -1,7 +1,5 @@
 package ornicar.scalalib
 
-package lila.common
-
 import scala.jdk.CollectionConverters.*
 
 object Jvm:
