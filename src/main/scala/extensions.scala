@@ -25,14 +25,9 @@ object extensions:
 
   extension [A, B](m: Map[A, B])
     // Add Map.mapKeys, similar to Map.mapValues
-    def mapKeys[C](f: A => C): Map[C, B] =
-      m map { case (a, b) =>
-        (f(a), b)
-      } toMap
+    def mapKeys[C](f: A => C): Map[C, B] = m.map { (a, b) => (f(a), b) }
     // Add Map.filterValues, similar to Map.filterKeys
-    def filterValues(p: B => Boolean): Map[A, B] = m filter { x =>
-      p(x._2)
-    }
+    def filterValues(p: B => Boolean): Map[A, B] = m.filter { x => p(x._2) }
 
   extension [A](as: Iterable[A]) def mapBy[B](f: A => B): Map[B, A] = as.view.map { a => f(a) -> a }.toMap
 
