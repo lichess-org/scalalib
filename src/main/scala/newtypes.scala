@@ -5,6 +5,7 @@ package ornicar.scalalib
 
 object newtypes:
 
+  @FunctionalInterface
   trait SameRuntime[A, T]:
     def apply(a: A): T
 
@@ -26,11 +27,8 @@ object newtypes:
       f.asInstanceOf[M[Newtype]]
     inline def raw[M[_]](inline f: M[Newtype]): M[Impl] = f.asInstanceOf[M[Impl]]
 
-    given SameRuntime[Newtype, Impl] = new:
-      def apply(a: Newtype): Impl = a.asInstanceOf[Impl]
-
-    given SameRuntime[Impl, Newtype] = new:
-      def apply(a: Impl): Newtype = a.asInstanceOf[Newtype]
+    given SameRuntime[Newtype, Impl] = _.asInstanceOf[Impl]
+    given SameRuntime[Impl, Newtype] = _.asInstanceOf[Newtype]
 
     extension (a: Newtype)
       inline def value: Impl                                     = raw(a)
@@ -74,8 +72,8 @@ object newtypes:
 
     inline def from[M[_]](inline a: M[Boolean]): M[A] = a.asInstanceOf[M[A]]
 
-    given SameRuntime[A, Boolean] = SameRuntime(_ == Yes)
-    given SameRuntime[Boolean, A] = SameRuntime(if _ then Yes else No)
+    given SameRuntime[A, Boolean] = _ == Yes
+    given SameRuntime[Boolean, A] = if _ then Yes else No
 
     inline def apply(inline b: Boolean): A = b
 
