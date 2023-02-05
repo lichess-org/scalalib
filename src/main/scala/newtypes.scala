@@ -18,7 +18,7 @@ object newtypes:
   type DoubleRuntime[A] = SameRuntime[A, Double]
 
   trait TotalWrapper[Newtype, Impl](using ev: Newtype =:= Impl):
-    inline def raw(inline a: Newtype): Impl              = a.asInstanceOf[Impl]
+    inline def raw(inline a: Newtype): Impl              = a
     inline def apply(inline s: Impl): Newtype            = s.asInstanceOf[Newtype]
     inline def from[M[_]](inline f: M[Impl]): M[Newtype] = f.asInstanceOf[M[Newtype]]
     inline def from[M[_], B](using sr: SameRuntime[B, Impl])(inline f: M[B]): M[Newtype] =
@@ -27,14 +27,17 @@ object newtypes:
       f.asInstanceOf[M[Newtype]]
     inline def raw[M[_]](inline f: M[Newtype]): M[Impl] = f.asInstanceOf[M[Impl]]
 
-    given SameRuntime[Newtype, Impl] = _.asInstanceOf[Impl]
+    given SameRuntime[Newtype, Impl] = identity
     given SameRuntime[Impl, Newtype] = _.asInstanceOf[Newtype]
 
     extension (a: Newtype)
-      inline def value: Impl                                     = raw(a)
-      inline def into[X](inline other: TotalWrapper[X, Impl]): X = other.apply(raw(a))
-      inline def map(inline f: Impl => Impl): Newtype            = apply(f(raw(a)))
+      inline def value: Impl                                     = a
+      inline def into[X](inline other: TotalWrapper[X, Impl]): X = other.apply(a)
+      inline def map(inline f: Impl => Impl): Newtype            = apply(f(a))
   end TotalWrapper
+
+  trait FunctionWrapper[Newtype, Impl](using ev: Newtype =:= Impl) extends TotalWrapper[Newtype, Impl]:
+    extension (a: Newtype) inline def apply: Impl = a
 
   trait OpaqueString[A](using A =:= String) extends TotalWrapper[A, String]
 
