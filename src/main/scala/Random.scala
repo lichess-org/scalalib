@@ -2,9 +2,9 @@ package ornicar.scalalib
 
 import scala.collection.mutable.StringBuilder
 
-val ThreadLocalRandom = new RandomApi(java.util.concurrent.ThreadLocalRandom.current)
+val ThreadLocalRandom = RandomApi(java.util.concurrent.ThreadLocalRandom.current)
 
-val SecureRandom = new RandomApi(new java.security.SecureRandom())
+val SecureRandom = RandomApi(java.security.SecureRandom())
 
 final class RandomApi(impl: java.util.Random):
 
@@ -27,12 +27,12 @@ final class RandomApi(impl: java.util.Random):
     chars charAt nextInt(chars.length) // Constant time
 
   def nextString(len: Int): String =
-    val sb = new StringBuilder(len)
+    val sb = StringBuilder(len)
     for (_ <- 0 until len) sb += nextAlphanumeric()
     sb.result()
 
-  def shuffle[T, C](xs: IterableOnce[T])(implicit bf: scala.collection.BuildFrom[xs.type, T, C]): C =
-    new scala.util.Random(impl).shuffle(xs)
+  def shuffle[T, C](xs: IterableOnce[T])(using scala.collection.BuildFrom[xs.type, T, C]): C =
+    scala.util.Random(impl).shuffle(xs)
 
   def oneOf[A](vec: Vector[A]): Option[A] =
     if vec.nonEmpty then vec lift nextInt(vec.size) else None
