@@ -1,7 +1,8 @@
 package ornicar.scalalib
 
 import java.time.{ Duration, Instant, LocalDateTime, ZoneOffset }
-import java.time.temporal.ChronoUnit
+import java.time.temporal.{ ChronoUnit, TemporalAdjuster, TemporalAdjusters }
+import scala.concurrent.duration as concDur
 
 object time:
 
@@ -17,13 +18,21 @@ object time:
     def atMost(other: LocalDateTime): LocalDateTime  = if other.isBefore(d) then other else d
     def atLeast(other: LocalDateTime): LocalDateTime = if other.isAfter(d) then other else d
     def withTimeAtStartOfDay: LocalDateTime          = d.toLocalDate.atStartOfDay
-    def plus(duration: scala.concurrent.duration.Duration): LocalDateTime =
-      d.plus(duration.toMillis, ChronoUnit.MILLIS)
-    def minus(duration: scala.concurrent.duration.Duration): LocalDateTime =
-      d.minus(duration.toMillis, ChronoUnit.MILLIS)
+    def plus(dur: concDur.Duration): LocalDateTime   = d.plus(dur.toMillis, ChronoUnit.MILLIS)
+    def minus(dur: concDur.Duration): LocalDateTime  = d.minus(dur.toMillis, ChronoUnit.MILLIS)
+
+  case class TimeInterval(start: LocalDateTime, end: LocalDateTime):
+    def overlaps(other: TimeInterval): Boolean = start.isBefore(other.end) && other.start.isBefore(end)
+    def contains(date: LocalDateTime): Boolean = (start == date || start.isBefore(date)) && end.isAfter(date)
+
+  object TimeInterval:
+    def apply(start: LocalDateTime, duration: Duration): TimeInterval =
+      TimeInterval(start, start.plus(duration))
 
   def millisToDate(millis: Long): LocalDateTime =
-    LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneOffset.UTC)
+    LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), utcZone)
 
   def daysBetween(from: LocalDateTime, to: LocalDateTime): Int =
     ChronoUnit.DAYS.between(from, to).toInt
+
+  val isoDateFormatter = java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
