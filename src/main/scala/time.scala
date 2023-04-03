@@ -1,9 +1,10 @@
 package ornicar.scalalib
 
-import java.time.{ Duration, Instant, LocalDateTime, ZoneOffset }
+import java.time.{ Duration, Instant, LocalDate, LocalDateTime, ZoneOffset }
 import java.time.temporal.{ ChronoUnit, TemporalAdjuster, TemporalAdjusters }
 import scala.concurrent.duration as concDur
 
+// about java.time https://stackoverflow.com/a/32443004
 object time:
 
   val utcZone = ZoneOffset.UTC
@@ -12,6 +13,8 @@ object time:
     def toMillis: Long                               = d.toInstant(utcZone).toEpochMilli
     def toSeconds: Long                              = toMillis / 1000
     def toCentis: Long                               = toMillis / 10
+    def instant: Instant                             = d.toInstant(utcZone)
+    def date: LocalDate                              = d.toLocalDate
     def toNow: Duration                              = Duration.between(d, LocalDateTime.now)
     def isBeforeNow: Boolean                         = d.isBefore(LocalDateTime.now)
     def isAfterNow: Boolean                          = d.isAfter(LocalDateTime.now)
@@ -21,18 +24,42 @@ object time:
     def plus(dur: concDur.Duration): LocalDateTime   = d.plus(dur.toMillis, ChronoUnit.MILLIS)
     def minus(dur: concDur.Duration): LocalDateTime  = d.minus(dur.toMillis, ChronoUnit.MILLIS)
 
-  case class TimeInterval(start: LocalDateTime, end: LocalDateTime):
+  extension (d: Instant)
+    def toMillis: Long                        = d.toEpochMilli
+    def toSeconds: Long                       = toMillis / 1000
+    def toCentis: Long                        = toMillis / 10
+    def date: LocalDate                       = LocalDate.ofInstant(d, utcZone)
+    def dateTime: LocalDateTime               = LocalDateTime.ofInstant(d, utcZone)
+    def toNow: Duration                       = Duration.between(d, LocalDateTime.now)
+    def isBeforeNow: Boolean                  = d.isBefore(Instant.now)
+    def isAfterNow: Boolean                   = d.isAfter(Instant.now)
+    def atMost(other: Instant): Instant       = if other.isBefore(d) then other else d
+    def atLeast(other: Instant): Instant      = if other.isAfter(d) then other else d
+    def withTimeAtStartOfDay: Instant         = date.atStartOfDay(utcZone).toInstant
+    def plus(dur: concDur.Duration): Instant  = d.plus(dur.toMillis, ChronoUnit.MILLIS)
+    def minus(dur: concDur.Duration): Instant = d.minus(dur.toMillis, ChronoUnit.MILLIS)
+    def plusHours(v: Int): Instant            = dateTime.plusHours(v.toLong).instant
+    def minusHours(v: Int): Instant           = dateTime.minusHours(v.toLong).instant
+    def plusDays(v: Int): Instant             = dateTime.plusDays(v.toLong).instant
+    def minusDays(v: Int): Instant            = dateTime.minusDays(v.toLong).instant
+
+  case class TimeInterval(start: Instant, end: Instant):
     def overlaps(other: TimeInterval): Boolean = start.isBefore(other.end) && other.start.isBefore(end)
-    def contains(date: LocalDateTime): Boolean = (start == date || start.isBefore(date)) && end.isAfter(date)
+    def contains(date: Instant): Boolean       = (start == date || start.isBefore(date)) && end.isAfter(date)
 
   object TimeInterval:
-    def apply(start: LocalDateTime, duration: Duration): TimeInterval =
+    def apply(start: Instant, duration: Duration): TimeInterval =
       TimeInterval(start, start.plus(duration))
 
-  def millisToDate(millis: Long): LocalDateTime =
-    LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), utcZone)
+  inline def millisToInstant(inline millis: Long): Instant        = Instant.ofEpochMilli(millis)
+  inline def millisToDateTime(inline millis: Long): LocalDateTime = millisToInstant(millis).dateTime
+  inline def nowDateTime: LocalDateTime                           = LocalDateTime.now()
+  inline def nowInstant: Instant                                  = Instant.now()
 
   def daysBetween(from: LocalDateTime, to: LocalDateTime): Int =
+    ChronoUnit.DAYS.between(from, to).toInt
+
+  def daysBetween(from: Instant, to: Instant): Int =
     ChronoUnit.DAYS.between(from, to).toInt
 
   val isoDateFormatter = java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
