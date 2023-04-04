@@ -9,6 +9,8 @@ object time:
 
   val utcZone = ZoneOffset.UTC
 
+  extension (d: LocalDate) def adjust(a: TemporalAdjuster): LocalDate = d.`with`(a)
+
   extension (d: LocalDateTime)
     def toMillis: Long                               = d.toInstant(utcZone).toEpochMilli
     def toSeconds: Long                              = toMillis / 1000
@@ -23,6 +25,7 @@ object time:
     def withTimeAtStartOfDay: LocalDateTime          = d.toLocalDate.atStartOfDay
     def plus(dur: concDur.Duration): LocalDateTime   = d.plus(dur.toMillis, ChronoUnit.MILLIS)
     def minus(dur: concDur.Duration): LocalDateTime  = d.minus(dur.toMillis, ChronoUnit.MILLIS)
+    def adjust(a: TemporalAdjuster): LocalDateTime   = d.`with`(a)
 
   extension (d: Instant)
     def toMillis: Long                        = d.toEpochMilli
@@ -38,10 +41,19 @@ object time:
     def withTimeAtStartOfDay: Instant         = date.atStartOfDay(utcZone).toInstant
     def plus(dur: concDur.Duration): Instant  = d.plus(dur.toMillis, ChronoUnit.MILLIS)
     def minus(dur: concDur.Duration): Instant = d.minus(dur.toMillis, ChronoUnit.MILLIS)
-    def plusHours(v: Int): Instant            = dateTime.plusHours(v.toLong).instant
-    def minusHours(v: Int): Instant           = dateTime.minusHours(v.toLong).instant
-    def plusDays(v: Int): Instant             = dateTime.plusDays(v.toLong).instant
-    def minusDays(v: Int): Instant            = dateTime.minusDays(v.toLong).instant
+    def plusMinutes(v: Int): Instant          = dateTime.plusMinutes(v).instant
+    def minusMinutes(v: Int): Instant         = dateTime.minusMinutes(v).instant
+    def plusHours(v: Int): Instant            = dateTime.plusHours(v).instant
+    def minusHours(v: Int): Instant           = dateTime.minusHours(v).instant
+    def plusDays(v: Int): Instant             = dateTime.plusDays(v).instant
+    def minusDays(v: Int): Instant            = dateTime.minusDays(v).instant
+    def plusWeeks(v: Int): Instant            = dateTime.plusWeeks(v).instant
+    def minusWeeks(v: Int): Instant           = dateTime.minusWeeks(v).instant
+    def plusMonths(v: Int): Instant           = dateTime.plusMonths(v).instant
+    def minusMonths(v: Int): Instant          = dateTime.minusMonths(v).instant
+    def plusYears(v: Int): Instant            = dateTime.plusYears(v).instant
+    def minusYears(v: Int): Instant           = dateTime.minusYears(v).instant
+    def adjust(a: TemporalAdjuster): Instant  = d.`with`(a)
 
   case class TimeInterval(start: Instant, end: Instant):
     def overlaps(other: TimeInterval): Boolean = start.isBefore(other.end) && other.start.isBefore(end)
@@ -55,6 +67,9 @@ object time:
   inline def millisToDateTime(inline millis: Long): LocalDateTime = millisToInstant(millis).dateTime
   inline def nowDateTime: LocalDateTime                           = LocalDateTime.now()
   inline def nowInstant: Instant                                  = Instant.now()
+
+  def instantOf(year: Int, month: Int, dayOfMonth: Int, hour: Int, minute: Int) =
+    java.time.LocalDateTime.of(year, month, dayOfMonth, hour, minute).instant
 
   def daysBetween(from: LocalDateTime, to: LocalDateTime): Int =
     ChronoUnit.DAYS.between(from, to).toInt
