@@ -63,10 +63,10 @@ object time:
     def apply(start: Instant, duration: Duration): TimeInterval =
       TimeInterval(start, start.plus(duration))
 
-  inline def millisToInstant(inline millis: Long): Instant        = Instant.ofEpochMilli(millis)
-  inline def millisToDateTime(inline millis: Long): LocalDateTime = millisToInstant(millis).dateTime
-  inline def nowDateTime: LocalDateTime                           = LocalDateTime.now()
-  inline def nowInstant: Instant                                  = Instant.now()
+  def millisToInstant(millis: Long): Instant        = Instant.ofEpochMilli(millis)
+  def millisToDateTime(millis: Long): LocalDateTime = millisToInstant(millis).dateTime
+  inline def nowDateTime: LocalDateTime             = LocalDateTime.now()
+  inline def nowInstant: Instant                    = Instant.now()
 
   def instantOf(year: Int, month: Int, dayOfMonth: Int, hour: Int, minute: Int) =
     java.time.LocalDateTime.of(year, month, dayOfMonth, hour, minute).instant
@@ -77,4 +77,4 @@ object time:
   def daysBetween(from: Instant, to: Instant): Int =
     ChronoUnit.DAYS.between(from, to).toInt
 
-  val isoDateFormatter = java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
+  val isoDateTimeFormatter = java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(utcZone)
