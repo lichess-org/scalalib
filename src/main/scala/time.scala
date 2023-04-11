@@ -3,6 +3,7 @@ package ornicar.scalalib
 import java.time.{ Duration, Instant, LocalDate, LocalDateTime, ZoneOffset }
 import java.time.temporal.{ ChronoUnit, TemporalAdjuster, TemporalAdjusters }
 import scala.concurrent.duration as concDur
+import java.time.format.DateTimeFormatter
 
 // about java.time https://stackoverflow.com/a/32443004
 object time:
@@ -54,6 +55,15 @@ object time:
     def plusYears(v: Int): Instant            = dateTime.plusYears(v).instant
     def minusYears(v: Int): Instant           = dateTime.minusYears(v).instant
     def adjust(a: TemporalAdjuster): Instant  = d.`with`(a)
+
+  // DateTimeFormatter is very dangerous as it throws exceptions where it could instead fail at compile time.
+  // format(instant) for instance can fail with `exception[[UnsupportedTemporalTypeException: Unsupported field: YearOfEra`
+  // or `java.time.temporal.UnsupportedTemporalTypeException: Unsupported field: OffsetSeconds`
+  // use `print` instead to ensure all fields are provided
+  extension (d: DateTimeFormatter)
+    def print(date: LocalDate): String         = d.format(date)
+    def print(dateTime: LocalDateTime): String = d.format(dateTime.atOffset(utcZone))
+    def print(instant: Instant): String        = print(instant.dateTime)
 
   case class TimeInterval(start: Instant, end: Instant):
     def overlaps(other: TimeInterval): Boolean = start.isBefore(other.end) && other.start.isBefore(end)
