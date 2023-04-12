@@ -88,3 +88,4 @@ object time:
     ChronoUnit.DAYS.between(from, to).toInt
 
   val isoDateTimeFormatter = java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(utcZone)
+  val isoInstantFormatter  = java.time.format.DateTimeFormatter.ISO_INSTANT.withZone(utcZone)
