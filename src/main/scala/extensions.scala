@@ -19,9 +19,11 @@ object extensions:
     def kCombinator(sideEffect: A => Unit): A =
       sideEffect(a)
       a
-    infix def ~(sideEffect: A => Unit): A = kCombinator(sideEffect)
-    def pp: A                             = kCombinator(println)
-    infix def pp(msg: String): A          = kCombinator(a => println(s"[$msg] $a"))
+    infix def ~(sideEffect: A => Unit): A  = kCombinator(sideEffect)
+    def pp: A                              = kCombinator(println)
+    infix def pp(msg: String): A           = kCombinator(x => println(s"[$msg] $x"))
+    def ppAs(as: A => Any): A              = kCombinator(x => println(as(x)))
+    def ppAs(as: A => Any, msg: String): A = kCombinator(x => println(s"[$msg] ${as(x)}"))
 
   extension [A, B](m: Map[A, B])
     // Add Map.mapKeys, similar to Map.mapValues
