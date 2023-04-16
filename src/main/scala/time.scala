@@ -18,7 +18,7 @@ object time:
     def toCentis: Long                               = toMillis / 10
     def instant: Instant                             = d.toInstant(utcZone)
     def date: LocalDate                              = d.toLocalDate
-    def toNow: Duration                              = Duration.between(d, LocalDateTime.now)
+    def toNow: Duration                              = instant.toNow
     def isBeforeNow: Boolean                         = d.isBefore(LocalDateTime.now)
     def isAfterNow: Boolean                          = d.isAfter(LocalDateTime.now)
     def atMost(other: LocalDateTime): LocalDateTime  = if other.isBefore(d) then other else d
@@ -34,7 +34,7 @@ object time:
     def toCentis: Long                        = toMillis / 10
     def date: LocalDate                       = LocalDate.ofInstant(d, utcZone)
     def dateTime: LocalDateTime               = LocalDateTime.ofInstant(d, utcZone)
-    def toNow: Duration                       = Duration.between(d, LocalDateTime.now)
+    def toNow: Duration                       = Duration.between(d, Instant.now)
     def isBeforeNow: Boolean                  = d.isBefore(Instant.now)
     def isAfterNow: Boolean                   = d.isAfter(Instant.now)
     def atMost(other: Instant): Instant       = if other.isBefore(d) then other else d
