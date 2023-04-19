@@ -2,7 +2,7 @@ lazy val scalalib = Project("scalalib", file("."))
 organization                           := "com.github.ornicar"
 name                                   := "scalalib"
 version                                := "9.3.5"
-scalaVersion                           := "3.3.0-RC3"
+scalaVersion                           := "3.3.0-RC4"
 licenses += "MIT"                      -> url("https://opensource.org/licenses/MIT")
 libraryDependencies += "org.typelevel" %% "cats-core"      % "2.9.0"
 libraryDependencies += "org.typelevel" %% "alleycats-core" % "2.9.0"
@@ -15,6 +15,7 @@ scalacOptions := Seq(
   "-indent",
   "-rewrite",
   "-source:future-migration",
-  "-Xtarget:12"
+  "-Xtarget:12",
+  "-Wunused:all"
 )
 publishTo := Some(Resolver.file("file", new File(sys.props.getOrElse("publishTo", ""))))

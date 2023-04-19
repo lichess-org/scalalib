@@ -1,7 +1,7 @@
 package ornicar.scalalib
 
 import java.time.{ Duration, Instant, LocalDate, LocalDateTime, ZoneOffset }
-import java.time.temporal.{ ChronoUnit, TemporalAdjuster, TemporalAdjusters }
+import java.time.temporal.{ ChronoUnit, TemporalAdjuster }
 import scala.concurrent.duration as concDur
 import java.time.format.DateTimeFormatter
 
