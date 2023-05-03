@@ -38,7 +38,7 @@ object extensions:
 
   extension [A](self: Option[A])
 
-    inline infix def ??[B: Zero](inline f: A => B): B = self.fold(Zero[B].zero)(f)
+    infix def ??[B: Zero](f: A => B): B = self.fold(Zero[B].zero)(f)
 
     inline def ifTrue(b: Boolean): Option[A]  = self.filter(_ => b)
     inline def ifFalse(b: Boolean): Option[A] = self.filter(_ => !b)
