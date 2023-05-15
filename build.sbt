@@ -1,8 +1,8 @@
 lazy val scalalib = Project("scalalib", file("."))
 organization                           := "com.github.ornicar"
 name                                   := "scalalib"
-version                                := "9.3.6"
-scalaVersion                           := "3.3.0-RC5"
+version                                := "9.3.7"
+scalaVersion                           := "3.3.0-RC6"
 licenses += "MIT"                      -> url("https://opensource.org/licenses/MIT")
 libraryDependencies += "org.typelevel" %% "cats-core"      % "2.9.0"
 libraryDependencies += "org.typelevel" %% "alleycats-core" % "2.9.0"
