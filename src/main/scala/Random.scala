@@ -8,14 +8,7 @@ val SecureRandom = RandomApi(java.security.SecureRandom())
 
 final class RandomApi(impl: java.util.Random):
 
-  inline def nextBoolean(): Boolean  = impl.nextBoolean()
-  inline def nextDouble(): Double    = impl.nextDouble()
-  inline def nextFloat(): Float      = impl.nextFloat()
-  inline def nextInt(): Int          = impl.nextInt()
-  inline def nextInt(n: Int): Int    = impl.nextInt(n)
-  inline def nextLong(): Long        = impl.nextLong()
-  inline def nextGaussian(): Double  = impl.nextGaussian()
-  inline def nextLong(n: Long): Long = impl.nextLong(n)
+  export impl.{ nextBoolean, nextDouble, nextFloat, nextGaussian, nextInt, nextLong }
 
   def nextBytes(len: Int): Array[Byte] =
     val bytes = new Array[Byte](len)
