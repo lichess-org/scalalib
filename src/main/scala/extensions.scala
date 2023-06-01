@@ -3,6 +3,7 @@ package ornicar.scalalib
 import alleycats.Zero
 import cats.data.Validated
 import scala.util.matching.Regex
+import pprint.pprintln
 
 object extensions:
 
@@ -20,10 +21,10 @@ object extensions:
       sideEffect(a)
       a
     infix def ~(sideEffect: A => Unit): A  = kCombinator(sideEffect)
-    def pp: A                              = kCombinator(println)
-    infix def pp(msg: String): A           = kCombinator(x => println(s"[$msg] $x"))
-    def ppAs(as: A => Any): A              = kCombinator(x => println(as(x)))
-    def ppAs(as: A => Any, msg: String): A = kCombinator(x => println(s"[$msg] ${as(x)}"))
+    def pp: A                              = kCombinator(pprintln(_))
+    infix def pp(msg: String): A           = kCombinator(x => pprintln(s"[$msg] $x"))
+    def ppAs(as: A => Any): A              = kCombinator(x => pprintln(as(x)))
+    def ppAs(as: A => Any, msg: String): A = kCombinator(x => pprintln(s"[$msg] ${as(x)}"))
 
   extension [A, B](m: Map[A, B])
     // Add Map.mapKeys, similar to Map.mapValues

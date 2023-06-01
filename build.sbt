@@ -6,6 +6,7 @@ scalaVersion                           := "3.3.0"
 licenses += "MIT"                      -> url("https://opensource.org/licenses/MIT")
 libraryDependencies += "org.typelevel" %% "cats-core"      % "2.9.0"
 libraryDependencies += "org.typelevel" %% "alleycats-core" % "2.9.0"
+libraryDependencies += "com.lihaoyi"   %% "pprint"         % "0.7.0"
 scalacOptions := Seq(
   "-encoding",
   "utf-8",
