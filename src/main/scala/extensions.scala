@@ -39,7 +39,7 @@ object extensions:
 
   extension [A](self: Option[A])
 
-    infix def ??[B: Zero](f: A => B): B = self.fold(Zero[B].zero)(f)
+    infix def so[B: Zero](f: A => B): B = self.fold(Zero[B].zero)(f)
 
     inline def ifTrue(b: Boolean): Option[A]  = self.filter(_ => b)
     inline def ifFalse(b: Boolean): Option[A] = self.filter(_ => !b)
@@ -52,4 +52,4 @@ object extensions:
 
   implicit final class OrnicarBooleanWrapper(private val self: Boolean) extends AnyVal:
     inline def option[A](a: => A): Option[A]                = if self then Some(a) else None
-    inline infix def ??[A](a: => A)(using zero: Zero[A]): A = if self then a else zero.zero
+    inline infix def so[A](a: => A)(using zero: Zero[A]): A = if self then a else zero.zero
