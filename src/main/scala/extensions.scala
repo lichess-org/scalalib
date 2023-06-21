@@ -37,6 +37,10 @@ object extensions:
   extension [E, A](validated: Validated[E, A])
     def flatMap[EE >: E, B](f: A => Validated[EE, B]): Validated[EE, B] = validated.andThen(f)
 
+  extension [A](seq: Seq[A])
+    def has[B](b: B)(using A =:= B): Boolean = seq.contains(b)
+    def indexOption(a: A)                    = Option(seq indexOf a).filter(0 <= _)
+
   extension [A](self: Option[A])
 
     infix def so[B: Zero](f: A => B): B = self.fold(Zero[B].zero)(f)
@@ -49,6 +53,11 @@ object extensions:
 
     inline def unary_~(using z: Zero[A]): A = self getOrElse z.zero
     inline def orZero(using z: Zero[A]): A  = self getOrElse z.zero
+
+    def has[B](b: B)(using A =:= B): Boolean = self.contains(b)
+
+    def soUse[B: Zero](f: A ?=> B): B      = self.fold(Zero[B].zero)(f(using _))
+    def foldUse[B](zero: B)(f: A ?=> B): B = self.fold(zero)(f(using _))
 
   implicit final class OrnicarBooleanWrapper(private val self: Boolean) extends AnyVal:
     inline def option[A](a: => A): Option[A]                = if self then Some(a) else None
