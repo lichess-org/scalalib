@@ -40,11 +40,9 @@ object extensions:
     def flatMap[EE >: E, B](f: A => Validated[EE, B]): Validated[EE, B] = validated.andThen(f)
 
   extension [A](seq: Seq[A])
-    def has(b: A)(using Eq[A]): Boolean = seq.contains_(b)
-    def indexOption(a: A)               = Option(seq indexOf a).filter(0 <= _)
+    def has(b: A)(using Eq[A]): Boolean = seq.contains(b)
 
-  // I don't dare doing that as I'm not sure cat's Set.contains_ is O(1)
-  // extension [A](set: Set[A]) def has(b: A)(using Eq[A]): Boolean = set.contains_(b)
+    def indexOption(a: A) = Option(seq indexOf a).filter(0 <= _)
 
   extension [A](self: Option[A])
 
@@ -59,7 +57,7 @@ object extensions:
     inline def unary_~(using z: Zero[A]): A = self getOrElse z.zero
     inline def orZero(using z: Zero[A]): A  = self getOrElse z.zero
 
-    def has(b: A)(using Eq[A]): Boolean = self.contains_(b)
+    def has(b: A)(using Eq[A]): Boolean = self.exists(_ === b)
 
     def soUse[B: Zero](f: A ?=> B): B      = self.fold(Zero[B].zero)(f(using _))
     def foldUse[B](zero: B)(f: A ?=> B): B = self.fold(zero)(f(using _))
