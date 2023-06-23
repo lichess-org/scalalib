@@ -43,6 +43,9 @@ object extensions:
     def has(b: A)(using Eq[A]): Boolean = seq.contains_(b)
     def indexOption(a: A)               = Option(seq indexOf a).filter(0 <= _)
 
+  // I don't dare doing that as I'm not sure cat's Set.contains_ is O(1)
+  // extension [A](set: Set[A]) def has(b: A)(using Eq[A]): Boolean = set.contains_(b)
+
   extension [A](self: Option[A])
 
     infix def so[B: Zero](f: A => B): B = self.fold(Zero[B].zero)(f)
