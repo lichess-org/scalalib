@@ -1,6 +1,7 @@
 package ornicar.scalalib
 
 import alleycats.Zero
+import cats.Eq
 import cats.data.Validated
 import scala.util.matching.Regex
 import pprint.pprintln
@@ -54,7 +55,7 @@ object extensions:
     inline def unary_~(using z: Zero[A]): A = self getOrElse z.zero
     inline def orZero(using z: Zero[A]): A  = self getOrElse z.zero
 
-    def has[B](b: B)(using A =:= B): Boolean = self.contains(b)
+    def has(b: A)(using Eq[A]): Boolean = self.contains_(b)
 
     def soUse[B: Zero](f: A ?=> B): B      = self.fold(Zero[B].zero)(f(using _))
     def foldUse[B](zero: B)(f: A ?=> B): B = self.fold(zero)(f(using _))
