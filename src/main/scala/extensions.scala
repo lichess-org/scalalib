@@ -2,6 +2,7 @@ package ornicar.scalalib
 
 import alleycats.Zero
 import cats.Eq
+import cats.syntax.all.*
 import cats.data.Validated
 import scala.util.matching.Regex
 import pprint.pprintln
