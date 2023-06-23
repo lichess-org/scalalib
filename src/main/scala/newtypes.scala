@@ -1,5 +1,7 @@
 package ornicar.scalalib
 
+import cats.kernel.Eq
+
 // thanks Anton!
 // https://github.com/indoorvivants/opaque-newtypes/blob/main/modules/core/src/main/scala/OpaqueNewtypes.scala
 
@@ -27,8 +29,9 @@ object newtypes:
       f.asInstanceOf[M[Newtype]]
     inline def raw[M[_]](inline f: M[Newtype]): M[Impl] = f.asInstanceOf[M[Impl]]
 
-    given SameRuntime[Newtype, Impl] = identity
-    given SameRuntime[Impl, Newtype] = _.asInstanceOf[Newtype]
+    given SameRuntime[Newtype, Impl]    = identity
+    given SameRuntime[Impl, Newtype]    = _.asInstanceOf[Newtype]
+    given (using Eq[Impl]): Eq[Newtype] = Eq.by(_.value)
 
     extension (a: Newtype)
       inline def value: Impl                                     = a
@@ -77,6 +80,7 @@ object newtypes:
 
     given SameRuntime[A, Boolean] = _ == Yes
     given SameRuntime[Boolean, A] = if _ then Yes else No
+    given Eq[A]                   = Eq.by(_.value)
 
     inline def apply(inline b: Boolean): A = b
 
