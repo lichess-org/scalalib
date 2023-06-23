@@ -40,8 +40,8 @@ object extensions:
     def flatMap[EE >: E, B](f: A => Validated[EE, B]): Validated[EE, B] = validated.andThen(f)
 
   extension [A](seq: Seq[A])
-    def has[B](b: B)(using A =:= B): Boolean = seq.contains(b)
-    def indexOption(a: A)                    = Option(seq indexOf a).filter(0 <= _)
+    def has(b: A)(using Eq[A]): Boolean = seq.contains_(b)
+    def indexOption(a: A)               = Option(seq indexOf a).filter(0 <= _)
 
   extension [A](self: Option[A])
 
