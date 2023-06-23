@@ -80,6 +80,7 @@ object newtypes:
 
     given SameRuntime[A, Boolean] = _ == Yes
     given SameRuntime[Boolean, A] = if _ then Yes else No
+    given Eq[A]                   = Eq.by(_.value)
 
     inline def apply(inline b: Boolean): A = b
 
