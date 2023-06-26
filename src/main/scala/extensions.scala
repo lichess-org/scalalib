@@ -27,6 +27,8 @@ object extensions:
     infix def pp(msg: String): A           = kCombinator(x => pprintln(s"[$msg] $x"))
     def ppAs(as: A => Any): A              = kCombinator(x => pprintln(as(x)))
     def ppAs(as: A => Any, msg: String): A = kCombinator(x => pprintln(s"[$msg] ${as(x)}"))
+    def pps: A                             = kCombinator(pprintln(_.toString))
+    infix def pp(msg: String): A           = kCombinator(x => pprintln(s"[$msg] ${x.toString}"))
 
   extension [A, B](m: Map[A, B])
     // Add Map.mapKeys, similar to Map.mapValues
