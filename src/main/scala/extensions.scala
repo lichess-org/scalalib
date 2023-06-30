@@ -15,6 +15,10 @@ object extensions:
     def matches(s: String): Boolean =
       r.pattern.matcher(s).matches
 
+  private def pprintlnBoth(x: Any, y: Any): Unit =
+    (pprint.tokenize(x) ++ Seq(fansi.Str(" ")) ++ pprint.tokenize(y)).foreach(print)
+    println()
+
   /** K combinator implementation Provides oneliner side effects See
     * https://web.archive.org/web/20111209063845/hacking-scala.posterous.com/side-effecting-without-braces
     */
@@ -22,13 +26,12 @@ object extensions:
     def kCombinator(sideEffect: A => Unit): A =
       sideEffect(a)
       a
-    infix def ~(sideEffect: A => Unit): A  = kCombinator(sideEffect)
     def pp: A                              = kCombinator(pprintln(_))
-    infix def pp(msg: String): A           = kCombinator(x => pprintln(s"[$msg] $x"))
+    infix def pp(msg: Any): A              = kCombinator(pprintlnBoth(msg, _))
     def ppAs(as: A => Any): A              = kCombinator(x => pprintln(as(x)))
-    def ppAs(as: A => Any, msg: String): A = kCombinator(x => pprintln(s"[$msg] ${as(x)}"))
-    def pps: A                             = kCombinator(pprintln(_.toString))
-    infix def pp(msg: String): A           = kCombinator(x => pprintln(s"[$msg] ${x.toString}"))
+    def ppAs(as: A => Any, msg: String): A = kCombinator(x => pprintlnBoth(msg, as(x)))
+    def pps: A                             = kCombinator(x => pprintln(x.toString))
+    infix def pp(msg: String): A           = kCombinator(x => pprintlnBoth(msg, x))
 
   extension [A, B](m: Map[A, B])
     // Add Map.mapKeys, similar to Map.mapValues
