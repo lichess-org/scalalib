@@ -16,7 +16,7 @@ scalacOptions := Seq(
   "-indent",
   "-rewrite",
   "-source:future-migration",
-  "-Xtarget:12",
+  "-release:17",
   "-Wunused:all"
 )
 publishTo := Some(Resolver.file("file", new File(sys.props.getOrElse("publishTo", ""))))
