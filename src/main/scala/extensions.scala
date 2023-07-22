@@ -3,7 +3,6 @@ package ornicar.scalalib
 import alleycats.Zero
 import cats.Eq
 import cats.syntax.all.*
-import cats.data.Validated
 import scala.util.matching.Regex
 import pprint.pprintln
 
@@ -40,9 +39,6 @@ object extensions:
     def filterValues(p: B => Boolean): Map[A, B] = m.filter { x => p(x._2) }
 
   extension [A](as: Iterable[A]) def mapBy[B](f: A => B): Map[B, A] = as.view.map { a => f(a) -> a }.toMap
-
-  extension [E, A](validated: Validated[E, A])
-    def flatMap[EE >: E, B](f: A => Validated[EE, B]): Validated[EE, B] = validated.andThen(f)
 
   extension [A](seq: Seq[A])
     def has(b: A)(using Eq[A]): Boolean = seq.contains(b)
