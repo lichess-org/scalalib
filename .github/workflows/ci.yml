@@ -7,7 +7,7 @@ on:
     branches: ['**']
 
 jobs:
-  openjdk17:
+  openjdk21:
     runs-on: ubuntu-latest
     steps:
 
@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
           cache: sbt
 
       - name: Build project
