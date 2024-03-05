@@ -44,7 +44,8 @@ object newtypes:
     extension (a: Newtype) inline def apply: Impl = a
 
   trait OpaqueString[A](using A =:= String) extends TotalWrapper[A, String]:
-    given Show[A] = Show.show(_.value)
+    given Show[A]   = _.value
+    given Render[A] = _.value
 
   trait OpaqueInt[A](using A =:= Int) extends TotalWrapper[A, Int]:
     extension (inline a: A)
