@@ -1,6 +1,7 @@
 package ornicar.scalalib
 
 import cats.kernel.Eq
+import cats.Show
 
 // thanks Anton!
 // https://github.com/indoorvivants/opaque-newtypes/blob/main/modules/core/src/main/scala/OpaqueNewtypes.scala
@@ -42,7 +43,8 @@ object newtypes:
   trait FunctionWrapper[Newtype, Impl](using ev: Newtype =:= Impl) extends TotalWrapper[Newtype, Impl]:
     extension (a: Newtype) inline def apply: Impl = a
 
-  trait OpaqueString[A](using A =:= String) extends TotalWrapper[A, String]
+  trait OpaqueString[A](using A =:= String) extends TotalWrapper[A, String]:
+    given Show[A] = Show.show(_.value)
 
   trait OpaqueInt[A](using A =:= Int) extends TotalWrapper[A, Int]:
     extension (inline a: A)
