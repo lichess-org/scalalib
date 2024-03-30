@@ -4,6 +4,7 @@ import alleycats.Zero
 import cats.Eq
 import cats.syntax.all.*
 import scala.util.matching.Regex
+import scala.concurrent.{ ExecutionContext, Future }
 import pprint.pprintln
 
 object extensions:
@@ -48,6 +49,10 @@ object extensions:
   extension [A](self: Option[A])
 
     infix def so[B: Zero](f: A => B): B = self.fold(Zero[B].zero)(f)
+
+    def soFu[B](f: A => Future[B]): Future[Option[B]] = self match
+      case Some(x) => f(x).map(Some(_))(ExecutionContext.parasitic)
+      case None    => Future.successful(None)
 
     inline def ifTrue(b: Boolean): Option[A]  = self.filter(_ => b)
     inline def ifFalse(b: Boolean): Option[A] = self.filter(_ => !b)
