@@ -1,4 +1,4 @@
-package ornicar.scalalib
+package scalalib
 
 import com.github.blemale.scaffeine.Scaffeine
 import com.github.benmanes.caffeine.cache.Scheduler

@@ -1,4 +1,4 @@
-package ornicar.scalalib
+package scalalib
 package future
 
 import scala.concurrent.Future

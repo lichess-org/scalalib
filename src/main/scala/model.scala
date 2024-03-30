@@ -1,6 +1,6 @@
-package ornicar.scalalib
+package scalalib
 
-import ornicar.scalalib.newtypes.*
+import scalalib.newtypes.*
 
 object model:
 

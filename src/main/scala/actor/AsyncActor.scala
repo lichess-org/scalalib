@@ -1,4 +1,4 @@
-package ornicar.scalalib
+package scalalib
 package actor
 
 import java.util.concurrent.atomic.AtomicReference

@@ -1,4 +1,4 @@
-package ornicar.scalalib
+package scalalib
 
 import alleycats.Zero
 import cats.Eq
@@ -68,6 +68,6 @@ object extensions:
     def soUse[B: Zero](f: A ?=> B): B      = self.fold(Zero[B].zero)(f(using _))
     def foldUse[B](zero: B)(f: A ?=> B): B = self.fold(zero)(f(using _))
 
-  implicit final class OrnicarBooleanWrapper(private val self: Boolean) extends AnyVal:
+  implicit final class ScalalibBooleanWrapper(private val self: Boolean) extends AnyVal:
     inline def option[A](a: => A): Option[A]                = if self then Some(a) else None
     inline infix def so[A](a: => A)(using zero: Zero[A]): A = if self then a else zero.zero

@@ -1,4 +1,4 @@
-package ornicar.scalalib
+package scalalib
 package actor
 
 import java.util.concurrent.atomic.AtomicReference
@@ -6,7 +6,7 @@ import java.util.function.UnaryOperator
 import scala.collection.immutable.Queue
 import scala.concurrent.{ ExecutionContext, Future, Promise }
 
-import ornicar.scalalib.model.Max
+import scalalib.model.Max
 
 /*
  * Sequential like an actor, but for async functions,

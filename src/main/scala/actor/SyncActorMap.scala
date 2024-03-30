@@ -1,4 +1,4 @@
-package ornicar.scalalib
+package scalalib
 package actor
 
 import com.github.benmanes.caffeine.cache.RemovalCause

@@ -1,13 +1,13 @@
-package ornicar.scalalib
+package scalalib
 package actor
 
 import com.github.blemale.scaffeine.{ LoadingCache, Scaffeine }
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ ExecutionContext, Future, Promise }
 
-import ornicar.scalalib.model.Max
-import ornicar.scalalib.future.FutureAfter
-import ornicar.scalalib.future.FutureExtension.*
+import scalalib.model.Max
+import scalalib.future.FutureAfter
+import scalalib.future.FutureExtension.*
 
 final class AsyncActorSequencer(
     maxSize: Max,

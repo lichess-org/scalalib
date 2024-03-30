@@ -1,4 +1,4 @@
-package ornicar.scalalib
+package scalalib
 
 import alleycats.Zero
 

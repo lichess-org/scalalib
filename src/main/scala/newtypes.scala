@@ -1,4 +1,4 @@
-package ornicar.scalalib
+package scalalib
 
 import cats.kernel.Eq
 import cats.Show

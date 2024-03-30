@@ -1,4 +1,4 @@
-package ornicar.scalalib
+package scalalib
 
 /* Like cats.Show,
  * except it's actually fine to render it to an end-user.

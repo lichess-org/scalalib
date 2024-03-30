@@ -1,4 +1,4 @@
-package ornicar.scalalib
+package scalalib
 
 import java.time.{ Duration, Instant, LocalDate, LocalDateTime, ZoneOffset }
 import java.time.temporal.{ ChronoUnit, TemporalAdjuster }

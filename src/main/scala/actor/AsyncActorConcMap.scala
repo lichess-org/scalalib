@@ -1,4 +1,4 @@
-package ornicar.scalalib
+package scalalib
 package actor
 
 import alleycats.Zero
@@ -6,8 +6,8 @@ import scala.concurrent.{ ExecutionContext, Future, Promise }
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Function
 import scala.jdk.CollectionConverters.*
-import ornicar.scalalib.extensions.*
-import ornicar.scalalib.future.FutureExtension.*
+import scalalib.extensions.*
+import scalalib.future.FutureExtension.*
 
 trait TellMap[Id]:
   def tell(id: Id, msg: Matchable): Unit

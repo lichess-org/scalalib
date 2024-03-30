@@ -1,5 +1,5 @@
 lazy val scalalib = Project("scalalib", file("."))
-organization                                          := "com.github.ornicar"
+organization                                          := "com.github.lichess-org"
 name                                                  := "scalalib"
 version                                               := "10.0.0"
 scalaVersion                                          := "3.4.1"
