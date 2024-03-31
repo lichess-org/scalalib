@@ -3,13 +3,14 @@ package actor
 
 import com.github.benmanes.caffeine.cache.RemovalCause
 import com.github.blemale.scaffeine.LoadingCache
-import scala.concurrent.{ ExecutionContextExecutor, Future, Promise }
+import scala.concurrent.{ Future, Promise }
 import scala.concurrent.duration.FiniteDuration
+import java.util.concurrent.Executor
 
 final class SyncActorMap[Id, T <: SyncActor](
     mkActor: Id => T,
     accessTimeout: FiniteDuration
-)(using ExecutionContextExecutor):
+)(using Executor):
 
   def getOrMake(id: Id): T = actors.get(id)
 
