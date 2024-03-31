@@ -3,7 +3,7 @@ package actor
 
 import com.github.blemale.scaffeine.{ LoadingCache, Scaffeine }
 import scala.concurrent.duration.FiniteDuration
-import scala.concurrent.{ ExecutionContext, Future, Promise }
+import scala.concurrent.{ ExecutionContextExecutor, Future, Promise }
 
 import scalalib.model.Max
 import scalalib.future.FutureAfter
@@ -14,7 +14,7 @@ final class AsyncActorSequencer(
     timeout: FiniteDuration,
     name: String,
     monitor: AsyncActorBounded.Monitor
-)(using ExecutionContext, FutureAfter):
+)(using ExecutionContextExecutor, FutureAfter):
 
   import AsyncActorSequencer.*
 
@@ -35,7 +35,7 @@ final class AsyncActorSequencers[K](
     timeout: FiniteDuration,
     name: String,
     monitor: AsyncActorBounded.Monitor
-)(using ExecutionContext, FutureAfter):
+)(using ExecutionContextExecutor, FutureAfter):
 
   def apply[A <: Matchable](key: K)(task: => Future[A]): Future[A] =
     sequencers.get(key).run(() => task)

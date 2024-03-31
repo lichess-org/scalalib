@@ -2,7 +2,7 @@ package scalalib
 
 class MathsTest extends munit.FunSuite:
 
-  import lila.common.Maths.*
+  import scalalib.Maths.*
 
   test("standard deviation empty collection"):
     assertEquals(standardDeviation(Nil), None)
