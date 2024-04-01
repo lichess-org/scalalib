@@ -6,6 +6,7 @@ import com.github.benmanes.caffeine.cache.Scheduler
 import java.util.concurrent.Executor
 import scala.concurrent.duration.FiniteDuration
 import com.github.blemale.scaffeine.Cache
+import java.util.concurrent.ConcurrentMap
 
 def scaffeine(using Executor): Scaffeine[Any, Any] =
   scaffeineNoScheduler.scheduler(Scheduler.systemScheduler)
@@ -73,3 +74,21 @@ object OnceEvery:
       val isNew = !cache.get(key)
       if isNew then cache.put(key)
       isNew
+
+final class FrequencyThreshold[K](count: Int, duration: FiniteDuration)(using Executor):
+
+  private val cache = Scaffeine()
+    .expireAfter[K, Int](
+      create = (_, _) => duration,
+      update = (_, _, current) => current,
+      read = (_, _, current) => current
+    )
+    .build[K, Int]()
+
+  private val concMap: ConcurrentMap[K, Int] = cache.underlying.asMap()
+
+  /* Returns true when called more than `count` times in `duration` window. */
+  def apply(key: K): Boolean = concMap.compute(
+    key,
+    (_, prev) => Option(prev).fold(1)(_ + 1)
+  ) >= count
