@@ -2,7 +2,7 @@ inThisBuild(
   Seq(
     scalaVersion       := "3.4.1",
     versionScheme      := Some("early-semver"),
-    version            := "11.0.0",
+    version            := "11.1.0",
     organization       := "org.lichess",
     licenses += ("MIT" -> url("https://opensource.org/licenses/MIT")),
     publishTo          := Option(Resolver.file("file", new File(sys.props.getOrElse("publishTo", ""))))
@@ -34,15 +34,17 @@ lazy val core: Project = Project("core", file("core")).settings(
   )
 )
 
-lazy val model: Project = Project("model", file("model")).settings(
-  commonSettings,
-  name := "model",
-).dependsOn(core)
+lazy val model: Project = Project("model", file("model"))
+  .settings(
+    commonSettings,
+    name := "scalalib-model"
+  )
+  .dependsOn(core)
 
 lazy val playJson: Project = Project("playJson", file("playJson"))
   .settings(
     commonSettings,
-    name := "play-json",
+    name := "scalalib-play-json",
     libraryDependencies ++= List(
       "org.playframework" %% "play-json" % "3.0.2"
     )
@@ -60,7 +62,7 @@ lazy val lila: Project = Project("lila", file("lila"))
       "org.scalameta"                %% "munit"     % "1.0.0-M11" % Test
     )
   )
-  .dependsOn(core, playJson)
+  .dependsOn(core, model, playJson)
 
 lazy val root = project
   .in(file("."))
