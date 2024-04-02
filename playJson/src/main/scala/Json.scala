@@ -2,8 +2,12 @@ package scalalib
 package json
 
 import play.api.libs.json.{ Json as PlayJson, * }
+import java.time.Instant
 
 import scala.util.NotGiven
+import scalalib.newtypes.SameRuntime
+import scalalib.model.*
+import scalalib.time.toMillis
 
 object Json:
 
@@ -70,11 +74,6 @@ object Json:
     tryRead(from),
     Writes[O](o => JsString(to(o)))
   )
-
-  given userStrReads: Reads[UserStr] = Reads
-    .of[String]
-    .flatMapResult: str =>
-      JsResult.fromTry(UserStr.read(str).toTry(s"Invalid username: $str"))
 
   given Writes[Instant] = writeAs(_.toMillis)
 
