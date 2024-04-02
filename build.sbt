@@ -1,10 +1,11 @@
 inThisBuild(
   Seq(
-    scalaVersion      := "3.4.1",
-    versionScheme     := Some("early-semver"),
-    version           := "10.0.5",
-    organization      := "lichess.std",
-    licenses += "MIT" -> url("https://opensource.org/licenses/MIT")
+    scalaVersion       := "3.4.1",
+    versionScheme      := Some("early-semver"),
+    version            := "10.0.5",
+    organization       := "lichess.std",
+    licenses += ("MIT" -> url("https://opensource.org/licenses/MIT")),
+    publishTo          := Option(Resolver.file("file", new File(sys.props.getOrElse("publishTo", ""))))
   )
 )
 
@@ -34,15 +35,17 @@ lazy val core: Project = Project("core", file("core")).settings(
 )
 
 // functions that useful for lila & lila-ws
-lazy val lila: Project = Project("lila", file("lila")).settings(
-  commonSettings,
-  name := "lila",
-  libraryDependencies ++= List(
-    "com.github.ben-manes.caffeine" % "caffeine"       % "3.1.8"     % "compile",
-    "com.github.blemale"           %% "scaffeine"      % "5.2.1"     % "compile",
-    "org.scalameta"                %% "munit"          % "1.0.0-M11" % Test
+lazy val lila: Project = Project("lila", file("lila"))
+  .settings(
+    commonSettings,
+    name := "lila",
+    libraryDependencies ++= List(
+      "com.github.ben-manes.caffeine" % "caffeine"  % "3.1.8"     % "compile",
+      "com.github.blemale"           %% "scaffeine" % "5.2.1"     % "compile",
+      "org.scalameta"                %% "munit"     % "1.0.0-M11" % Test
+    )
   )
-).dependsOn(core)
+  .dependsOn(core)
 
 lazy val root = project
   .in(file("."))
