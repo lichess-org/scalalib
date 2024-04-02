@@ -34,6 +34,11 @@ lazy val core: Project = Project("core", file("core")).settings(
   )
 )
 
+lazy val model: Project = Project("model", file("model")).settings(
+  commonSettings,
+  name := "model",
+).dependsOn(core)
+
 lazy val playJson: Project = Project("playJson", file("playJson"))
   .settings(
     commonSettings,
@@ -42,7 +47,7 @@ lazy val playJson: Project = Project("playJson", file("playJson"))
       "org.playframework" %% "play-json" % "3.0.2"
     )
   )
-  .dependsOn(core)
+  .dependsOn(core, model)
 
 // functions that useful for lila & lila-ws
 lazy val lila: Project = Project("lila", file("lila"))
@@ -60,4 +65,4 @@ lazy val lila: Project = Project("lila", file("lila"))
 lazy val root = project
   .in(file("."))
   .settings(publish := {}, publish / skip := true)
-  .aggregate(core, lila, playJson)
+  .aggregate(core, model, playJson, lila)
