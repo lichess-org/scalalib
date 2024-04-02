@@ -842,4 +842,3 @@ class WMMatchingTest extends munit.FunSuite:
         94, 80, 24, 9, 43, 20, 52, 33, 74),
       (10, 46)
     )
-
