@@ -30,13 +30,11 @@ lazy val core: Project = Project("core", file("core")).settings(
     "org.typelevel"                %% "cats-core"      % "2.10.0",
     "org.typelevel"                %% "alleycats-core" % "2.10.0",
     "com.lihaoyi"                  %% "pprint"         % "0.7.0",
-    "com.github.ben-manes.caffeine" % "caffeine"       % "3.1.8"     % "compile",
-    "com.github.blemale"           %% "scaffeine"      % "5.2.1"     % "compile",
-    "org.scalameta"                %% "munit"          % "1.0.0-M11" % Test
   )
 )
 
-lazy val core: Project = Project("core", file("core")).settings(
+// functions that useful for lila & lila-ws
+lazy val lila: Project = Project("lila", file("lila")).settings(
   commonSettings,
   name := "lila",
   libraryDependencies ++= List(
@@ -44,9 +42,9 @@ lazy val core: Project = Project("core", file("core")).settings(
     "com.github.blemale"           %% "scaffeine"      % "5.2.1"     % "compile",
     "org.scalameta"                %% "munit"          % "1.0.0-M11" % Test
   )
-)
+).dependsOn(core)
 
 lazy val root = project
   .in(file("."))
   .settings(publish := {}, publish / skip := true)
-  .aggregate(core)
+  .aggregate(core, lila)
