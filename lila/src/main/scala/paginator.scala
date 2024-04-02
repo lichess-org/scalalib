@@ -74,6 +74,19 @@ object Paginator:
       nbResults = p.nbResults
     )
 
+  import play.api.libs.json.{Json as PlayJson, *}
+  import model.MaxPerPage.given
+  given paginatorWrite[A: Writes]: OWrites[Paginator[A]] = OWrites[Paginator[A]]: p =>
+    PlayJson.obj(
+      "currentPage"        -> p.currentPage,
+      "maxPerPage"         -> p.maxPerPage,
+      "currentPageResults" -> p.currentPageResults,
+      "nbResults"          -> p.nbResults,
+      "previousPage"       -> p.previousPage,
+      "nextPage"           -> p.nextPage,
+      "nbPages"            -> p.nbPages
+    )
+
   def fromResults[A](
       currentPageResults: Seq[A],
       nbResults: Int,
