@@ -7,7 +7,6 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 
 import scalalib.model.MaxPerPage
-import scalalib.future.FutureExtension.dmap
 import scalalib.extensions.squeeze
 
 final class Paginator[A] private[paginator] (
@@ -47,10 +46,10 @@ final class Paginator[A] private[paginator] (
     withCurrentPageResults(f(currentPageResults))
 
   def mapFutureResults[B](f: A => Future[B])(using ExecutionContext): Future[Paginator[B]] =
-    currentPageResults.traverse(f).dmap(withCurrentPageResults)
+    currentPageResults.traverse(f).map(withCurrentPageResults)
 
-  def mapFutureList[B](f: Seq[A] => Future[Seq[B]]): Future[Paginator[B]] =
-    f(currentPageResults).dmap(withCurrentPageResults)
+  def mapFutureList[B](f: Seq[A] => Future[Seq[B]])(using ExecutionContext): Future[Paginator[B]] =
+    f(currentPageResults).map(withCurrentPageResults)
 
 object Paginator:
 
