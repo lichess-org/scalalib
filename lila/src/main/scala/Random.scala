@@ -17,7 +17,7 @@ final class RandomApi(impl: java.util.Random):
 
   private val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
   private inline def nextAlphanumeric(): Char =
-    chars.`charAt`(nextInt(chars.length)) // Constant time
+    chars.charAt(nextInt(chars.length)) // Constant time
 
   def nextString(len: Int): String =
     val sb = StringBuilder(len)
