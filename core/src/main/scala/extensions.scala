@@ -45,7 +45,7 @@ object extensions:
   extension [A](seq: Seq[A])
     def has(b: A)(using Eq[A]): Boolean = seq.contains(b)
 
-    def indexOption(a: A) = Option(seq indexOf a).filter(0 <= _)
+    def indexOption(a: A) = Option(seq.indexOf(a)).filter(0 <= _)
 
   extension [A](self: Option[A])
 
@@ -59,10 +59,10 @@ object extensions:
     inline def ifFalse(b: Boolean): Option[A] = self.filter(_ => !b)
 
     // typesafe getOrElse
-    inline infix def |(default: => A): A = self getOrElse default
+    inline infix def |(default: => A): A = self.getOrElse(default)
 
-    inline def unary_~(using z: Zero[A]): A = self getOrElse z.zero
-    inline def orZero(using z: Zero[A]): A  = self getOrElse z.zero
+    inline def unary_~(using z: Zero[A]): A = self.getOrElse(z.zero)
+    inline def orZero(using z: Zero[A]): A  = self.getOrElse(z.zero)
 
     def has(b: A)(using Eq[A]): Boolean = self.exists(_ === b)
 
