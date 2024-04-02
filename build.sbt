@@ -2,7 +2,7 @@ inThisBuild(
   Seq(
     scalaVersion       := "3.4.1",
     versionScheme      := Some("early-semver"),
-    version            := "10.0.5",
+    version            := "11.0.0",
     organization       := "lichess.std",
     licenses += ("MIT" -> url("https://opensource.org/licenses/MIT")),
     publishTo          := Option(Resolver.file("file", new File(sys.props.getOrElse("publishTo", ""))))
@@ -28,9 +28,9 @@ lazy val core: Project = Project("core", file("core")).settings(
   commonSettings,
   name := "core",
   libraryDependencies ++= List(
-    "org.typelevel"                %% "cats-core"      % "2.10.0",
-    "org.typelevel"                %% "alleycats-core" % "2.10.0",
-    "com.lihaoyi"                  %% "pprint"         % "0.7.0",
+    "org.typelevel" %% "cats-core"      % "2.10.0",
+    "org.typelevel" %% "alleycats-core" % "2.10.0",
+    "com.lihaoyi"   %% "pprint"         % "0.7.0"
   )
 )
 
