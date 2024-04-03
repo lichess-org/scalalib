@@ -3,8 +3,9 @@ package json
 
 import play.api.libs.json.{ Json as PlayJson, * }
 import java.time.Instant
-
 import scala.util.NotGiven
+import alleycats.Zero
+
 import scalalib.newtypes.SameRuntime
 import scalalib.model.*
 import scalalib.time.toMillis
@@ -12,6 +13,9 @@ import scalalib.time.toMillis
 object Json:
 
   trait NoJsonHandler[A] // don't create default JSON handlers for this type
+
+  given Zero[JsObject] with
+    def zero = JsObject(Seq.empty)
 
   given opaqueFormat[A, T](using
       bts: SameRuntime[A, T],

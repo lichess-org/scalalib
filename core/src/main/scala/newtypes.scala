@@ -2,6 +2,7 @@ package scalalib
 
 import cats.kernel.Eq
 import cats.Show
+import alleycats.Zero
 
 // thanks Anton!
 // https://github.com/indoorvivants/opaque-newtypes/blob/main/modules/core/src/main/scala/OpaqueNewtypes.scala
@@ -102,3 +103,5 @@ object newtypes:
   inline def stringOrdering[T: StringRuntime](using Ordering[String]): Ordering[T] = sameOrdering[String, T]
   inline def intOrdering[T: IntRuntime](using Ordering[Int]): Ordering[T]          = sameOrdering[Int, T]
   inline def doubleOrdering[T: DoubleRuntime](using Ordering[Double]): Ordering[T] = sameOrdering[Double, T]
+
+  given [A](using sr: SameRuntime[Boolean, A]): Zero[A] = Zero(sr(false))

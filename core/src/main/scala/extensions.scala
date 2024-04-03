@@ -16,6 +16,15 @@ object extensions:
     def matches(s: String): Boolean =
       r.pattern.matcher(s).matches
 
+  extension (s: String)
+    def replaceIf(t: Char, r: Char): String =
+      if s.indexOf(t.toInt) >= 0 then s.replace(t, r) else s
+    def replaceIf(t: Char, r: CharSequence): String =
+      if s.indexOf(t.toInt) >= 0 then s.replace(String.valueOf(t), r) else s
+    def replaceIf(t: CharSequence, r: CharSequence): String =
+      if s.contains(t) then s.replace(t, r) else s
+    def replaceAllIn(regex: Regex, replacement: String) = regex.replaceAllIn(s, replacement)
+
   private def pprintlnBoth(x: Any, y: Any): Unit =
     (pprint.tokenize(x) ++ Seq(fansi.Str(" ")) ++ pprint.tokenize(y)).foreach(print)
     println()
