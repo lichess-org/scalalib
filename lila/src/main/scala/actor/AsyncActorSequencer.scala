@@ -7,7 +7,7 @@ import scala.concurrent.{ ExecutionContext, Future, Promise }
 
 import scalalib.model.Max
 import scalalib.future.FutureAfter
-import scalalib.future.FutureExtension.*
+import scalalib.future.extensions.*
 import java.util.concurrent.Executor
 
 final class AsyncActorSequencer(

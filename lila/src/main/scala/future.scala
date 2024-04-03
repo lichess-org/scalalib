@@ -7,6 +7,7 @@ import scala.concurrent.ExecutionContext as EC
 import scala.util.control.NoStackTrace
 import scala.util.Try
 import alleycats.Zero
+import scalalib.extensions.so
 
 /** Returns a [[scala.concurrent.Future]] that will be completed with the success or failure of the provided
   * value after the specified duration. Implementation can be done with or without akka/pekko
@@ -15,7 +16,11 @@ type FutureAfter = [T] => (FiniteDuration) => (() => Future[T]) => Future[T]
 
 final class TimeoutException(msg: String) extends Exception(msg) with NoStackTrace
 
-object FutureExtension:
+given [A](using az: Zero[A]): Zero[Future[A]] with
+  def zero = Future.successful(az.zero)
+
+object extensions:
+
   extension [A](fua: Future[A])
 
     inline def dmap[B](f: A => B): Future[B]   = fua.map(f)(EC.parasitic)
@@ -92,3 +97,32 @@ object FutureExtension:
           after(duration)(() => Future(default))
         )
       )
+
+  extension [A](fua: Future[Option[A]])
+
+    def orFail(msg: => String)(using EC): Future[A] =
+      fua.flatMap:
+        _.fold[Future[A]](Future.failed(new Exception(msg)))(Future.successful)
+
+    def orFailWith(err: => Exception)(using EC): Future[A] =
+      fua.flatMap:
+        _.fold[Future[A]](Future.failed(err))(Future.successful)
+
+    def orElse(other: => Future[Option[A]])(using EC): Future[Option[A]] =
+      fua.flatMap:
+        _.fold(other): x =>
+          Future.successful(Some(x))
+
+    def getOrElse(other: => Future[A])(using EC): Future[A] = fua.flatMap { _.fold(other)(Future.successful) }
+    def orZeroFu(using z: Zero[A]): Future[A]               = fua.map(_.getOrElse(z.zero))(EC.parasitic)
+
+    def map2[B](f: A => B)(using EC): Future[Option[B]] = fua.map(_.map(f))
+    def dmap2[B](f: A => B): Future[Option[B]]          = fua.map(_.map(f))(EC.parasitic)
+
+    def getIfPresent: Option[A] =
+      fua.value match
+        case Some(scala.util.Success(v)) => v
+        case _                           => None
+
+    def mapz[B: Zero](fb: A => B)(using EC): Future[B]                    = fua.map { _.so(fb) }
+    infix def flatMapz[B: Zero](fub: A => Future[B])(using EC): Future[B] = fua.flatMap { _.so(fub) }

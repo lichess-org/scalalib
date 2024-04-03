@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Function
 import scala.jdk.CollectionConverters.*
 import scalalib.extensions.*
-import scalalib.future.FutureExtension.*
+import scalalib.future.extensions.*
 
 trait TellMap[Id]:
   def tell(id: Id, msg: Matchable): Unit

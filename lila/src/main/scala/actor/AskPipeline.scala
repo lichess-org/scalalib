@@ -7,7 +7,7 @@ import com.github.blemale.scaffeine.LoadingCache
 import java.util.concurrent.Executor
 
 import scalalib.future.FutureAfter
-import scalalib.future.FutureExtension.*
+import scalalib.future.extensions.*
 import scalalib.cache.scaffeine
 
 /*

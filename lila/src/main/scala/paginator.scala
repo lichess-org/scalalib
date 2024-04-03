@@ -7,7 +7,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 
 import scalalib.model.MaxPerPage
-import scalalib.future.FutureExtension.dmap
+import scalalib.future.extensions.dmap
 import scalalib.extensions.squeeze
 
 final class Paginator[A] private[paginator] (
