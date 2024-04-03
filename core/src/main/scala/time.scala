@@ -75,8 +75,14 @@ object time:
 
   def millisToInstant(millis: Long): Instant        = Instant.ofEpochMilli(millis)
   def millisToDateTime(millis: Long): LocalDateTime = millisToInstant(millis).dateTime
-  inline def nowDateTime: LocalDateTime             = LocalDateTime.now()
-  inline def nowInstant: Instant                    = Instant.now()
+
+  inline def nowDateTime: LocalDateTime = LocalDateTime.now()
+  inline def nowInstant: Instant        = Instant.now()
+  inline def nowNanos: Long             = System.nanoTime()
+  inline def nowMillis: Long            = System.currentTimeMillis()
+  inline def nowCentis: Long            = nowMillis / 10
+  inline def nowTenths: Long            = nowMillis / 100
+  inline def nowSeconds: Int            = (nowMillis / 1000).toInt
 
   def instantOf(year: Int, month: Int, dayOfMonth: Int, hour: Int, minute: Int) =
     java.time.LocalDateTime.of(year, month, dayOfMonth, hour, minute).instant
