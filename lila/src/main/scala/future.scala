@@ -61,13 +61,15 @@ object extensions:
         inAnyCase
       fua
 
+    private def recoverDefaultMonitor: Exception => Unit      = e => println(s"Future.recoverDefault $e")
     def recoverDefault(using EC)(using z: Zero[A]): Future[A] = recoverDefault(z.zero)
-
-    def recoverDefault(using EC)(default: => A): Future[A] =
+    def recoverDefault(using EC)(default: => A): Future[A]    = recoverDefault(default)(recoverDefaultMonitor)
+    def recoverDefault(monitor: Exception => Unit)(using EC)(using z: Zero[A]): Future[A] =
+      recoverDefault(z.zero)(monitor)
+    def recoverDefault(default: => A)(monitor: Exception => Unit)(using EC): Future[A] =
       fua.recover:
-        case _: java.util.concurrent.TimeoutException => default
         case e: Exception =>
-          println(s"Future.recoverDefault $e")
+          monitor(e)
           default
 
     def withTimeout(
