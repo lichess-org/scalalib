@@ -12,3 +12,9 @@ object model:
 
   opaque type MaxPerSecond = Int
   object MaxPerSecond extends OpaqueInt[MaxPerSecond]
+
+  opaque type Days = Int
+  object Days extends OpaqueInt[Days]
+
+  opaque type Seconds = Int
+  object Seconds extends OpaqueInt[Seconds]
