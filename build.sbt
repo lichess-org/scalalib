@@ -30,7 +30,7 @@ lazy val core: Project = Project("core", file("core")).settings(
   libraryDependencies ++= List(
     "org.typelevel" %% "cats-core"      % "2.10.0",
     "org.typelevel" %% "alleycats-core" % "2.10.0",
-    "com.lihaoyi"   %% "pprint"         % "0.7.3"
+    "com.lihaoyi"   %% "pprint"         % "0.8.1"
   )
 )
 
