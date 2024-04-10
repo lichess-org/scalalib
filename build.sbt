@@ -41,16 +41,6 @@ lazy val model: Project = Project("model", file("model"))
   )
   .dependsOn(core)
 
-lazy val playJson: Project = Project("playJson", file("playJson"))
-  .settings(
-    commonSettings,
-    name := "scalalib-play-json",
-    libraryDependencies ++= List(
-      "org.playframework" %% "play-json" % "3.0.2"
-    )
-  )
-  .dependsOn(core, model)
-
 // functions that useful for lila & lila-ws
 lazy val lila: Project = Project("lila", file("lila"))
   .settings(
@@ -62,7 +52,17 @@ lazy val lila: Project = Project("lila", file("lila"))
       "org.scalameta"                %% "munit"     % "1.0.0-M11" % Test
     )
   )
-  .dependsOn(core, model, playJson)
+  .dependsOn(core, model)
+
+lazy val playJson: Project = Project("playJson", file("playJson"))
+  .settings(
+    commonSettings,
+    name := "scalalib-play-json",
+    libraryDependencies ++= List(
+      "org.playframework" %% "play-json" % "3.0.2"
+    )
+  )
+  .dependsOn(core, lila)
 
 lazy val root = project
   .in(file("."))
