@@ -2,7 +2,7 @@ package scalalib
 
 import java.text.Normalizer
 
-object String:
+object StringOps:
 
   object slug:
     private val slugR              = """[^\w-]""".r
