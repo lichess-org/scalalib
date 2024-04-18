@@ -39,8 +39,9 @@ object Json:
   def writeWrap[A, B](fieldName: String)(get: A => B)(using writes: Writes[B]): OWrites[A] = OWrites: a =>
     PlayJson.obj(fieldName -> writes.writes(get(a)))
 
-  def stringIsoWriter[O](using iso: Iso[String, O]): Writes[O] = writeAs[O, String](iso.to)
-  def intIsoWriter[O](using iso: Iso[Int, O]): Writes[O]       = writeAs[O, Int](iso.to)
+  def stringIsoWriter[O](using iso: Iso[String, O]): Writes[O]    = writeAs[O, String](iso.to)
+  def intIsoWriter[O](using iso: Iso[Int, O]): Writes[O]          = writeAs[O, Int](iso.to)
+  def anyIsoWriter[A: Writes, O](using iso: Iso[A, O]): Writes[O] = writeAs[O, A](iso.to)
 
   def stringIsoReader[O](using iso: Iso[String, O]): Reads[O] = Reads.of[String].map(iso.from)
 
