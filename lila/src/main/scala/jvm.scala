@@ -10,12 +10,10 @@ object Jvm:
     override def toString = s"$name total: $total runnable: $running"
 
   def threadGroups(): List[ThreadGroup] = threadList()
-    .map { thread => """-\d+$""".r.replaceAllIn(thread.getName, "") -> thread.getState }
+    .map(thread => """-\d+$""".r.replaceAllIn(thread.getName, "") -> thread.getState)
     .groupBy(_._1)
     .view
-    .map { (name, states) =>
-      ThreadGroup(name, states.groupBy(_._2).view.mapValues(_.size).toMap)
-    }
+    .map((name, states) => ThreadGroup(name, states.groupMapReduce(_._2)(_ => 1)(_ + _)))
     .toList
     .sortBy(-_.total)
 
