@@ -10,11 +10,7 @@ import pprint.pprintln
 
 object extensions:
 
-  extension (r: Regex)
-    def find(s: String): Boolean =
-      r.pattern.matcher(s).find
-    def matches(s: String): Boolean =
-      r.pattern.matcher(s).matches
+  extension (r: Regex) def find(s: String): Boolean = r.pattern.matcher(s).find
 
   extension (s: String)
     def replaceIf(t: Char, r: Char): String =
