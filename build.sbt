@@ -28,8 +28,8 @@ lazy val core: Project = Project("core", file("core")).settings(
   commonSettings,
   name := "scalalib-core",
   libraryDependencies ++= List(
-    "org.typelevel" %% "cats-core"      % "2.10.0",
-    "org.typelevel" %% "alleycats-core" % "2.10.0",
+    "org.typelevel" %% "cats-core"      % "2.12.0",
+    "org.typelevel" %% "alleycats-core" % "2.12.0",
     "com.lihaoyi"   %% "pprint"         % "0.9.0"
   )
 )
