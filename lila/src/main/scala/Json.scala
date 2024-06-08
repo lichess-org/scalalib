@@ -18,7 +18,7 @@ object Json:
       "nbPages"   -> p.nbPages
     )
 
-  given paginatorWriteNoNbResults[A: Writes]: OWrites[Paginator[A]] = OWrites[Paginator[A]]: p =>
+  def paginatorWriteNoNbResults[A: Writes]: OWrites[Paginator[A]] = OWrites[Paginator[A]]: p =>
     PlayJson.obj(
       "currentPage"        -> p.currentPage,
       "maxPerPage"         -> p.maxPerPage,
