@@ -39,6 +39,10 @@ object extensions:
     def pps: A                             = kCombinator(x => pprintln(x.toString))
     infix def pp(msg: String): A           = kCombinator(x => pprintlnBoth(msg, x))
 
+    // copy from: https://github.com/Ichoran/kse3/blob/d3e3ec4771599204a22091ece804dd3491b31ea3/basics/src/Data.scala#L5506C1-L5507C49
+    /** replacement for standard lib pipe use inline to avoid boxing */
+    inline def pipe[B](inline f: A => B): B = f(a)
+
   extension [A, B](m: Map[A, B])
     // Add Map.mapKeys, similar to Map.mapValues
     def mapKeys[C](f: A => C): Map[C, B] = m.map { (a, b) => (f(a), b) }
