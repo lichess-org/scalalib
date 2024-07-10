@@ -25,23 +25,22 @@ object extensions:
     (pprint.tokenize(x) ++ Seq(fansi.Str(" ")) ++ pprint.tokenize(y)).foreach(print)
     println()
 
-  /** K combinator implementation Provides oneliner side effects See
-    * https://web.archive.org/web/20111209063845/hacking-scala.posterous.com/side-effecting-without-braces
-    */
   extension [A](a: A)
-    def kCombinator(sideEffect: A => Unit): A =
-      sideEffect(a)
-      a
-    def pp: A                              = kCombinator(pprintln(_))
-    infix def pp(msg: Any): A              = kCombinator(pprintlnBoth(msg, _))
-    def ppAs(as: A => Any): A              = kCombinator(x => pprintln(as(x)))
-    def ppAs(as: A => Any, msg: String): A = kCombinator(x => pprintlnBoth(msg, as(x)))
-    def pps: A                             = kCombinator(x => pprintln(x.toString))
-    infix def pp(msg: String): A           = kCombinator(x => pprintlnBoth(msg, x))
+    def pp: A                              = tap(pprintln(_))
+    infix def pp(msg: Any): A              = tap(pprintlnBoth(msg, _))
+    def ppAs(as: A => Any): A              = tap(x => pprintln(as(x)))
+    def ppAs(as: A => Any, msg: String): A = tap(x => pprintlnBoth(msg, as(x)))
+    def pps: A                             = tap(x => pprintln(x.toString))
+    infix def pp(msg: String): A           = tap(x => pprintlnBoth(msg, x))
 
-    // copy from: https://github.com/Ichoran/kse3/blob/d3e3ec4771599204a22091ece804dd3491b31ea3/basics/src/Data.scala#L5506C1-L5507C49
+    // https://github.com/Ichoran/kse3/blob/d3e3ec4771599204a22091ece804dd3491b31ea3/basics/src/Data.scala#L5506-L5510
     /** replacement for standard lib pipe use inline to avoid boxing */
     inline def pipe[B](inline f: A => B): B = f(a)
+
+    /** Apply a side-effecting function to this value; return the original value */
+    inline def tap(inline f: A => Unit): A =
+      f(a)
+      a
 
   extension [A, B](m: Map[A, B])
     // Add Map.mapKeys, similar to Map.mapValues
