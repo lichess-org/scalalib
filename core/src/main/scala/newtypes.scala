@@ -13,6 +13,8 @@ object newtypes:
   trait SameRuntime[A, T]:
     def apply(a: A): T
 
+    extension (a: A) def transform: T = apply(a)
+
   object SameRuntime:
     def apply[A, T](f: A => T): SameRuntime[A, T] = new:
       def apply(a: A): T = f(a)
