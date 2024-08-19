@@ -1,6 +1,7 @@
 package scalalib
 
 import alleycats.Zero
+import scala.collection.immutable.SeqMap
 
 object zeros:
 
@@ -42,3 +43,6 @@ object zeros:
 
   given [A]: Zero[Vector[A]] with
     def zero = Vector.empty
+
+  given [A, B]: Zero[SeqMap[A, B]] with
+    def zero = SeqMap.empty
