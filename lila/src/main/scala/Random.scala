@@ -1,7 +1,5 @@
 package scalalib
 
-import scala.collection.mutable.StringBuilder
-
 object ThreadLocalRandom extends RandomApi:
   protected[scalalib] def impl = java.util.concurrent.ThreadLocalRandom.current()
 
@@ -25,22 +23,30 @@ private abstract class RandomApi:
     impl.nextBytes(bytes)
     bytes
 
-  private val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-  private inline def nextAlphanumeric(): Char =
-    chars.charAt(impl.nextInt(chars.length)) // Constant time
-
   def nextString(len: Int): String =
-    val sb = StringBuilder(len)
-    for _ <- 0 until len do sb += nextAlphanumeric()
-    sb.result()
+    val randomImpl = impl
+    val chars      = RandomApi.chars
+    val arr        = new Array[Char](len)
+
+    var i = 0
+    while i < len do
+      arr(i) = chars(randomImpl.nextInt(chars.length))
+      i += 1
+    String.valueOf(arr)
 
   def shuffle[T, C](xs: IterableOnce[T])(using scala.collection.BuildFrom[xs.type, T, C]): C =
     scala.util.Random(impl).shuffle(xs)
 
-  def oneOf[A](vec: Vector[A]): Option[A] =
-    if vec.nonEmpty then vec.lift(impl.nextInt(vec.size)) else None
+  def oneOf[A](seq: scala.collection.IndexedSeq[A]): Option[A] =
+    val len = seq.length
+    if len > 0 then Some(seq(impl.nextInt(len))) else None
 
   // odds(1) = 100% true
   // odds(2) = 50% true
   // odds(3) = 33% true
-  def odds(n: Int): Boolean = impl.nextInt(n) == 0
+  def odds(n: Int): Boolean = impl.nextFloat() * n < 1
+
+private object RandomApi:
+  // private vals are accessed directly as a static field.
+  // final doesn't currently affect bytecode, but it could in the future and is good practice.
+  private final val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".toCharArray()
