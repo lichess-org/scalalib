@@ -2,7 +2,10 @@ package scalalib
 
 import scala.collection.mutable.StringBuilder
 
-val ThreadLocalRandom = RandomApi(java.util.concurrent.ThreadLocalRandom.current)
+private final val store =
+  java.lang.ThreadLocal.withInitial(() => RandomApi(java.util.concurrent.ThreadLocalRandom.current))
+
+def ThreadLocalRandom = store.get
 
 val SecureRandom = RandomApi(java.security.SecureRandom())
 
