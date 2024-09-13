@@ -3,7 +3,7 @@ package scalalib
 import scala.collection.mutable.StringBuilder
 
 object ThreadLocalRandom extends RandomApi:
-  protected def impl = java.util.concurrent.ThreadLocalRandom.current()
+  protected[scalalib] def impl = java.util.concurrent.ThreadLocalRandom.current()
 
 object SecureRandom extends RandomApi:
   protected val impl = java.security.SecureRandom.getInstanceStrong()
