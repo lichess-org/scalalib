@@ -2,16 +2,21 @@ package scalalib
 
 import scala.collection.mutable.StringBuilder
 
-private final val store =
-  java.lang.ThreadLocal.withInitial(() => RandomApi(java.util.concurrent.ThreadLocalRandom.current))
+object ThreadLocalRandom extends RandomApi:
+  protected def impl = java.util.concurrent.ThreadLocalRandom.current()
 
-def ThreadLocalRandom = store.get
+object SecureRandom extends RandomApi:
+  protected val impl = java.security.SecureRandom.getInstanceStrong()
 
-val SecureRandom = RandomApi(java.security.SecureRandom())
+private abstract class RandomApi:
+  protected def impl: java.util.Random
 
-final class RandomApi(impl: java.util.Random):
-
-  export impl.{ nextBoolean, nextDouble, nextFloat, nextGaussian, nextInt, nextLong }
+  def nextBoolean  = impl.nextBoolean
+  def nextDouble   = impl.nextDouble
+  def nextFloat    = impl.nextFloat
+  def nextGaussian = impl.nextGaussian
+  def nextInt      = impl.nextInt
+  def nextLong     = impl.nextLong
 
   def nextBytes(len: Int): Array[Byte] =
     val bytes = new Array[Byte](len)
@@ -20,7 +25,7 @@ final class RandomApi(impl: java.util.Random):
 
   private val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
   private inline def nextAlphanumeric(): Char =
-    chars.charAt(nextInt(chars.length)) // Constant time
+    chars.charAt(impl.nextInt(chars.length)) // Constant time
 
   def nextString(len: Int): String =
     val sb = StringBuilder(len)
@@ -31,9 +36,9 @@ final class RandomApi(impl: java.util.Random):
     scala.util.Random(impl).shuffle(xs)
 
   def oneOf[A](vec: Vector[A]): Option[A] =
-    if vec.nonEmpty then vec.lift(nextInt(vec.size)) else None
+    if vec.nonEmpty then vec.lift(impl.nextInt(vec.size)) else None
 
   // odds(1) = 100% true
   // odds(2) = 50% true
   // odds(3) = 33% true
-  def odds(n: Int): Boolean = nextInt(n) == 0
+  def odds(n: Int): Boolean = impl.nextInt(n) == 0
