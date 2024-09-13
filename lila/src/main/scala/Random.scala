@@ -11,12 +11,14 @@ object SecureRandom extends RandomApi:
 private abstract class RandomApi:
   protected def impl: java.util.Random
 
-  def nextBoolean()  = impl.nextBoolean
-  def nextDouble()   = impl.nextDouble
-  def nextFloat()    = impl.nextFloat
-  def nextGaussian() = impl.nextGaussian
-  def nextInt()      = impl.nextInt
-  def nextLong()     = impl.nextLong
+  def nextBoolean()     = impl.nextBoolean
+  def nextDouble()      = impl.nextDouble
+  def nextFloat()       = impl.nextFloat
+  def nextGaussian()    = impl.nextGaussian
+  def nextInt()         = impl.nextInt
+  def nextInt(n: Int)   = impl.nextInt(n)
+  def nextLong()        = impl.nextLong
+  def nextLong(l: Long) = impl.nextLong(l)
 
   def nextBytes(len: Int): Array[Byte] =
     val bytes = new Array[Byte](len)
