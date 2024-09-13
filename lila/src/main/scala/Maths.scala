@@ -1,7 +1,5 @@
 package scalalib
 
-import scalalib.ThreadLocalRandom
-
 import scala.Numeric.Implicits.*
 import scala.reflect.ClassTag
 import scala.util.Sorting
