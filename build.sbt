@@ -59,7 +59,7 @@ lazy val lila: Project = Project("lila", file("lila"))
     libraryDependencies ++= List(
       "com.github.ben-manes.caffeine" % "caffeine"  % "3.1.8" % "compile",
       "com.github.blemale"           %% "scaffeine" % "5.3.0" % "compile",
-      "org.scalameta"                %% "munit"     % "1.0.1" % Test
+      "org.scalameta"                %% "munit"     % "1.0.2" % Test
     )
   )
   .dependsOn(core, model, playJson)
