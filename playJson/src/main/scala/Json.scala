@@ -23,6 +23,9 @@ object Json:
   )(using NotGiven[NoJsonHandler[T]]): Format[T] =
     format.bimap(bts.apply, stb.apply)
 
+  given [A](using sr: SameRuntime[A, String]): KeyWrites[A] with
+    def writeKey(key: A) = sr(key)
+
   private val stringFormatBase: Format[String] = Format(Reads.StringReads, Writes.StringWrites)
   private val intFormatBase: Format[Int]       = Format(Reads.IntReads, Writes.IntWrites)
 
