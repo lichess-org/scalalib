@@ -1,8 +1,6 @@
 package scalalib
 package cuteName
 
-import scalalib.ThreadLocalRandom
-
 // children friendly names only
 // this is used by /class
 object CuteNameGenerator:
