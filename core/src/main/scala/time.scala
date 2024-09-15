@@ -7,54 +7,74 @@ import java.time.format.DateTimeFormatter
 
 // about java.time https://stackoverflow.com/a/32443004
 object time:
+  // private vals are faster (accessed as a static member).
+  private val utc_ = ZoneOffset.UTC
 
-  val utcZone = ZoneOffset.UTC
+  val utcZone = utc_
 
   extension (d: LocalDate) def adjust(a: TemporalAdjuster): LocalDate = d.`with`(a)
 
   extension (d: LocalDateTime)
-    def toMillis: Long                               = d.toInstant(utcZone).toEpochMilli
-    def toSeconds: Long                              = toMillis / 1000
-    def toCentis: Long                               = toMillis / 10
-    def instant: Instant                             = d.toInstant(utcZone)
+    def toMillis: Long                               = d.toInstant(utc_).toEpochMilli
+    def toSeconds: Int                               = Math.toIntExact(d.toEpochSecond(utc_))
+    def toCentis: Long                               = toMillis / 10L
+    def instant: Instant                             = d.toInstant(utc_)
     def date: LocalDate                              = d.toLocalDate
     def toNow: Duration                              = instant.toNow
-    def isBeforeNow: Boolean                         = d.isBefore(LocalDateTime.now)
-    def isAfterNow: Boolean                          = d.isAfter(LocalDateTime.now)
+    def isBeforeNow: Boolean                         = instant.isBeforeNow
+    def isAfterNow: Boolean                          = instant.isAfterNow
     def atMost(other: LocalDateTime): LocalDateTime  = if other.isBefore(d) then other else d
     def atLeast(other: LocalDateTime): LocalDateTime = if other.isAfter(d) then other else d
     def withTimeAtStartOfDay: LocalDateTime          = d.toLocalDate.atStartOfDay
-    def plus(dur: concDur.Duration): LocalDateTime   = d.plus(dur.toMillis, ChronoUnit.MILLIS)
-    def minus(dur: concDur.Duration): LocalDateTime  = d.minus(dur.toMillis, ChronoUnit.MILLIS)
+    def plus(dur: concDur.Duration): LocalDateTime   = instant.plusMillis(dur.toMillis).dateTime
+    def minus(dur: concDur.Duration): LocalDateTime  = instant.minusMillis(dur.toMillis).dateTime
     def adjust(a: TemporalAdjuster): LocalDateTime   = d.`with`(a)
 
-  extension (d: Instant)
-    def toMillis: Long                        = d.toEpochMilli
-    def toSeconds: Long                       = toMillis / 1000
-    def toCentis: Long                        = toMillis / 10
-    def date: LocalDate                       = LocalDate.ofInstant(d, utcZone)
-    def dateTime: LocalDateTime               = LocalDateTime.ofInstant(d, utcZone)
-    def toNow: Duration                       = Duration.between(d, Instant.now)
-    def isBeforeNow: Boolean                  = d.isBefore(Instant.now)
-    def isAfterNow: Boolean                   = d.isAfter(Instant.now)
-    def atMost(other: Instant): Instant       = if other.isBefore(d) then other else d
-    def atLeast(other: Instant): Instant      = if other.isAfter(d) then other else d
-    def withTimeAtStartOfDay: Instant         = date.atStartOfDay(utcZone).toInstant
-    def plus(dur: concDur.Duration): Instant  = d.plus(dur.toMillis, ChronoUnit.MILLIS)
-    def minus(dur: concDur.Duration): Instant = d.minus(dur.toMillis, ChronoUnit.MILLIS)
-    def plusMinutes(v: Int): Instant          = dateTime.plusMinutes(v).instant
-    def minusMinutes(v: Int): Instant         = dateTime.minusMinutes(v).instant
-    def plusHours(v: Int): Instant            = dateTime.plusHours(v).instant
-    def minusHours(v: Int): Instant           = dateTime.minusHours(v).instant
-    def plusDays(v: Int): Instant             = dateTime.plusDays(v).instant
-    def minusDays(v: Int): Instant            = dateTime.minusDays(v).instant
-    def plusWeeks(v: Int): Instant            = dateTime.plusWeeks(v).instant
-    def minusWeeks(v: Int): Instant           = dateTime.minusWeeks(v).instant
-    def plusMonths(v: Int): Instant           = dateTime.plusMonths(v).instant
-    def minusMonths(v: Int): Instant          = dateTime.minusMonths(v).instant
-    def plusYears(v: Int): Instant            = dateTime.plusYears(v).instant
-    def minusYears(v: Int): Instant           = dateTime.minusYears(v).instant
-    def adjust(a: TemporalAdjuster): Instant  = d.`with`(a)
+  extension (i: Instant)
+    def toMillis: Long                        = i.toEpochMilli
+    def toSeconds: Long                       = toMillis / 1000L
+    def toCentis: Long                        = toMillis / 10L
+    def date: LocalDate                       = LocalDate.ofInstant(i, utc_)
+    def dateTime: LocalDateTime               = LocalDateTime.ofInstant(i, utc_)
+    def toNow: Duration                       = Duration.between(i, Instant.now)
+    def isBeforeNow: Boolean                  = i.isBefore(Instant.now)
+    def isAfterNow: Boolean                   = i.isAfter(Instant.now)
+    def atMost(other: Instant): Instant       = if other.isBefore(i) then other else i
+    def atLeast(other: Instant): Instant      = if other.isAfter(i) then other else i
+    def withTimeAtStartOfDay: Instant         = date.atStartOfDay(utc_).toInstant
+    def plus(dur: concDur.Duration): Instant  = i.plusMillis(dur.toMillis)
+    def minus(dur: concDur.Duration): Instant = i.minusMillis(dur.toMillis)
+    def adjust(a: TemporalAdjuster): Instant  = i.`with`(a)
+
+    // These methods add time in LocalDateTime space and then convert back to
+    // an Instant using the UTC timezone. These conversions can lead to unexpected
+    // results. For example, adding a minute to an Instant that's close to a leap
+    // second will result in an Instant that's 61 seconds later than the original.
+    // And adding a month or year is not well defined for Instants, but ambiguity
+    // is resolved through the UTC trampoline.
+    // Regardless of whether these methods do too much implicitly, they are what
+    // one normally wants for adjusting Instants in a service that uses UTC.
+    def plusMinutes(m: Int): Instant  = dateTime.plusMinutes(m).instant
+    def minusMinutes(m: Int): Instant = dateTime.minusMinutes(m).instant
+    def plusHours(h: Int): Instant    = dateTime.plusHours(h).instant
+    def minusHours(h: Int): Instant   = dateTime.minusHours(h).instant
+    def plusDays(d: Int): Instant     = dateTime.plusDays(d).instant
+    def minusDays(d: Int): Instant    = dateTime.minusDays(d).instant
+    def plusWeeks(w: Int): Instant    = dateTime.plusWeeks(w).instant
+    def minusWeeks(w: Int): Instant   = dateTime.minusWeeks(w).instant
+    def plusMonths(m: Int): Instant   = dateTime.plusMonths(m).instant
+    def minusMonths(m: Int): Instant  = dateTime.minusMonths(m).instant
+    def plusYears(y: Int): Instant    = dateTime.plusYears(y).instant
+    def minusYears(y: Int): Instant   = dateTime.minusYears(y).instant
+
+    // These methods guarantee that the resulting instant is exactly the
+    // specified amount away from the original instant.
+    def plusStdMinutes(m: Int): Instant  = i.plus(Duration.ofMinutes(m))
+    def minusStdMinutes(m: Int): Instant = i.minus(Duration.ofMinutes(m))
+    def plusStdHours(h: Int): Instant    = i.plus(Duration.ofHours(h))
+    def minusStdHours(h: Int): Instant   = i.minus(Duration.ofHours(h))
+    def plusStdDays(d: Int): Instant     = i.plus(Duration.ofDays(d))
+    def minusStdDays(d: Int): Instant    = i.minus(Duration.ofDays(d))
 
   // DateTimeFormatter is very dangerous as it throws exceptions where it could instead fail at compile time.
   // format(instant) for instance can fail with `exception[[UnsupportedTemporalTypeException: Unsupported field: YearOfEra`
@@ -62,12 +82,12 @@ object time:
   // use `print` instead to ensure all fields are provided
   extension (d: DateTimeFormatter)
     def print(date: LocalDate): String         = d.format(date)
-    def print(dateTime: LocalDateTime): String = d.format(dateTime.atOffset(utcZone))
+    def print(dateTime: LocalDateTime): String = d.format(dateTime.atOffset(utc_))
     def print(instant: Instant): String        = print(instant.dateTime)
 
   case class TimeInterval(start: Instant, end: Instant):
     def overlaps(other: TimeInterval): Boolean = start.isBefore(other.end) && other.start.isBefore(end)
-    def contains(date: Instant): Boolean       = (start == date || start.isBefore(date)) && end.isAfter(date)
+    def contains(date: Instant): Boolean       = !start.isAfter(date) && end.isAfter(date)
 
   object TimeInterval:
     def apply(start: Instant, duration: Duration): TimeInterval =
@@ -76,13 +96,13 @@ object time:
   def millisToInstant(millis: Long): Instant        = Instant.ofEpochMilli(millis)
   def millisToDateTime(millis: Long): LocalDateTime = millisToInstant(millis).dateTime
 
-  inline def nowDateTime: LocalDateTime = LocalDateTime.now()
+  inline def nowDateTime: LocalDateTime = LocalDateTime.now(utc_)
   inline def nowInstant: Instant        = Instant.now()
   inline def nowNanos: Long             = System.nanoTime()
   inline def nowMillis: Long            = System.currentTimeMillis()
-  inline def nowCentis: Long            = nowMillis / 10
-  inline def nowTenths: Long            = nowMillis / 100
-  inline def nowSeconds: Int            = (nowMillis / 1000).toInt
+  inline def nowCentis: Long            = nowMillis / 10L
+  inline def nowTenths: Long            = nowMillis / 100L
+  inline def nowSeconds: Int            = (nowMillis / 1000L).toInt // Guaranteed to not overflow until 2038
 
   def instantOf(year: Int, month: Int, dayOfMonth: Int, hour: Int, minute: Int) =
     java.time.LocalDateTime.of(year, month, dayOfMonth, hour, minute).instant
@@ -93,5 +113,5 @@ object time:
   def daysBetween(from: Instant, to: Instant): Int =
     ChronoUnit.DAYS.between(from, to).toInt
 
-  val isoDateTimeFormatter = java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(utcZone)
-  val isoInstantFormatter  = java.time.format.DateTimeFormatter.ISO_INSTANT.withZone(utcZone)
+  val isoDateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(utc_)
+  val isoInstantFormatter  = DateTimeFormatter.ISO_INSTANT.withZone(utc_)
