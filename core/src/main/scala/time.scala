@@ -78,11 +78,16 @@ object time:
 
   inline def nowDateTime: LocalDateTime = LocalDateTime.now()
   inline def nowInstant: Instant        = Instant.now()
-  inline def nowNanos: Long             = System.nanoTime()
   inline def nowMillis: Long            = System.currentTimeMillis()
   inline def nowCentis: Long            = nowMillis / 10
   inline def nowTenths: Long            = nowMillis / 100
   inline def nowSeconds: Int            = (nowMillis / 1000).toInt
+
+  /** Relative to some arbitrary point in time.
+    *
+    * Useful only in comparisons to self, such as measuring time intervals.
+    */
+  inline def nowNanosRel: Long = System.nanoTime()
 
   def instantOf(year: Int, month: Int, dayOfMonth: Int, hour: Int, minute: Int) =
     java.time.LocalDateTime.of(year, month, dayOfMonth, hour, minute).instant
