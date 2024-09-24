@@ -33,6 +33,8 @@ object extensions:
     inline def void: Future[Unit] =
       fua.dmap(_ => ())
 
+    inline def discard: Unit = ()
+
     inline infix def inject[B](b: => B): Future[B] =
       fua.dmap(_ => b)
 
