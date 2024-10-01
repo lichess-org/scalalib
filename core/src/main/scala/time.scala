@@ -15,8 +15,13 @@ object time:
   extension (d: LocalDate) def adjust(a: TemporalAdjuster): LocalDate = d.`with`(a)
 
   extension (d: LocalDateTime)
+    /** Seconds from epoch.
+      *
+      * This uses a checked conversion, it will overflow and raise if the year is after 2038.
+      */
+    def toSeconds: Int = Math.toIntExact(d.toEpochSecond(utc_))
+
     def toMillis: Long                               = d.toInstant(utc_).toEpochMilli
-    def toSeconds: Int                               = Math.toIntExact(d.toEpochSecond(utc_))
     def toCentis: Long                               = toMillis / 10L
     def instant: Instant                             = d.toInstant(utc_)
     def date: LocalDate                              = d.toLocalDate
@@ -31,8 +36,13 @@ object time:
     def adjust(a: TemporalAdjuster): LocalDateTime   = d.`with`(a)
 
   extension (i: Instant)
+    /** Seconds from epoch.
+      *
+      * This uses a checked conversion, it will overflow and raise if the year is after 2038.
+      */
+    def toSeconds: Int = Math.toIntExact(toMillis / 1000L)
+
     def toMillis: Long                        = i.toEpochMilli
-    def toSeconds: Long                       = toMillis / 1000L
     def toCentis: Long                        = toMillis / 10L
     def date: LocalDate                       = LocalDate.ofInstant(i, utc_)
     def dateTime: LocalDateTime               = LocalDateTime.ofInstant(i, utc_)
@@ -101,11 +111,13 @@ object time:
   inline def nowMillis: Long            = System.currentTimeMillis()
   inline def nowCentis: Long            = nowMillis / 10L
   inline def nowTenths: Long            = nowMillis / 100L
-  inline def nowSeconds: Int            = (nowMillis / 1000L).toInt // Guaranteed to not overflow until 2038
+  // Unchecked conversion, but this won't overflow until 2038
+  inline def nowSeconds: Int = (nowMillis / 1000L).toInt
 
   /** Relative to some arbitrary point in time.
     *
-    * Useful only in comparisons to self, such as measuring time intervals.
+    * Useful only in comparisons to self, such as measuring time intervals, though even this can be
+    * problematic as the clock can pause if the process sleeps or system hibernates.
     */
   inline def nowNanosRel: Long = System.nanoTime()
 
