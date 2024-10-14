@@ -71,6 +71,7 @@ object newtypes:
 
   abstract class OpaqueInt[A](using A =:= Int) extends TotalWrapper[A, Int]:
     extension (inline a: A)
+      inline def unary_- : A                      = apply(-raw(a))
       inline infix def >(inline o: Int): Boolean  = raw(a) > o
       inline infix def <(inline o: Int): Boolean  = raw(a) < o
       inline infix def >=(inline o: Int): Boolean = raw(a) >= o
