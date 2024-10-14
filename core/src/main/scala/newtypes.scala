@@ -13,15 +13,14 @@ import alleycats.Zero
 //
 // Details: The classes use witnesses to ensure type compatibility.  However, in order to completely inline
 // simple methods like `<` (OpaqueInt), we cannot use the witness, and instead "cast" using asInstanceOf.
-// during compile scala3 (as of now) detects and redundant casts when using asInstanceOf, but it does *not*
-// detect or remove witness casts. So, when using asInstanceOf, types are completely elided, but not so with
-// witnesses. This is especially problematic for methods marked with `inline` which are expected to be small.
+// During compilation, scala3 detects and removes redundant casts when using asInstanceOf, but it does *not*
+// detect or remove redudant witness casts. So, when using asInstanceOf, types are completely elided, but not
+// so with witnesses. This is especially problematic for methods marked `inline` which should be small.
 //
 // The challenge for you, dear coder, when writing new code, either in this file or in a subclass, is that
-// you can accidentally rely on a witness cast, because scala will happily use a witness implicitly.
-// changing this file, it's up to you to ensure any new code does not use the witness (by using `raw`, `apply`,
-// or the extension methods).  It's still a fairly efficient operation, but if the method you write is inlined,
-// it can cause performance degredation.
+// you can accidentally rely on a witness cast, because scala will happily use a witness implicitly for
+// conversions. It's up to you to ensure any new code does not use a witness conversion (use `raw`, `apply`,
+// or extension methods instead).
 //
 // === Why this issue is not regression tested ===
 // - The scala class `=:=` is sealed and difficult/impossible to subclass, so we cannot create a mock which raises
