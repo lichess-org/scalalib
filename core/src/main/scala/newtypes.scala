@@ -7,28 +7,33 @@ import alleycats.Zero
 // thanks Anton!
 // https://github.com/indoorvivants/opaque-newtypes/blob/main/modules/core/src/main/scala/OpaqueNewtypes.scala
 
-// WARNING: This implementation below is fragile and seemingly small changes can significantly
-// degrade performance. In particular, do not add any methods which implicitly use the witness to perform
-// type conversions.  Only use `raw` and `apply` (or the extension methods) to convert types.
-
+// WARNING: This implementation below is fragile and seemingly small changes can degrade performance.
+// In particular, do not add any methods which implicitly use the witness to perform type conversions.
+// Only use `raw` and `apply` (or the extension methods) to convert types.
+//
 // Details: The classes use witnesses to ensure type compatibility.  However, in order to completely inline
 // simple methods like `<` (OpaqueInt), we cannot use the witness, and instead "cast" using asInstanceOf.
-// scala will remove these redudant casts at compile time, leaving the types completely elided.
-// The issue for new code is that scala will happily use a witness implicitly to convert types, so if you're
+// during compile scala3 (as of now) detects and redundant casts when using asInstanceOf, but it does *not*
+// detect or remove witness casts. So, when using asInstanceOf, types are completely elided, but not so with
+// witnesses. This is especially problematic for methods marked with `inline` which are expected to be small.
+//
+// The challenge for you, dear coder, when writing new code, either in this file or in a subclass, is that
+// you can accidentally rely on a witness cast, because scala will happily use a witness implicitly.
 // changing this file, it's up to you to ensure any new code does not use the witness (by using `raw`, `apply`,
-// or the extension methods).
-
-// Why it's not regression tested:
-// - The scala class `=:=` is sealed and impossible to subclass, so we cannot create a mock which raises
-//   exceptions on use.
+// or the extension methods).  It's still a fairly efficient operation, but if the method you write is inlined,
+// it can cause performance degredation.
+//
+// === Why this issue is not regression tested ===
+// - The scala class `=:=` is sealed and difficult/impossible to subclass, so we cannot create a mock which raises
+//   exceptions on use and test each method.
 // - It's possible to compile code, decompile it, and inspect bytecode but this requires a hell of a lot of
-//   machinery.  See github.com/scala/scala3/blob/main/compiler/test/dotty/tools/backend/jvm/ArrayApplyOptTest.scala
+//   machinery. See github.com/scala/scala3/blob/main/compiler/test/dotty/tools/backend/jvm/ArrayApplyOptTest.scala
 //   as an example of what would be required.  (it's a lot -- compiling to disk, finding the right class files,
 //   interpreting bytecode, ignoring irrelevant differences, etc.)
 object newtypes:
 
   @FunctionalInterface
-  trait SameRuntime[A, T]:
+  abstract class SameRuntime[A, T]:
     def apply(a: A): T
 
     extension (a: A) def transform: T = apply(a)
@@ -53,6 +58,7 @@ object newtypes:
 
     given SameRuntime[Newtype, Impl] = raw(_)
     given SameRuntime[Impl, Newtype] = apply(_)
+    // Avoiding a simple cast because Eq is @specialized, so there might be edge cases.
     given (using e: Eq[Impl]): Eq[Newtype] = new Eq[Newtype]:
       override def eqv(x: Newtype, y: Newtype) = e.eqv(raw(x), raw(y))
 
@@ -69,6 +75,15 @@ object newtypes:
     given Show[A]   = _.value
     given Render[A] = _.value
 
+  /// --- SIDE NOTE ---
+  /// Despite looking very similar to each other, the following classes are necessary to split out.  Math
+  /// methods are overloaded and each class uses methods specific to its underlying type.  It's possible
+  /// this could be condensed using @specialized, once it is implemented for scala3 / dotty.
+  /// -----------------
+
+  /** Use [[OpaqueIntSafer]] if possible. This class may be removed in the future as it has relaxed type
+    * safety.
+    */
   abstract class OpaqueInt[A](using A =:= Int) extends TotalWrapper[A, Int]:
     extension (inline a: A)
       inline def unary_- : A                      = apply(-raw(a))
@@ -88,6 +103,7 @@ object newtypes:
       inline infix def -(inline o: A): A          = a - raw(o)
       inline def atLeast(inline bot: A): A        = atLeast(raw(bot))
       inline def atMost(inline top: A): A         = atMost(raw(top))
+  end OpaqueInt
 
   abstract class OpaqueIntSafer[A](using A =:= Int) extends TotalWrapper[A, Int]:
     extension (inline a: A)
@@ -100,14 +116,63 @@ object newtypes:
       inline infix def -(inline o: A): A        = apply(raw(a) - raw(o))
       inline def atLeast(inline bot: A): A      = apply(Math.max(raw(a), raw(bot)))
       inline def atMost(inline top: A): A       = apply(Math.min(raw(a), raw(top)))
+  end OpaqueIntSafer
 
-  abstract class OpaqueLong[A](using A =:= Long) extends TotalWrapper[A, Long]
+  abstract class OpaqueLong[A](using A =:= Long) extends TotalWrapper[A, Long]:
+    extension (inline a: A)
+      inline def unary_- : A                    = apply(-raw(a))
+      inline infix def >(inline o: A): Boolean  = raw(a) > raw(o)
+      inline infix def <(inline o: A): Boolean  = raw(a) < raw(o)
+      inline infix def >=(inline o: A): Boolean = raw(a) >= raw(o)
+      inline infix def <=(inline o: A): Boolean = raw(a) <= raw(o)
+      inline infix def +(inline o: A): A        = apply(raw(a) + raw(o))
+      inline infix def -(inline o: A): A        = apply(raw(a) - raw(o))
+      inline def atLeast(inline bot: A): A      = apply(Math.max(raw(a), raw(bot)))
+      inline def atMost(inline top: A): A       = apply(Math.min(raw(a), raw(top)))
+  end OpaqueLong
+
   abstract class OpaqueDouble[A](using A =:= Double) extends TotalWrapper[A, Double]:
-    extension (inline a: A) inline def +(inline o: Int): A = apply(raw(a) + o)
-  abstract class OpaqueFloat[A](using A =:= Float) extends TotalWrapper[A, Float]
+    extension (inline a: A)
+      inline def unary_- : A                    = apply(-raw(a))
+      inline infix def >(inline o: A): Boolean  = raw(a) > raw(o)
+      inline infix def <(inline o: A): Boolean  = raw(a) < raw(o)
+      inline infix def >=(inline o: A): Boolean = raw(a) >= raw(o)
+      inline infix def <=(inline o: A): Boolean = raw(a) <= raw(o)
+      inline infix def +(inline o: A): A        = apply(raw(a) + raw(o))
+      inline infix def -(inline o: A): A        = apply(raw(a) - raw(o))
+      inline def atLeast(inline bot: A): A      = apply(Math.max(raw(a), raw(bot)))
+      inline def atMost(inline top: A): A       = apply(Math.min(raw(a), raw(top)))
+
+      @deprecated("Unsafe and be removed later.", "11.3.0")
+      inline def +(inline o: Int): A = apply(raw(a) + o)
+  end OpaqueDouble
+
+  abstract class OpaqueFloat[A](using A =:= Float) extends TotalWrapper[A, Float]:
+    extension (inline a: A)
+      inline def unary_- : A                    = apply(-raw(a))
+      inline infix def >(inline o: A): Boolean  = raw(a) > raw(o)
+      inline infix def <(inline o: A): Boolean  = raw(a) < raw(o)
+      inline infix def >=(inline o: A): Boolean = raw(a) >= raw(o)
+      inline infix def <=(inline o: A): Boolean = raw(a) <= raw(o)
+      inline infix def +(inline o: A): A        = apply(raw(a) + raw(o))
+      inline infix def -(inline o: A): A        = apply(raw(a) - raw(o))
+      inline def atLeast(inline bot: A): A      = apply(Math.max(raw(a), raw(bot)))
+      inline def atMost(inline top: A): A       = apply(Math.min(raw(a), raw(top)))
+  end OpaqueFloat
 
   import scala.concurrent.duration.FiniteDuration
-  abstract class OpaqueDuration[A](using A =:= FiniteDuration) extends TotalWrapper[A, FiniteDuration]
+  abstract class OpaqueDuration[A](using A =:= FiniteDuration) extends TotalWrapper[A, FiniteDuration]:
+    extension (inline a: A)
+      inline def unary_- : A                    = apply(-raw(a))
+      inline infix def >(inline o: A): Boolean  = raw(a) > raw(o)
+      inline infix def <(inline o: A): Boolean  = raw(a) < raw(o)
+      inline infix def >=(inline o: A): Boolean = raw(a) >= raw(o)
+      inline infix def <=(inline o: A): Boolean = raw(a) <= raw(o)
+      inline infix def +(inline o: A): A        = apply(raw(a) + raw(o))
+      inline infix def -(inline o: A): A        = apply(raw(a) - raw(o))
+      inline def atLeast(inline bot: A): A      = apply(raw(a).max(raw(bot)))
+      inline def atMost(inline top: A): A       = apply(raw(a).min(raw(top)))
+  end OpaqueDuration
 
   abstract class YesNo[A](using A =:= Boolean) extends TotalWrapper[A, Boolean]:
     final val Yes: A = apply(true)
@@ -115,6 +180,7 @@ object newtypes:
 
     extension (inline a: A)
       inline def flip: A                  = apply(!raw(a))
+      inline def unary_! : A              = a.flip
       inline def yes: Boolean             = raw(a)
       inline def no: Boolean              = !raw(a)
       inline def &&(inline other: A): A   = apply(raw(a) && raw(other))
