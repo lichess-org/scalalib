@@ -177,8 +177,8 @@ object newtypes:
   end OpaqueDuration
 
   abstract class YesNo[A](using A =:= Boolean) extends TotalWrapper[A, Boolean]:
-    final val Yes: A = apply(true)
-    final val No: A  = apply(false)
+    final def Yes: A = apply(true)
+    final def No: A  = apply(false)
 
     extension (inline a: A)
       inline def flip: A                  = apply(!raw(a))
