@@ -32,7 +32,7 @@ import alleycats.Zero
 object newtypes:
 
   @FunctionalInterface
-  abstract class SameRuntime[A, T]:
+  trait SameRuntime[A, T]:
     // TODO: Convert in both directions...
     def apply(a: A): T
 
@@ -71,22 +71,15 @@ object newtypes:
   end TotalWrapper
 
   abstract class FunctionWrapper[Newtype, Impl](using Newtype =:= Impl) extends TotalWrapper[Newtype, Impl]:
-    extension (inline a: Newtype) inline def apply: Impl = a.asInstanceOf[Impl]
+    extension (inline a: Newtype) inline def exec: Impl = a.asInstanceOf[Impl]
 
   abstract class OpaqueString[A](using A =:= String) extends TotalWrapper[A, String]:
     given Show[A]   = _.value
     given Render[A] = _.value
 
-  /// --- SIDE NOTE ---
-  /// Despite looking very similar to each other, the following classes are necessary to split out.  Math
-  /// methods are overloaded and each class uses methods specific to its underlying type.  It's possible
-  /// this could be condensed using @specialized, once it is implemented for scala3 / dotty.
-  /// -----------------
-
-  /** Use [[OpaqueIntSafer]] if possible. This class may be removed in the future as it has relaxed type
-    * safety.
+  /** [[RichOpaqueInt]] is preferred when possible as it offers more type safety.
     */
-  abstract class OpaqueInt[A](using A =:= Int) extends TotalWrapper[A, Int]:
+  abstract class RelaxedOpaqueInt[A](using A =:= Int) extends TotalWrapper[A, Int]:
     extension (inline a: A)
       inline def unary_- : A                      = apply(-raw(a))
       inline infix def >(inline o: Int): Boolean  = raw(a) > o
@@ -105,9 +98,9 @@ object newtypes:
       inline infix def -(inline o: A): A          = a - raw(o)
       inline def atLeast(inline bot: A): A        = atLeast(raw(bot))
       inline def atMost(inline top: A): A         = atMost(raw(top))
-  end OpaqueInt
+  end RelaxedOpaqueInt
 
-  abstract class OpaqueIntSafer[A](using A =:= Int) extends TotalWrapper[A, Int]:
+  abstract class RichOpaqueInt[A](using A =:= Int) extends TotalWrapper[A, Int]:
     extension (inline a: A)
       inline def unary_- : A                    = apply(-raw(a))
       inline infix def >(inline o: A): Boolean  = raw(a) > raw(o)
@@ -118,67 +111,19 @@ object newtypes:
       inline infix def -(inline o: A): A        = apply(raw(a) - raw(o))
       inline def atLeast(inline bot: A): A      = apply(Math.max(raw(a), raw(bot)))
       inline def atMost(inline top: A): A       = apply(Math.min(raw(a), raw(top)))
-  end OpaqueIntSafer
+  end RichOpaqueInt
 
-  abstract class OpaqueLong[A](using A =:= Long) extends TotalWrapper[A, Long]:
-    extension (inline a: A)
-      inline def unary_- : A                    = apply(-raw(a))
-      inline infix def >(inline o: A): Boolean  = raw(a) > raw(o)
-      inline infix def <(inline o: A): Boolean  = raw(a) < raw(o)
-      inline infix def >=(inline o: A): Boolean = raw(a) >= raw(o)
-      inline infix def <=(inline o: A): Boolean = raw(a) <= raw(o)
-      inline infix def +(inline o: A): A        = apply(raw(a) + raw(o))
-      inline infix def -(inline o: A): A        = apply(raw(a) - raw(o))
-      inline def atLeast(inline bot: A): A      = apply(Math.max(raw(a), raw(bot)))
-      inline def atMost(inline top: A): A       = apply(Math.min(raw(a), raw(top)))
-  end OpaqueLong
-
-  abstract class OpaqueDouble[A](using A =:= Double) extends TotalWrapper[A, Double]:
-    extension (inline a: A)
-      inline def unary_- : A                    = apply(-raw(a))
-      inline infix def >(inline o: A): Boolean  = raw(a) > raw(o)
-      inline infix def <(inline o: A): Boolean  = raw(a) < raw(o)
-      inline infix def >=(inline o: A): Boolean = raw(a) >= raw(o)
-      inline infix def <=(inline o: A): Boolean = raw(a) <= raw(o)
-      inline infix def +(inline o: A): A        = apply(raw(a) + raw(o))
-      inline infix def -(inline o: A): A        = apply(raw(a) - raw(o))
-      inline def atLeast(inline bot: A): A      = apply(Math.max(raw(a), raw(bot)))
-      inline def atMost(inline top: A): A       = apply(Math.min(raw(a), raw(top)))
-
-      @deprecated("Unsafe and be removed later.", "11.3.0")
-      inline def +(inline o: Int): A = apply(raw(a) + o)
-  end OpaqueDouble
-
-  abstract class OpaqueFloat[A](using A =:= Float) extends TotalWrapper[A, Float]:
-    extension (inline a: A)
-      inline def unary_- : A                    = apply(-raw(a))
-      inline infix def >(inline o: A): Boolean  = raw(a) > raw(o)
-      inline infix def <(inline o: A): Boolean  = raw(a) < raw(o)
-      inline infix def >=(inline o: A): Boolean = raw(a) >= raw(o)
-      inline infix def <=(inline o: A): Boolean = raw(a) <= raw(o)
-      inline infix def +(inline o: A): A        = apply(raw(a) + raw(o))
-      inline infix def -(inline o: A): A        = apply(raw(a) - raw(o))
-      inline def atLeast(inline bot: A): A      = apply(Math.max(raw(a), raw(bot)))
-      inline def atMost(inline top: A): A       = apply(Math.min(raw(a), raw(top)))
-  end OpaqueFloat
+  abstract class OpaqueInt[A](using A =:= Int)       extends TotalWrapper[A, Int]
+  abstract class OpaqueLong[A](using A =:= Long)     extends TotalWrapper[A, Long]
+  abstract class OpaqueDouble[A](using A =:= Double) extends TotalWrapper[A, Double]
+  abstract class OpaqueFloat[A](using A =:= Float)   extends TotalWrapper[A, Float]
 
   import scala.concurrent.duration.FiniteDuration
-  abstract class OpaqueDuration[A](using A =:= FiniteDuration) extends TotalWrapper[A, FiniteDuration]:
-    extension (inline a: A)
-      inline def unary_- : A                    = apply(-raw(a))
-      inline infix def >(inline o: A): Boolean  = raw(a) > raw(o)
-      inline infix def <(inline o: A): Boolean  = raw(a) < raw(o)
-      inline infix def >=(inline o: A): Boolean = raw(a) >= raw(o)
-      inline infix def <=(inline o: A): Boolean = raw(a) <= raw(o)
-      inline infix def +(inline o: A): A        = apply(raw(a) + raw(o))
-      inline infix def -(inline o: A): A        = apply(raw(a) - raw(o))
-      inline def atLeast(inline bot: A): A      = apply(raw(a).max(raw(bot)))
-      inline def atMost(inline top: A): A       = apply(raw(a).min(raw(top)))
-  end OpaqueDuration
+  abstract class OpaqueDuration[A](using A =:= FiniteDuration) extends TotalWrapper[A, FiniteDuration]
 
   abstract class YesNo[A](using A =:= Boolean) extends TotalWrapper[A, Boolean]:
-    final val Yes: A = apply(true)
-    final val No: A  = apply(false)
+    final def Yes: A = apply(true)
+    final def No: A  = apply(false)
 
     extension (inline a: A)
       inline def flip: A                  = apply(!raw(a))
