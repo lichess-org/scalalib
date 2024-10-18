@@ -5,16 +5,16 @@ import scalalib.newtypes.*
 object model:
 
   opaque type Max = Int
-  object Max extends OpaqueInt[Max]
+  object Max extends RelaxedOpaqueInt[Max]
 
   opaque type MaxPerPage = Int
-  object MaxPerPage extends OpaqueInt[MaxPerPage]
+  object MaxPerPage extends RelaxedOpaqueInt[MaxPerPage]
 
   opaque type MaxPerSecond = Int
-  object MaxPerSecond extends OpaqueInt[MaxPerSecond]
+  object MaxPerSecond extends RelaxedOpaqueInt[MaxPerSecond]
 
   opaque type Days = Int
-  object Days extends OpaqueInt[Days]
+  object Days extends RelaxedOpaqueInt[Days]
 
   opaque type Seconds = Int
-  object Seconds extends OpaqueInt[Seconds]
+  object Seconds extends RelaxedOpaqueInt[Seconds]
