@@ -61,7 +61,9 @@ object StringOps:
       // weird stuff https://www.compart.com/en/unicode/block/U+2000
       (c >= '\u2028' && c <= '\u202F') ||
       // Hangul fillers
-      (c == '\u115f' || c == '\u1160')
+      (c == '\u115f' || c == '\u1160') ||
+      // braille space https://unicode-explorer.com/c/2800
+      (c == '\u2800')
 
   object normalize:
 

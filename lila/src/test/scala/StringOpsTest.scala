@@ -46,3 +46,12 @@ class StringTest extends munit.FunSuite:
     assertEquals(normalize("keep º and ª"), "keep º and ª")
   test("normalize preserve half point"):
     assertEquals(normalize("½"), "½")
+
+  test("invisible chars"):
+    // normal space
+    assertEquals(softCleanUp(" "), "")
+    assertEquals(softCleanUp("    "), "")
+    // braille space
+    assertEquals(softCleanUp("⠀"), "")
+    assertEquals(softCleanUp("⠀⠀⠀"), "")
+    assertEquals(softCleanUp("⠀uh⠀⠀"), "uh")
