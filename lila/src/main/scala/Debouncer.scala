@@ -8,7 +8,7 @@ import scala.concurrent.ExecutionContext
  * and `f(id)` is called at most once every `duration`.
  * It is guaranteed that `f(id)` will run after the last `push(id)`. */
 final class Debouncer[Id](
-    scheduleOnce: (() => Unit) => Unit, // scheduler.scheduleOnce(duration) _
+    scheduleOnce: Runnable => Unit, // scheduler.scheduleOnce(duration, _)
     initialCapacity: Int = 64
 )(
     f: Id => Unit
