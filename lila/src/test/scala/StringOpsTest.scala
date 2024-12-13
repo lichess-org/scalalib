@@ -55,3 +55,5 @@ class StringTest extends munit.FunSuite:
     assertEquals(softCleanUp("⠀"), "")
     assertEquals(softCleanUp("⠀⠀⠀"), "")
     assertEquals(softCleanUp("⠀uh⠀⠀"), "uh")
+    // https://blankcopypaste.com
+    assertEquals(softCleanUp(" ︎ ︎ ︎ ︎ ︎ ︎ ︎ ︎ ︎ ︎"), "")

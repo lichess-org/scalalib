@@ -55,15 +55,29 @@ object StringOps:
     // but allow https://www.compart.com/en/unicode/U+0259
     (c >= '\u0250' && c < '\u0259') || (c > '\u0259' && c <= '\u02af'))
 
-  private inline def isInvisibleChar(c: Int) =
+  private inline def isInvisibleChar(c: Int) = invisibleChars.contains(c.toChar)
+
+  private val invisibleChars: Set[Int] =
+    // blankcopypaste.com
+    val blankcopypaste = Set('\u00A0', '\u2000', '\u2001', '\u2002', '\u2004', '\u2005', '\u2006', '\u2007',
+      '\u2008', '\u2009', '\u200A', '\u2028', '\u205F', '\u3000', '\u2003', '\u25A0', '\u0009', '\u000A',
+      '\u000C', '\u001C', '\u200B', '\u200C', '\u2060', '\u2061', '\u2062', '\u00AD', '\u034F', '\u061C',
+      '\u115F', '\u1160', '\u17B4', '\u17B5', '\u180B', '\u180C', '\u180D', '\u180E', '\u200D', '\u200E',
+      '\u200F', '\u202A', '\u202B', '\u202C', '\u202D', '\u202E', '\u202F', '\u2063', '\u2064', '\u2064',
+      '\u2066', '\u2066', '\u2067', '\u2068', '\u2069', '\u206A', '\u2800', '\u206B', '\u206C', '\u206D',
+      '\u206E', '\u206F', '\u3164', '\uFFFC', '\uFEFF', '\uFFA0')
     // invisible chars https://www.compart.com/en/unicode/block/U+2000
-    (c >= '\u2000' && c <= '\u200F') ||
-      // weird stuff https://www.compart.com/en/unicode/block/U+2000
-      (c >= '\u2028' && c <= '\u202F') ||
-      // Hangul fillers
-      (c == '\u115f' || c == '\u1160') ||
-      // braille space https://unicode-explorer.com/c/2800
-      (c == '\u2800')
+    val invisible = Set('\u2000', '\u2001', '\u2002', '\u2003', '\u2004', '\u2005', '\u2006', '\u2007',
+      '\u2008', '\u2009', '\u200A', '\u200B', '\u200C', '\u200D', '\u200E', '\u200F')
+    // https://www.compart.com/en/unicode/block/U+2000
+    val separators = Set('\u2028', '\u2029')
+    // https://www.compart.com/en/unicode/block/U+2000
+    val directions = Set('\u202a', '\u202b', '\u202c', '\u202d', '\u202e', '\u202f')
+    // variation selectors https://www.compart.com/en/unicode/block/U+FE00
+    val variations = Set('\uFE00', '\uFE01', '\uFE02', '\uFE03', '\uFE04', '\uFE05', '\uFE06', '\uFE07',
+      '\uFE08', '\uFE09', '\uFE0A', '\uFE0B', '\uFE0C', '\uFE0D', '\uFE0E', '\uFE0F')
+    val all = blankcopypaste ++ invisible ++ separators ++ directions ++ variations
+    all.map(_.toInt)
 
   object normalize:
 
