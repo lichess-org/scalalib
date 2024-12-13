@@ -104,7 +104,17 @@ object StringOps:
   // https://www.compart.com/en/unicode/block/U+1F600
   // https://www.compart.com/en/unicode/block/U+1F900
   private val multibyteSymbolsRegex =
-    raw"[\p{So}\p{block=Emoticons}\p{block=Miscellaneous Symbols and Pictographs}\p{block=Supplemental Symbols and Pictographs}]".r
+    import java.lang.Character.UnicodeBlock.*
+    val blocks = List(
+      EMOTICONS,
+      MISCELLANEOUS_SYMBOLS_AND_PICTOGRAPHS,
+      SUPPLEMENTAL_SYMBOLS_AND_PICTOGRAPHS,
+      EGYPTIAN_HIEROGLYPHS,
+      MUSICAL_SYMBOLS,
+      TAGS
+    )
+    val blocksString = blocks.map(b => s"\\p{block=$b}").mkString
+    s"[\\p{So}$blocksString]".r
   def removeMultibyteSymbols(str: String): String = multibyteSymbolsRegex.replaceAllIn(str, "")
 
   // for publicly listed text like team names, study names, forum topics...
