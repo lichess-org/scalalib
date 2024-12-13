@@ -46,11 +46,12 @@ class StringTest extends munit.FunSuite:
     assertEquals(rms("½"), "½")
 
   test("remove garbage chars"):
-    assertEquals(removeGarbageChars("""ℱ۩۞۩꧁꧂"""), "")
-    assertEquals(removeGarbageChars("""ᴀᴛᴏᴍɪᴄ"""), "")
-    assertEquals(removeGarbageChars("""af éâòöÌÒÒçÇℱ۩۞۩꧁꧂"  صار"""), """af éâòöÌÒÒçÇ"  صار""")
+    val rgc = removeGarbageChars
+    assertEquals(rgc("""ℱ۩۞۩꧁꧂"""), "")
+    assertEquals(rgc("""ᴀᴛᴏᴍɪᴄ"""), "")
+    assertEquals(rgc("""af éâòöÌÒÒçÇℱ۩۞۩꧁꧂"  صار"""), """af éâòöÌÒÒçÇ"  صار""")
     i18nValidStrings.foreach: txt =>
-      assertEquals(removeGarbageChars(txt), txt)
+      assertEquals(rgc(txt), txt)
 
   test("normalize keep º and ª"):
     assertEquals(normalize("keep normal text"), "keep normal text")
@@ -59,12 +60,23 @@ class StringTest extends munit.FunSuite:
     assertEquals(normalize("½"), "½")
 
   test("invisible chars"):
+    val sc = softCleanUp
     // normal space
-    assertEquals(softCleanUp(" "), "")
-    assertEquals(softCleanUp("    "), "")
+    assertEquals(sc(" "), "")
+    assertEquals(sc("    "), "")
     // braille space
-    assertEquals(softCleanUp("⠀"), "")
-    assertEquals(softCleanUp("⠀⠀⠀"), "")
-    assertEquals(softCleanUp("⠀uh⠀⠀"), "uh")
+    assertEquals(sc("⠀"), "")
+    assertEquals(sc("⠀⠀⠀"), "")
+    assertEquals(sc("⠀uh⠀⠀"), "uh")
     // https://blankcopypaste.com
-    assertEquals(softCleanUp(" ︎ ︎ ︎ ︎ ︎ ︎ ︎ ︎ ︎ ︎"), "")
+    assertEquals(sc(" ︎ ︎ ︎ ︎ ︎ ︎ ︎ ︎ ︎ ︎"), "")
+    // utf32 invisible
+    assertEquals(sc("𝅙"), "")
+    assertEquals(sc("𝅳"), "")
+    assertEquals(sc("𝅴"), "")
+    assertEquals(sc("𝅵"), "")
+    assertEquals(sc("𝅶"), "")
+    assertEquals(sc("𝅸𝅸𝅸𝅸𝅸𝅹𝅺𝅸"), "")
+    assertEquals(sc("󠀁"), "")
+    assertEquals(sc("󠀠"), "")
+    assertEquals(sc("󠀰"), "")

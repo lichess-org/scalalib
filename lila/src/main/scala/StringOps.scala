@@ -1,6 +1,7 @@
 package scalalib
 
 import java.text.Normalizer
+import java.lang.Character.{ UnicodeBlock as Block }
 
 object StringOps:
 
@@ -100,28 +101,36 @@ object StringOps:
       .replace('\u0002', 'ª')
       .replace('\u0003', '½')
 
+  private def unicodeBlocksRegex(blocks: List[Character.UnicodeBlock]) =
+    blocks.map(b => s"\\p{block=$b}").mkString
+
+  private val multibyteInvisibleRegex =
+    val blocks = List(Block.MUSICAL_SYMBOLS, Block.TAGS)
+    s"[${unicodeBlocksRegex(blocks)}]".r
+  def removeMultibyteInvisible(str: String): String = multibyteInvisibleRegex.replaceAllIn(str, "")
+
   // https://www.compart.com/en/unicode/block/U+1F300
   // https://www.compart.com/en/unicode/block/U+1F600
   // https://www.compart.com/en/unicode/block/U+1F900
   private val multibyteSymbolsRegex =
-    import java.lang.Character.UnicodeBlock.*
     val blocks = List(
-      EMOTICONS,
-      MISCELLANEOUS_SYMBOLS_AND_PICTOGRAPHS,
-      SUPPLEMENTAL_SYMBOLS_AND_PICTOGRAPHS,
-      EGYPTIAN_HIEROGLYPHS,
-      MUSICAL_SYMBOLS,
-      TAGS
+      Block.EMOTICONS,
+      Block.MISCELLANEOUS_SYMBOLS_AND_PICTOGRAPHS,
+      Block.SUPPLEMENTAL_SYMBOLS_AND_PICTOGRAPHS,
+      Block.EGYPTIAN_HIEROGLYPHS,
+      Block.MUSICAL_SYMBOLS,
+      Block.TAGS
     )
-    val blocksString = blocks.map(b => s"\\p{block=$b}").mkString
-    s"[\\p{So}$blocksString]".r
+    s"[\\p{So}${unicodeBlocksRegex(blocks)}]".r
   def removeMultibyteSymbols(str: String): String = multibyteSymbolsRegex.replaceAllIn(str, "")
 
   // for publicly listed text like team names, study names, forum topics...
-  def fullCleanUp(str: String) = removeMultibyteSymbols(removeChars(normalize(str), isGarbageChar)).trim
+  def fullCleanUp(str: String) =
+    removeMultibyteSymbols(removeChars(normalize(str), isGarbageChar)).trim
 
   // for inner text like study chapter names, possibly forum posts and team descriptions
-  def softCleanUp(str: String) = removeChars(normalize(str), isInvisibleChar(_)).trim
+  def softCleanUp(str: String) =
+    removeMultibyteInvisible(removeChars(normalize(str), isInvisibleChar(_))).trim
 
   object base64:
     import java.util.Base64
