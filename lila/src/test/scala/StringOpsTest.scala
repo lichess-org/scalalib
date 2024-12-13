@@ -50,6 +50,7 @@ class StringTest extends munit.FunSuite:
     assertEquals(rgc("""ℱ۩۞۩꧁꧂"""), "")
     assertEquals(rgc("""ᴀᴛᴏᴍɪᴄ"""), "")
     assertEquals(rgc("""af éâòöÌÒÒçÇℱ۩۞۩꧁꧂"  صار"""), """af éâòöÌÒÒçÇ"  صار""")
+    assertEquals(rgc("卐卐卐"), "")
     i18nValidStrings.foreach: txt =>
       assertEquals(rgc(txt), txt)
 
@@ -59,8 +60,9 @@ class StringTest extends munit.FunSuite:
   test("normalize preserve half point"):
     assertEquals(normalize("½"), "½")
 
-  test("invisible chars"):
+  test("soft cleanup"):
     val sc = softCleanUp
+    assertEquals(sc("卐卐卐"), "")
     // normal space
     assertEquals(sc(" "), "")
     assertEquals(sc("    "), "")

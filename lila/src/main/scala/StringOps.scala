@@ -39,15 +39,15 @@ object StringOps:
   private def removeChars(str: String, isRemoveable: Int => Boolean): String =
     if str.chars.anyMatch(isRemoveable(_)) then str.filterNot(isRemoveable(_)) else str
 
-  private def isGarbageChar(c: Int) = c >= '\u0250' && (isInvisibleChar(c) ||
+  private def isGarbageChar(c: Int) = c >= '\u0250' && (isOffensiveChar(c) || isInvisibleChar(c) ||
     // bunch of probably useless blocks https://www.compart.com/en/unicode/block/U+2100
     // but keep maths operators cause maths are cool https://www.compart.com/en/unicode/block/U+2200
     // and chess symbols https://www.compart.com/en/unicode/block/U+2600
     (c >= '\u2100' && c <= '\u21FF') ||
     (c >= '\u2300' && c <= '\u2653') ||
     (c >= '\u2660' && c <= '\u2C5F') ||
-    // decorative chars ꧁ ꧂ and svastikas
-    (c == '\ua9c1' || c == '\ua9c2' || c == '\u534d' || c == '\u5350') ||
+    // decorative chars ꧁ ꧂
+    (c == '\ua9c1' || c == '\ua9c2') ||
     // pretty quranic chars ۩۞
     (c >= '\u06d6' && c <= '\u06ff') ||
     // phonetic extensions https://www.compart.com/en/unicode/block/U+1D00
@@ -55,6 +55,10 @@ object StringOps:
     // IPA extensions https://www.compart.com/en/unicode/block/U+0250
     // but allow https://www.compart.com/en/unicode/U+0259
     (c >= '\u0250' && c < '\u0259') || (c > '\u0259' && c <= '\u02af'))
+
+  private def isOffensiveChar(c: Int) =
+    // svastikas
+    c == '\u534d' || c == '\u5350'
 
   private inline def isInvisibleChar(c: Int) = invisibleChars.contains(c.toChar)
 
@@ -130,7 +134,7 @@ object StringOps:
 
   // for inner text like study chapter names, possibly forum posts and team descriptions
   def softCleanUp(str: String) =
-    removeMultibyteInvisible(removeChars(normalize(str), isInvisibleChar(_))).trim
+    removeMultibyteInvisible(removeChars(normalize(str), c => isOffensiveChar(c) || isInvisibleChar(c))).trim
 
   object base64:
     import java.util.Base64
