@@ -82,3 +82,8 @@ class StringTest extends munit.FunSuite:
     assertEquals(sc("󠀁"), "")
     assertEquals(sc("󠀠"), "")
     assertEquals(sc("󠀰"), "")
+    assertEquals(
+      sc("""multi
+line"""),
+      "multi\nline"
+    )
