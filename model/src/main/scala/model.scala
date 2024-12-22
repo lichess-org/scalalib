@@ -18,3 +18,12 @@ object model:
 
   opaque type Seconds = Int
   object Seconds extends RelaxedOpaqueInt[Seconds]
+
+  trait Percent[A]:
+    def value(a: A): Double
+    def apply(a: Double): A
+  object Percent:
+    def of[A](w: TotalWrapper[A, Double]): Percent[A] = new:
+      def apply(a: Double): A = w(a)
+      def value(a: A): Double = w.value(a)
+    def toInt[A](a: A)(using p: Percent[A]): Int = Math.round(p.value(a)).toInt // round to closest
