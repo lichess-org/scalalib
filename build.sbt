@@ -39,7 +39,7 @@ lazy val model: Project = Project("model", file("model"))
     commonSettings,
     name := "scalalib-model"
   )
-  .dependsOn(core, playJson)
+  .dependsOn(core)
 
 lazy val playJson: Project = Project("playJson", file("playJson"))
   .settings(
