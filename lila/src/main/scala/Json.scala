@@ -9,10 +9,10 @@ object Json:
   export scalalib.json.Json.{ *, given }
   export scalalib.json.extensions.{ *, given }
 
-  given Writes[MaxPerPage] with
+  given Writes[MaxPerPage]:
     def writes(m: MaxPerPage) = JsNumber(m.value)
 
-  given paginatorWrite[A: Writes]: OWrites[Paginator[A]] = OWrites[Paginator[A]]: p =>
+  given [A: Writes] => OWrites[Paginator[A]] = OWrites[Paginator[A]]: p =>
     paginatorWriteNoNbResults.writes(p) ++ PlayJson.obj(
       "nbResults" -> p.nbResults,
       "nbPages"   -> p.nbPages
