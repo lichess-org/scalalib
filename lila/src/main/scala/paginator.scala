@@ -63,10 +63,10 @@ object Paginator:
 
   def empty[A]: Paginator[A] = new Paginator(0, MaxPerPage(0), Nil, 0)
 
-  given [A]: Zero[Paginator[A]] with
+  given [A] => Zero[Paginator[A]]:
     def zero = empty[A]
 
-  given cats.Functor[Paginator] with
+  given cats.Functor[Paginator]:
     def map[A, B](p: Paginator[A])(f: A => B) = new Paginator(
       currentPage = p.currentPage,
       maxPerPage = p.maxPerPage,

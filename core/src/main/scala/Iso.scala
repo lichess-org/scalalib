@@ -17,7 +17,7 @@ object Iso:
   type BooleanIso[B] = Iso[Boolean, B]
   type DoubleIso[B]  = Iso[Double, B]
 
-  given sameRuntime[A, B](using sr: SameRuntime[A, B], rs: SameRuntime[B, A]): Iso[A, B] with
+  given [A, B] => (sr: SameRuntime[A, B], rs: SameRuntime[B, A]) => Iso[A, B]:
     val from = sr.apply
     val to   = rs.apply
 

@@ -61,7 +61,7 @@ object newtypes:
     given SameRuntime[Newtype, Impl] = raw(_)
     given SameRuntime[Impl, Newtype] = apply(_)
     // Avoiding a simple cast because Eq is @specialized, so there might be edge cases.
-    given (using eqi: Eq[Impl]): Eq[Newtype] = new:
+    given (eqi: Eq[Impl]) => Eq[Newtype] = new:
       override def eqv(x: Newtype, y: Newtype) = eqi.eqv(raw(x), raw(y))
 
     extension (inline a: Newtype)
@@ -143,4 +143,4 @@ object newtypes:
   inline def floatOrdering[T: FloatRuntime](using Ordering[Float]): Ordering[T]    = sameOrdering[Float, T]
   inline def doubleOrdering[T: DoubleRuntime](using Ordering[Double]): Ordering[T] = sameOrdering[Double, T]
 
-  given [A](using sr: SameRuntime[Boolean, A]): Zero[A] = Zero(sr(false))
+  given [A] => (sr: SameRuntime[Boolean, A]) => Zero[A] = Zero(sr(false))

@@ -13,17 +13,17 @@ object Json:
 
   trait NoJsonHandler[A] // don't create default JSON handlers for this type
 
-  given Zero[JsObject] with
+  given Zero[JsObject]:
     def zero = JsObject(Seq.empty)
 
-  given opaqueFormat[A, T](using
+  given [A, T] => (
       bts: SameRuntime[A, T],
       stb: SameRuntime[T, A],
       format: Format[A]
-  )(using NotGiven[NoJsonHandler[T]]): Format[T] =
+  ) => NotGiven[NoJsonHandler[T]] => Format[T] =
     format.bimap(bts.apply, stb.apply)
 
-  given [A](using sr: SameRuntime[A, String]): KeyWrites[A] with
+  given [A] => (sr: SameRuntime[A, String]) => KeyWrites[A]:
     def writeKey(key: A) = sr(key)
 
   private val stringFormatBase: Format[String] = Format(Reads.StringReads, Writes.StringWrites)

@@ -15,4 +15,4 @@ object Render:
 
   /* If we have Render, we have Show;
    * but not the other way around. */
-  given [A](using Render[A]): cats.Show[A] = cats.Show.show(_.render)
+  given [A] => Render[A] => cats.Show[A] = cats.Show.show(_.render)

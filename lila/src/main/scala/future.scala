@@ -16,8 +16,8 @@ type FutureAfter = [T] => (FiniteDuration) => (() => Future[T]) => Future[T]
 
 final class TimeoutException(msg: String) extends Exception(msg) with NoStackTrace
 
-given [A](using az: Zero[A]): Zero[Future[A]] with
-  def zero = Future.successful(az.zero)
+given [A: Zero] => Zero[Future[A]]:
+  def zero = Future.successful(Zero[A].zero)
 
 object extensions:
 

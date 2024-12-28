@@ -21,7 +21,8 @@ object HeapSort:
    * should be used for small nb and large n
    * Complexity: O(n + nb * log(n))
    */
-  def topN[T, C](xs: IterableOnce[T], nb: Int)(using ord: Ordering[T])(using
+  def topN[T, C](xs: IterableOnce[T], nb: Int)(using
+      ord: Ordering[T],
       bf: BuildFrom[xs.type, T, C]
   ): C =
     val p = PriorityQueue.from(xs)(ord)
