@@ -1,7 +1,7 @@
 package scalalib
 
 import java.text.Normalizer
-import java.lang.Character.{ UnicodeBlock as Block }
+import java.lang.Character.UnicodeBlock as Block
 
 object StringOps:
 

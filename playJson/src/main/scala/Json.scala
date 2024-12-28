@@ -20,7 +20,7 @@ object Json:
       bts: SameRuntime[A, T],
       stb: SameRuntime[T, A],
       format: Format[A]
-    ) => NotGiven[NoJsonHandler[T]] => Format[T] =
+  ) => NotGiven[NoJsonHandler[T]] => Format[T] =
     format.bimap(bts.apply, stb.apply)
 
   given [A] => (sr: SameRuntime[A, String]) => KeyWrites[A]:
