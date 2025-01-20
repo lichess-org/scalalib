@@ -57,7 +57,7 @@ lazy val lila: Project = Project("lila", file("lila"))
     commonSettings,
     name := "scalalib-lila",
     libraryDependencies ++= List(
-      "com.github.ben-manes.caffeine" % "caffeine"  % "3.1.8" % "compile",
+      "com.github.ben-manes.caffeine" % "caffeine"  % "3.2.0" % "compile",
       "com.github.blemale"           %% "scaffeine" % "5.3.0" % "compile",
       "org.scalameta"                %% "munit"     % "1.0.4" % Test
     )
