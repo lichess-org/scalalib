@@ -27,3 +27,20 @@ object model:
       def apply(a: Double): A = w(a)
       def value(a: A): Double = w.value(a)
     def toInt[A](a: A)(using p: Percent[A]): Int = Math.round(p.value(a)).toInt // round to closest
+
+  /* play.api.i18n.Lang is composed of language and country.
+   * Let's make new types for those so we don't mix them.
+   */
+  opaque type Language = String
+  object Language extends OpaqueString[Language]
+
+  opaque type Country = String
+  object Country extends OpaqueString[Country]
+
+  /* A IETF BCP 47 language tag representing a locale.
+   * See [[java.util.Locale.toLanguageTag]].
+   * Is returned by [[play.api.i18n.Lang.code]].
+   * E.g. "tr" or "en-US"
+   */
+  opaque type LangTag = String
+  object LangTag extends OpaqueString[LangTag]
