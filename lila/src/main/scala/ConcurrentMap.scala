@@ -19,12 +19,12 @@ final class ConcurrentMap[K, V](initialCapacity: Int):
   /* Runs f exactly once and returns the new value */
   def compute(key: K)(f: Option[V] => Option[V]): Option[V] =
     Option:
-      underlying.compute(key, (k, v) => f(Option(v)).getOrElse(null.asInstanceOf[V]))
+      underlying.compute(key, (_, v) => f(Option(v)).getOrElse(null.asInstanceOf[V]))
 
   /* Runs f at most once and returns the new value */
   def computeIfPresent(key: K)(f: V => Option[V]): Option[V] =
     Option:
-      underlying.computeIfPresent(key, (k, v) => f(v).getOrElse(null.asInstanceOf[V]))
+      underlying.computeIfPresent(key, (_, v) => f(v).getOrElse(null.asInstanceOf[V]))
 
   /* Runs f at most once and returns the new value */
   def computeIfAbsent(key: K)(f: => Option[V]): Option[V] =
