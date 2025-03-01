@@ -5,7 +5,6 @@ import scala.jdk.CollectionConverters.*
 import scala.reflect.Typeable
 import scala.concurrent.duration.*
 import scala.concurrent.{ ExecutionContext, Future, Promise }
-import com.github.benmanes.caffeine.cache.Scheduler
 import scalalib.future.extensions.withTimeout
 import scalalib.future.FutureAfter
 
@@ -33,6 +32,10 @@ object Bus:
 
   type Payload            = Matchable
   type SubscriberFunction = PartialFunction[Payload, Unit]
+
+final class Bus(initialCapacity: Int = 4096):
+
+  import Bus.*
 
   def pub[T <: Payload](payload: T)(using wc: WithChannel[T]) =
     publish(payload, wc.channel)
@@ -66,7 +69,6 @@ object Bus:
 
   def ask[A](channel: Channel, timeout: FiniteDuration = 2.second)(makeMsg: Promise[A] => Matchable)(using
       ExecutionContext,
-      Scheduler,
       FutureAfter
   ): Future[A] =
     val promise = Promise[A]()
@@ -78,7 +80,6 @@ object Bus:
       wc: WithChannel[T]
   )(using
       ExecutionContext,
-      Scheduler,
       FutureAfter
   ): Future[A] =
     val promise = Promise[A]()
@@ -88,7 +89,7 @@ object Bus:
     promise.future.withTimeout(timeout, s"Bus.safeAsk $channel $msg")
 
   private val bus = EventBus[Payload, Channel, Tellable](
-    initialCapacity = 4096,
+    initialCapacity = initialCapacity,
     publish = (tellable, event) => tellable ! event
   )
 
