@@ -2,9 +2,10 @@ package scalalib
 package cache
 
 import com.github.blemale.scaffeine.Scaffeine
-import com.github.benmanes.caffeine.cache.Scheduler
+import com.github.benmanes.caffeine.cache.{ RemovalCause, Scheduler }
 import java.util.concurrent.Executor
 import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.Future
 import com.github.blemale.scaffeine.Cache
 import java.util.concurrent.ConcurrentMap
 
@@ -92,3 +93,31 @@ final class FrequencyThreshold[K](count: Int, duration: FiniteDuration)(using Ex
     key,
     (_, prev) => Option(prev).fold(1)(_ + 1)
   ) >= count
+
+final class NowAndLater[K](cooldown: FiniteDuration)(using Executor):
+  // if key is not found, execute immediately and set cooldown timer with a None thunk.
+  // if key found, reset its cooldown and set Some(thunk) to execute on expiry. only
+  // the most recent thunk is executed, all previous ones are discarded.
+  type ThunkOpt = Option[() => Future[Unit]]
+  private val cache: Cache[K, ThunkOpt] = scaffeineNoScheduler
+    .expireAfter(
+      create = (_, _) => cooldown,
+      update = (_, _, _) => cooldown,
+      read = (_, _, remaining: FiniteDuration) => remaining
+    )
+    .scheduler(Scheduler.systemScheduler)
+    .removalListener((key: K, thunkOpt: ThunkOpt, cause: RemovalCause) =>
+      if cause == RemovalCause.EXPIRED then
+        thunkOpt.map: thunk =>
+          cache.put(key, None)
+          thunk()
+    )
+    .build[K, ThunkOpt]()
+
+  def apply(key: K)(f: => Future[Unit])(using Executor): Future[Unit] =
+    if cache.underlying.getIfPresent(key) == null then
+      cache.put(key, None)
+      f
+    else
+      cache.put(key, Some(() => f))
+      Future.unit
