@@ -5,9 +5,6 @@ import scala.jdk.CollectionConverters.*
 import scala.reflect.Typeable
 import scala.concurrent.duration.*
 import scala.concurrent.{ ExecutionContext, Future, Promise }
-
-import typemap.MutableTypeMap
-
 import scalalib.future.extensions.withTimeout
 import scalalib.future.FutureAfter
 
@@ -91,28 +88,27 @@ final class Bus(initialCapacity: Int = 4096):
     pub(msg)
     promise.future.withTimeout(timeout, s"Bus.safeAsk $channel $msg")
 
-  private val bus = EventBus[Payload, Tellable](
+  private val bus = EventBus[Payload, Channel, Tellable](
     initialCapacity = initialCapacity,
     publish = (tellable, event) => tellable ! event
   )
 
-final private class EventBus[Event, Subscriber](
+final private class EventBus[Event, Channel, Subscriber](
     initialCapacity: Int,
     publish: (Subscriber, Event) => Unit
 ):
 
-  private val entries: MutableTypeMap[Set[Subscriber], ConcurrentMap.Backend] =
-    MutableTypeMap.make(initialCapacity)
-  def size = entries.unsafeMap.size()
+  private val entries = scalalib.ConcurrentMap[Channel, Set[Subscriber]](initialCapacity)
+  export entries.size
 
   def subscribe(subscriber: Subscriber, channel: Channel): Unit =
-    entries.unsafeMap.compute(channel): prev =>
+    entries.compute(channel): prev =>
       Some(prev.fold(Set(subscriber))(_ + subscriber))
 
   def unsubscribe(subscriber: Subscriber, channel: Channel): Unit =
-    entries.unsafeMap.computeIfPresent(channel): subs =>
+    entries.computeIfPresent(channel): subs =>
       val newSubs = subs - subscriber
       Option.when(newSubs.nonEmpty)(newSubs)
 
   def publish(event: Event, channel: Channel): Unit =
-    entries.unsafeMap.get(channel).foreach(_.foreach(publish(_, event)))
+    entries.get(channel).foreach(_.foreach(publish(_, event)))
