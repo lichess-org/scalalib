@@ -5,6 +5,9 @@ import scala.jdk.CollectionConverters.*
 import scala.reflect.Typeable
 import scala.concurrent.duration.*
 import scala.concurrent.{ ExecutionContext, Future, Promise }
+
+import typemap.{ MutableTypeMap, typeName }
+
 import scalalib.future.extensions.withTimeout
 import scalalib.future.FutureAfter
 
@@ -37,12 +40,22 @@ final class Bus(initialCapacity: Int = 4096):
 
   import Bus.*
 
-  def pub[T <: Payload](payload: T)(using wc: WithChannel[T]) =
-    publish(payload, wc.channel)
+  inline def pub[T <: Payload](t: T): Unit = bus.entries.get[T].foreach(_.foreach(_ ! t))
 
-  def sub[T <: Payload: Typeable](f: PartialFunction[T, Unit])(using wc: WithChannel[T]) =
-    subscribeFun(wc.channel):
-      case x: T => f.applyOrElse(x, _ => ())
+  inline def sub[T <: Payload: Typeable](f: PartialFunction[T, Unit]): Unit =
+    val buseableFunction: SubscriberFunction = buseableFunctionBuilder[T](f)
+    val tellable                             = Tellable(buseableFunction)
+    bus.entries.compute[T](_.fold(Set(tellable))(_ + tellable))
+
+  // extracted from `subscribe` to avoid warning about definition being duplicated at each callsite
+  private def buseableFunctionBuilder[T <: Payload: Typeable](
+      f: PartialFunction[T, Unit]
+  ): PartialFunction[Payload, Unit] =
+    case x: T =>
+      // it's not always error when type T is enum, and matching only one variant
+      f.applyOrElse(x, _ => ())
+    // error because events are based by types
+    case y => println(s"Subscribe error: Incorrect message type, wanted: ${typeName[T]}, received: $y")
 
   def publish(payload: Payload, channel: Channel): Unit = bus.publish(payload, channel)
 
@@ -76,39 +89,49 @@ final class Bus(initialCapacity: Int = 4096):
     publish(msg, channel)
     promise.future.withTimeout(timeout, s"Bus.ask $channel $msg")
 
-  def safeAsk[A, T <: Payload](makeMsg: Promise[A] => T, timeout: FiniteDuration = 2.second)(using
-      wc: WithChannel[T]
-  )(using
+  // def safeAsk[A, T <: Payload](makeMsg: Promise[A] => T, timeout: FiniteDuration = 2.second)(using
+  //     wc: WithChannel[T]
+  // )(using
+  //     ExecutionContext,
+  //     FutureAfter
+  // ): Future[A] =
+  //   val promise = Promise[A]()
+  //   val channel = wc.channel
+  //   val msg     = makeMsg(promise)
+  //   pub(msg)
+  //   promise.future.withTimeout(timeout, s"Bus.safeAsk $channel $msg")
+
+  inline def safeAsk[A, T <: Payload](makeMsg: Promise[A] => T, timeout: FiniteDuration = 2.second)(using
       ExecutionContext,
       FutureAfter
   ): Future[A] =
     val promise = Promise[A]()
-    val channel = wc.channel
     val msg     = makeMsg(promise)
     pub(msg)
-    promise.future.withTimeout(timeout, s"Bus.safeAsk $channel $msg")
+    promise.future.withTimeout(timeout, s"Bus.safeAsk ${typeName[T]} $msg")
 
-  private val bus = EventBus[Payload, Channel, Tellable](
+  private val bus = EventBus[Payload, Tellable](
     initialCapacity = initialCapacity,
     publish = (tellable, event) => tellable ! event
   )
 
-final private class EventBus[Event, Channel, Subscriber](
+final private class EventBus[Event, Subscriber](
     initialCapacity: Int,
     publish: (Subscriber, Event) => Unit
 ):
 
-  private val entries = scalalib.ConcurrentMap[Channel, Set[Subscriber]](initialCapacity)
-  export entries.size
+  val entries: MutableTypeMap[Set[Subscriber], ConcurrentMap.Backend] =
+    MutableTypeMap.make(initialCapacity)
+  def size = entries.unsafeMap.size()
 
   def subscribe(subscriber: Subscriber, channel: Channel): Unit =
-    entries.compute(channel): prev =>
+    entries.unsafeMap.compute(channel): prev =>
       Some(prev.fold(Set(subscriber))(_ + subscriber))
 
   def unsubscribe(subscriber: Subscriber, channel: Channel): Unit =
-    entries.computeIfPresent(channel): subs =>
+    entries.unsafeMap.computeIfPresent(channel): subs =>
       val newSubs = subs - subscriber
       Option.when(newSubs.nonEmpty)(newSubs)
 
   def publish(event: Event, channel: Channel): Unit =
-    entries.get(channel).foreach(_.foreach(publish(_, event)))
+    entries.unsafeMap.get(channel).foreach(_.foreach(publish(_, event)))
