@@ -1,6 +1,7 @@
 package scalalib
 
 import scala.jdk.CollectionConverters.*
+import typemap.{ MutableMapOps, ThreadSafeMutableMapOps }
 
 /* Exactly like ConcurrentHashMap but using Option instead of null.
  * I didn't like the scala.collection.Concurrent.Map overrides in
@@ -41,3 +42,22 @@ final class ConcurrentMap[K, V](initialCapacity: Int):
   def getOrDefault(key: K, default: => V): V = get(key).getOrElse(default)
 
   def keySet: Set[K] = underlying.keySet.asScala.toSet
+
+object ConcurrentMap:
+  type Backend = [X] =>> ConcurrentMap[String, X]
+  given [V]: MutableMapOps[Backend, V] with
+    private type DS = Backend[V]
+    def make(length: Int): DS                    = new DS(length)
+    def get(ds: DS, key: String): Option[V]      = ds.get(key)
+    def put(ds: DS, key: String, value: V): Unit = ds.put(key, value)
+
+  given [V]: ThreadSafeMutableMapOps[Backend, V] with
+    private type DS = Backend[V]
+    def computeIfAbsent(ds: DS, key: String, f: => V): V =
+      ds.computeIfAbsent(key)(Option(f)).get
+    def computeIfPresent(ds: DS, key: String, f: V => V): Option[V] =
+      // we just wrapped it in Some
+      ds.computeIfPresent(key)((v) => Some(f(v)))
+    def compute(ds: DS, key: String, f: Option[V] => V): V =
+      // we just wrapped it in Some
+      ds.compute(key)((vOpt) => Some(f(vOpt))).get
