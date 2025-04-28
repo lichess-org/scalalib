@@ -3,10 +3,11 @@ package bus
 
 import scala.jdk.CollectionConverters.*
 import scala.reflect.Typeable
+import scala.util.NotGiven
 import scala.concurrent.duration.*
 import scala.concurrent.{ ExecutionContext, Future, Promise }
 
-import typemap.{ MutableTypeMap, typeName }
+import typemap.{ MutableTypeMap, typeName, assertBuseable }
 
 import scalalib.future.extensions.withTimeout
 import scalalib.future.FutureAfter
@@ -40,9 +41,12 @@ final class Bus(initialCapacity: Int = 4096):
 
   import Bus.*
 
-  inline def pub[T <: Payload](t: T): Unit = bus.entries.get[T].foreach(_.foreach(_ ! t))
+  inline def pub[T <: Payload](t: T)(using NotGiven[T <:< Tuple]): Unit = 
+    assertBuseable[T]
+    bus.entries.get[T].foreach(_.foreach(_ ! t))
 
   inline def sub[T <: Payload: Typeable](f: PartialFunction[T, Unit]): Unit =
+    assertBuseable[T]
     val buseableFunction: SubscriberFunction = buseableFunctionBuilder[T](f)
     val tellable                             = Tellable(buseableFunction)
     bus.entries.compute[T](_.fold(Set(tellable))(_ + tellable))
@@ -57,11 +61,11 @@ final class Bus(initialCapacity: Int = 4096):
     // error because events are based by types
     case y => println(s"Subscribe error: Incorrect message type, wanted: ${typeName[T]}, received: $y")
 
-  def publish(payload: Payload, channel: Channel): Unit = bus.publish(payload, channel)
+  def publish2(payload: Payload, channel: Channel): Unit = bus.publish(payload, channel)
 
   export bus.{ size, subscribe, unsubscribe }
 
-  def subscribe(subscriber: Tellable, to: Channel*) =
+  def subscribe2(subscriber: Tellable, to: Channel*) =
     to.foreach(bus.subscribe(subscriber, _))
 
   def subscribe(ref: scalalib.actor.SyncActor, to: Channel*) =
@@ -69,7 +73,7 @@ final class Bus(initialCapacity: Int = 4096):
 
   def subscribeFun(to: Channel*)(f: SubscriberFunction): Tellable =
     val t = Tellable(f)
-    subscribe(t, to*)
+    subscribe2(t, to*)
     t
 
   def subscribeFuns(subscriptions: (Channel, SubscriberFunction)*): Unit =
@@ -86,7 +90,7 @@ final class Bus(initialCapacity: Int = 4096):
   ): Future[A] =
     val promise = Promise[A]()
     val msg     = makeMsg(promise)
-    publish(msg, channel)
+    publish2(msg, channel)
     promise.future.withTimeout(timeout, s"Bus.ask $channel $msg")
 
   // def safeAsk[A, T <: Payload](makeMsg: Promise[A] => T, timeout: FiniteDuration = 2.second)(using
