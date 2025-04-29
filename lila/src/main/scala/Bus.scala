@@ -46,12 +46,11 @@ final class Bus(initialCapacity: Int = 4096):
     bus.entries.get[T].foreach(_.foreach(_ ! t))
 
   inline def sub[T <: Payload: Typeable](f: PartialFunction[T, Unit]): Unit =
-    assertBuseable[T]
     val buseableFunction: SubscriberFunction = buseableFunctionBuilder[T](f)
     subTellable[T](Tellable(buseableFunction))
 
-  // SAFETY: assumes `assertBuseable` has already been called
-  private inline def subTellable[T <: Payload](tellable: Tellable): Unit =
+  inline def subTellable[T <: Payload](tellable: Tellable): Unit =
+    assertBuseable[T]
     bus.entries.compute[T](_.fold(Set(tellable))(_ + tellable))
 
   // extracted from `subscribe` to avoid warning about definition being duplicated at each callsite
@@ -72,7 +71,6 @@ final class Bus(initialCapacity: Int = 4096):
     to.foreach(bus.subscribe(subscriber, _))
 
   inline def subscribeActor[T <: Payload](ref: scalalib.actor.SyncActor) =
-    assertBuseable[T]
     subTellable[T](Tellable.SyncActor(ref))
 
   def subscribeFun(to: Channel*)(f: SubscriberFunction): Tellable =
