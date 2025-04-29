@@ -45,14 +45,15 @@ final class Bus(initialCapacity: Int = 4096):
     assertBuseable[T]
     bus.entries.get[T].foreach(_.foreach(_ ! t))
 
-  inline def sub[T <: Payload: Typeable](f: PartialFunction[T, Unit]): Unit =
+  inline def sub[T <: Payload: Typeable](f: PartialFunction[T, Unit]): Tellable =
     val buseableFunction: SubscriberFunction = buseableFunctionBuilder[T](f)
     subTellable[T](Tellable(buseableFunction))
 
   // LOGIC : It is up to the caller to make sure `T`'s channel is relevant to the `tellable`
-  inline def subTellable[T <: Payload](tellable: Tellable): Unit =
+  inline def subTellable[T <: Payload](tellable: Tellable): Tellable =
     assertBuseable[T]
     bus.entries.compute[T](_.fold(Set(tellable))(_ + tellable))
+    tellable
 
   // extracted from `subscribe` to avoid warning about definition being duplicated at each callsite
   private def buseableFunctionBuilder[T <: Payload: Typeable](
@@ -84,6 +85,11 @@ final class Bus(initialCapacity: Int = 4096):
     subscriptions.foreach: (channel, subscriber) =>
       subscribeFun(channel)(subscriber)
 
+  inline def unsub[T <: Payload](subscriber: Tellable) =
+    assertBuseable[T]
+    bus.entries.computeIfPresent[T]: subs =>
+      subs - subscriber
+
   def unsubscribe(subscriber: Tellable, from: Iterable[Channel]) =
     from.foreach:
       bus.unsubscribe(subscriber, _)
@@ -96,18 +102,6 @@ final class Bus(initialCapacity: Int = 4096):
     val msg     = makeMsg(promise)
     publish2(msg, channel)
     promise.future.withTimeout(timeout, s"Bus.ask $channel $msg")
-
-  // def safeAsk[A, T <: Payload](makeMsg: Promise[A] => T, timeout: FiniteDuration = 2.second)(using
-  //     wc: WithChannel[T]
-  // )(using
-  //     ExecutionContext,
-  //     FutureAfter
-  // ): Future[A] =
-  //   val promise = Promise[A]()
-  //   val channel = wc.channel
-  //   val msg     = makeMsg(promise)
-  //   pub(msg)
-  //   promise.future.withTimeout(timeout, s"Bus.safeAsk $channel $msg")
 
   inline def safeAsk[A, T <: Payload](makeMsg: Promise[A] => T, timeout: FiniteDuration = 2.second)(using
       ExecutionContext,
