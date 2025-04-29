@@ -49,6 +49,7 @@ final class Bus(initialCapacity: Int = 4096):
     val buseableFunction: SubscriberFunction = buseableFunctionBuilder[T](f)
     subTellable[T](Tellable(buseableFunction))
 
+  // LOGIC : It is up to the caller to make sure `T`'s channel is relevant to the `tellable`
   inline def subTellable[T <: Payload](tellable: Tellable): Unit =
     assertBuseable[T]
     bus.entries.compute[T](_.fold(Set(tellable))(_ + tellable))
@@ -70,6 +71,7 @@ final class Bus(initialCapacity: Int = 4096):
   def subscribe2(subscriber: Tellable, to: Channel*) =
     to.foreach(bus.subscribe(subscriber, _))
 
+  // LOGIC : It is up to the caller to make sure `T`'s channel is relevant to the `tellable`
   inline def subscribeActor[T <: Payload](ref: scalalib.actor.SyncActor) =
     subTellable[T](Tellable.SyncActor(ref))
 
