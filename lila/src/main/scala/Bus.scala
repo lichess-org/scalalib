@@ -14,19 +14,22 @@ import scalalib.future.FutureAfter
 
 type Channel = String
 
+// BC
 // constructor is private so instances can only be created by extending the `GivenChannel` trait
 final class WithChannel[T](private val key: Channel):
   def channel: Channel = key
 
+// BC
 transparent trait GivenChannel[T](val channel: Channel):
   given WithChannel[T] = WithChannel[T](channel)
 
+// Marker trait to implement on types you specifically do not want to Bus
 trait NotBuseable
 
 trait Tellable extends Any:
   def !(msg: Matchable): Unit
 
-final case class TypedTellable[T](private val inner: Tellable):
+final case class TypedTellable[T](private val inner: Tellable) extends NotBuseable:
   val tellable = inner
 
 object Tellable:
@@ -75,14 +78,14 @@ final class Bus(initialCapacity: Int = 4096):
     case y => println(s"Subscribe error: Incorrect message type, wanted: ${typeName[T]}, received: $y")
 
   // BC
-  // def publish(payload: Payload, channel: Channel): Unit = publishDyn(payload, channel)
+  def publish(payload: Payload, channel: Channel): Unit = publishDyn(payload, channel)
 
   def publishDyn(payload: Payload, channel: Channel): Unit =
     entries.unsafeMap.get(channel).foreach(_.foreach(_ ! payload))
 
   // BC
-  // def subscribe(subscriber: Tellable, to: Channel*) =
-  //   subscribeDyn(subscriber, to*)
+  def subscribe(subscriber: Tellable, to: Channel*) =
+    subscribeDyn(subscriber, to*)
 
   def subscribeDyn(subscriber: Tellable, to: Channel*) =
     to.foreach:
@@ -94,8 +97,8 @@ final class Bus(initialCapacity: Int = 4096):
     subTellable[T](Tellable.SyncActor(ref))
 
   // BC
-  // def subscribeFun(to: Channel*)(f: SubscriberFunction): Tellable =
-  //   subscribeFunDyn(to*)(f)
+  def subscribeFun(to: Channel*)(f: SubscriberFunction): Tellable =
+    subscribeFunDyn(to*)(f)
 
   def subscribeFunDyn(to: Channel*)(f: SubscriberFunction): Tellable =
     val t = Tellable(f)
@@ -103,9 +106,9 @@ final class Bus(initialCapacity: Int = 4096):
     t
 
   // BC
-  // def subscribeFuns(subscriptions: (Channel, SubscriberFunction)*): Unit =
-  //   subscriptions.foreach: (channel, subscriber) =>
-  //     subscribeFun(channel)(subscriber)
+  def subscribeFuns(subscriptions: (Channel, SubscriberFunction)*): Unit =
+    subscriptions.foreach: (channel, subscriber) =>
+      subscribeFun(channel)(subscriber)
 
   inline def unsub[T <: Payload](subscriber: TypedTellable[T])(using NotGiven[T <:< NotBuseable]) =
     assertBuseable[T]
@@ -123,8 +126,17 @@ final class Bus(initialCapacity: Int = 4096):
         Option.when(newSubs.nonEmpty)(newSubs)
 
   // BC
-  // def unsubscribe(subscriber: Tellable, from: Iterable[Channel]) =
-  //   unsubscribeDyn(subscriber, from)
+  def unsubscribe(subscriber: Tellable, from: Iterable[Channel]) =
+    unsubscribeDyn(subscriber, from)
+
+  // BC
+  def ask[A](channel: Channel, timeout: FiniteDuration = 2.second)(
+      makeMsg: Promise[A] => Matchable
+  )(using
+      ExecutionContext,
+      FutureAfter
+  ): Future[A] =
+    askDyn[A](channel, timeout)(makeMsg)
 
   def askDyn[A](channel: Channel, timeout: FiniteDuration = 2.second)(
       makeMsg: Promise[A] => Matchable
@@ -148,29 +160,7 @@ final class Bus(initialCapacity: Int = 4096):
 
     promise.future.withTimeout(timeout, s"Bus.safeAsk ${typeName[T]} $msg")
 
-  // private val bus = EventBus[Payload, Tellable](
-  //   initialCapacity = initialCapacity,
-  //   publish = (tellable, event) => tellable ! event
-  // )
-
   private val entries: MutableTypeMap[Set[Tellable], ConcurrentMap.Backend] =
     MutableTypeMap.make(initialCapacity)
 
   def size = entries.unsafeMap.size()
-
-// final private class EventBus[Event, Subscriber](
-//     initialCapacity: Int,
-//     publish: (Subscriber, Event) => Unit
-// ):
-
-//   // val entries: MutableTypeMap[Set[Subscriber], ConcurrentMap.Backend] =
-//   //   MutableTypeMap.make(initialCapacity)
-//   // def size = entries.unsafeMap.size()
-
-//   // def unsubscribe(subscriber: Subscriber, channel: Channel): Unit =
-//   //   entries.unsafeMap.computeIfPresent(channel): subs =>
-//   //     val newSubs = subs - subscriber
-//   //     Option.when(newSubs.nonEmpty)(newSubs)
-
-//   def publish(event: Event, channel: Channel): Unit =
-//     entries.unsafeMap.get(channel).foreach(_.foreach(publish(_, event)))
