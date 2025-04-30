@@ -21,6 +21,8 @@ final class WithChannel[T](private val key: Channel):
 transparent trait GivenChannel[T](val channel: Channel):
   given WithChannel[T] = WithChannel[T](channel)
 
+// TODO add a marker trait to forbid certain types from being busable 
+
 trait Tellable extends Any:
   def !(msg: Matchable): Unit
 
@@ -76,7 +78,11 @@ final class Bus(initialCapacity: Int = 4096):
   inline def subscribeActor[T <: Payload](ref: scalalib.actor.SyncActor) =
     subTellable[T](Tellable.SyncActor(ref))
 
+  // BC
   def subscribeFun(to: Channel*)(f: SubscriberFunction): Tellable =
+    subscribeFunDyn(to*)(f)
+
+  def subscribeFunDyn(to: Channel*)(f: SubscriberFunction): Tellable =
     val t = Tellable(f)
     subscribe2(t, to*)
     t
@@ -90,18 +96,24 @@ final class Bus(initialCapacity: Int = 4096):
     bus.entries.computeIfPresent[T]: subs =>
       subs - subscriber
 
-  def unsubscribe(subscriber: Tellable, from: Iterable[Channel]) =
+  def unsubscribeDyn(subscriber: Tellable, from: Iterable[Channel]) =
     from.foreach:
       bus.unsubscribe(subscriber, _)
 
-  def ask[A](channel: Channel, timeout: FiniteDuration = 2.second)(makeMsg: Promise[A] => Matchable)(using
+  // BC
+  def unsubscribe(subscriber: Tellable, from: Iterable[Channel]) =
+    unsubscribeDyn(subscriber, from)
+
+  def askDyn[A](channel: Channel, timeout: FiniteDuration = 2.second)(
+      makeMsg: Promise[A] => Matchable
+  )(using
       ExecutionContext,
       FutureAfter
   ): Future[A] =
     val promise = Promise[A]()
     val msg     = makeMsg(promise)
     publish2(msg, channel)
-    promise.future.withTimeout(timeout, s"Bus.ask $channel $msg")
+    promise.future.withTimeout(timeout, s"Bus.askDynamic $channel $msg")
 
   inline def safeAsk[A, T <: Payload](makeMsg: Promise[A] => T, timeout: FiniteDuration = 2.second)(using
       ExecutionContext,
