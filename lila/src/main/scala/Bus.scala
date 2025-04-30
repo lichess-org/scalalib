@@ -171,4 +171,4 @@ final class Bus(initialCapacity: Int = 4096):
   private val entries: MutableTypeMap[Set[Tellable], ConcurrentMap.Backend] =
     MutableTypeMap.make(initialCapacity)
 
-  def size = entries.unsafeMap.size()
+  def size() = entries.unsafeMap.size()
