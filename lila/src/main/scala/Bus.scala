@@ -21,10 +21,13 @@ final class WithChannel[T](private val key: Channel):
 transparent trait GivenChannel[T](val channel: Channel):
   given WithChannel[T] = WithChannel[T](channel)
 
-// TODO add a marker trait to forbid certain types from being busable 
+trait NotBuseable
 
 trait Tellable extends Any:
   def !(msg: Matchable): Unit
+
+final case class TypedTellable[T](private val inner: Tellable):
+  val tellable = inner
 
 object Tellable:
 
@@ -43,19 +46,23 @@ final class Bus(initialCapacity: Int = 4096):
 
   import Bus.*
 
-  inline def pub[T <: Payload](t: T)(using NotGiven[T <:< Tuple]): Unit =
+  inline def pub[T <: Payload](t: T)(using NotGiven[T <:< Tuple], NotGiven[T <:< NotBuseable]): Unit =
     assertBuseable[T]
-    bus.entries.get[T].foreach(_.foreach(_ ! t))
+    entries.get[T].foreach(_.foreach(_ ! t))
 
-  inline def sub[T <: Payload: Typeable](f: PartialFunction[T, Unit]): Tellable =
+  inline def sub[T <: Payload: Typeable](f: PartialFunction[T, Unit])(using
+      NotGiven[T <:< NotBuseable]
+  ): TypedTellable[T] =
     val buseableFunction: SubscriberFunction = buseableFunctionBuilder[T](f)
     subTellable[T](Tellable(buseableFunction))
 
   // LOGIC : It is up to the caller to make sure `T`'s channel is relevant to the `tellable`
-  inline def subTellable[T <: Payload](tellable: Tellable): Tellable =
+  inline def subTellable[T <: Payload](tellable: Tellable)(using
+      NotGiven[T <:< NotBuseable]
+  ): TypedTellable[T] =
     assertBuseable[T]
-    bus.entries.compute[T](_.fold(Set(tellable))(_ + tellable))
-    tellable
+    entries.compute[T](_.fold(Set(tellable))(_ + tellable))
+    TypedTellable[T](tellable)
 
   // extracted from `subscribe` to avoid warning about definition being duplicated at each callsite
   private def buseableFunctionBuilder[T <: Payload: Typeable](
@@ -67,42 +74,57 @@ final class Bus(initialCapacity: Int = 4096):
     // error because events are based by types
     case y => println(s"Subscribe error: Incorrect message type, wanted: ${typeName[T]}, received: $y")
 
-  def publish2(payload: Payload, channel: Channel): Unit = bus.publish(payload, channel)
+  // BC
+  // def publish(payload: Payload, channel: Channel): Unit = publishDyn(payload, channel)
 
-  export bus.{ size, subscribe, unsubscribe }
+  def publishDyn(payload: Payload, channel: Channel): Unit =
+    entries.unsafeMap.get(channel).foreach(_.foreach(_ ! payload))
 
-  def subscribe2(subscriber: Tellable, to: Channel*) =
-    to.foreach(bus.subscribe(subscriber, _))
+  // BC
+  // def subscribe(subscriber: Tellable, to: Channel*) =
+  //   subscribeDyn(subscriber, to*)
+
+  def subscribeDyn(subscriber: Tellable, to: Channel*) =
+    to.foreach:
+      entries.unsafeMap.compute(_): prev =>
+        Some(prev.fold(Set(subscriber))(_ + subscriber))
 
   // LOGIC : It is up to the caller to make sure `T`'s channel is relevant to the `tellable`
-  inline def subscribeActor[T <: Payload](ref: scalalib.actor.SyncActor) =
+  inline def subscribeActor[T <: Payload](ref: scalalib.actor.SyncActor)(using NotGiven[T <:< NotBuseable]) =
     subTellable[T](Tellable.SyncActor(ref))
 
   // BC
-  def subscribeFun(to: Channel*)(f: SubscriberFunction): Tellable =
-    subscribeFunDyn(to*)(f)
+  // def subscribeFun(to: Channel*)(f: SubscriberFunction): Tellable =
+  //   subscribeFunDyn(to*)(f)
 
   def subscribeFunDyn(to: Channel*)(f: SubscriberFunction): Tellable =
     val t = Tellable(f)
-    subscribe2(t, to*)
+    subscribeDyn(t, to*)
     t
 
-  def subscribeFuns(subscriptions: (Channel, SubscriberFunction)*): Unit =
-    subscriptions.foreach: (channel, subscriber) =>
-      subscribeFun(channel)(subscriber)
+  // BC
+  // def subscribeFuns(subscriptions: (Channel, SubscriberFunction)*): Unit =
+  //   subscriptions.foreach: (channel, subscriber) =>
+  //     subscribeFun(channel)(subscriber)
 
-  inline def unsub[T <: Payload](subscriber: Tellable) =
+  inline def unsub[T <: Payload](subscriber: TypedTellable[T])(using NotGiven[T <:< NotBuseable]) =
     assertBuseable[T]
-    bus.entries.computeIfPresent[T]: subs =>
+    unsubUnchecked[T](subscriber.tellable)
+
+  inline def unsubUnchecked[T <: Payload](subscriber: Tellable)(using NotGiven[T <:< NotBuseable]) =
+    assertBuseable[T]
+    entries.computeIfPresent[T]: subs =>
       subs - subscriber
 
   def unsubscribeDyn(subscriber: Tellable, from: Iterable[Channel]) =
     from.foreach:
-      bus.unsubscribe(subscriber, _)
+      entries.unsafeMap.computeIfPresent(_): subs =>
+        val newSubs = subs - subscriber
+        Option.when(newSubs.nonEmpty)(newSubs)
 
   // BC
-  def unsubscribe(subscriber: Tellable, from: Iterable[Channel]) =
-    unsubscribeDyn(subscriber, from)
+  // def unsubscribe(subscriber: Tellable, from: Iterable[Channel]) =
+  //   unsubscribeDyn(subscriber, from)
 
   def askDyn[A](channel: Channel, timeout: FiniteDuration = 2.second)(
       makeMsg: Promise[A] => Matchable
@@ -112,9 +134,10 @@ final class Bus(initialCapacity: Int = 4096):
   ): Future[A] =
     val promise = Promise[A]()
     val msg     = makeMsg(promise)
-    publish2(msg, channel)
-    promise.future.withTimeout(timeout, s"Bus.askDynamic $channel $msg")
+    publishDyn(msg, channel)
+    promise.future.withTimeout(timeout, s"Bus.askDyn $channel $msg")
 
+  // TODO rename to `ask` once migration is complete
   inline def safeAsk[A, T <: Payload](makeMsg: Promise[A] => T, timeout: FiniteDuration = 2.second)(using
       ExecutionContext,
       FutureAfter
@@ -122,30 +145,32 @@ final class Bus(initialCapacity: Int = 4096):
     val promise = Promise[A]()
     val msg     = makeMsg(promise)
     pub[T](msg)
+
     promise.future.withTimeout(timeout, s"Bus.safeAsk ${typeName[T]} $msg")
 
-  private val bus = EventBus[Payload, Tellable](
-    initialCapacity = initialCapacity,
-    publish = (tellable, event) => tellable ! event
-  )
+  // private val bus = EventBus[Payload, Tellable](
+  //   initialCapacity = initialCapacity,
+  //   publish = (tellable, event) => tellable ! event
+  // )
 
-final private class EventBus[Event, Subscriber](
-    initialCapacity: Int,
-    publish: (Subscriber, Event) => Unit
-):
-
-  val entries: MutableTypeMap[Set[Subscriber], ConcurrentMap.Backend] =
+  private val entries: MutableTypeMap[Set[Tellable], ConcurrentMap.Backend] =
     MutableTypeMap.make(initialCapacity)
+
   def size = entries.unsafeMap.size()
 
-  def subscribe(subscriber: Subscriber, channel: Channel): Unit =
-    entries.unsafeMap.compute(channel): prev =>
-      Some(prev.fold(Set(subscriber))(_ + subscriber))
+// final private class EventBus[Event, Subscriber](
+//     initialCapacity: Int,
+//     publish: (Subscriber, Event) => Unit
+// ):
 
-  def unsubscribe(subscriber: Subscriber, channel: Channel): Unit =
-    entries.unsafeMap.computeIfPresent(channel): subs =>
-      val newSubs = subs - subscriber
-      Option.when(newSubs.nonEmpty)(newSubs)
+//   // val entries: MutableTypeMap[Set[Subscriber], ConcurrentMap.Backend] =
+//   //   MutableTypeMap.make(initialCapacity)
+//   // def size = entries.unsafeMap.size()
 
-  def publish(event: Event, channel: Channel): Unit =
-    entries.unsafeMap.get(channel).foreach(_.foreach(publish(_, event)))
+//   // def unsubscribe(subscriber: Subscriber, channel: Channel): Unit =
+//   //   entries.unsafeMap.computeIfPresent(channel): subs =>
+//   //     val newSubs = subs - subscriber
+//   //     Option.when(newSubs.nonEmpty)(newSubs)
+
+//   def publish(event: Event, channel: Channel): Unit =
+//     entries.unsafeMap.get(channel).foreach(_.foreach(publish(_, event)))
