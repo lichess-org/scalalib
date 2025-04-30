@@ -92,6 +92,10 @@ final class Bus(initialCapacity: Int = 4096):
       entries.unsafeMap.compute(_): prev =>
         Some(prev.fold(Set(subscriber))(_ + subscriber))
 
+  // BC
+  def subscribe(ref: scalalib.actor.SyncActor, to: Channel*) =
+    subscribeDyn(Tellable.SyncActor(ref), to*)
+
   // LOGIC : It is up to the caller to make sure `T`'s channel is relevant to the `tellable`
   inline def subscribeActor[T <: Payload](ref: scalalib.actor.SyncActor)(using NotGiven[T <:< NotBuseable]) =
     subTellable[T](Tellable.SyncActor(ref))
@@ -124,6 +128,10 @@ final class Bus(initialCapacity: Int = 4096):
       entries.unsafeMap.computeIfPresent(_): subs =>
         val newSubs = subs - subscriber
         Option.when(newSubs.nonEmpty)(newSubs)
+
+  // BC
+  def unsubscribe(subscriber: Tellable, from: Channel*) =
+    unsubscribeDyn(subscriber, from)
 
   // BC
   def unsubscribe(subscriber: Tellable, from: Iterable[Channel]) =
