@@ -64,7 +64,7 @@ final class Bus(initialCapacity: Int = 4096):
       NotGiven[T <:< NotBuseable]
   ): TypedTellable[T] =
     assertBuseable[T]
-    entries.compute[T](_.fold(Set(tellable))(_ + tellable))
+    entries.compute[T](subs => Some(subs.fold(Set(tellable))(_ + tellable)))
     TypedTellable[T](tellable)
 
   // extracted from `subscribe` to avoid warning about definition being duplicated at each callsite
@@ -78,7 +78,7 @@ final class Bus(initialCapacity: Int = 4096):
     case y => println(s"Subscribe error: Incorrect message type, wanted: ${typeName[T]}, received: $y")
 
   // BC
-  def publish(payload: Payload, channel: Channel): Unit = publishDyn(payload, channel)
+  def publish = publishDyn
 
   def publishDyn(payload: Payload, channel: Channel): Unit =
     entries.unsafeMap.get(channel).foreach(_.foreach(_ ! payload))
@@ -121,7 +121,8 @@ final class Bus(initialCapacity: Int = 4096):
   inline def unsubUnchecked[T <: Payload](subscriber: Tellable)(using NotGiven[T <:< NotBuseable]) =
     assertBuseable[T]
     entries.computeIfPresent[T]: subs =>
-      subs - subscriber
+      val subsLeft = subs - subscriber
+      Option.when(subsLeft.nonEmpty)(subsLeft)
 
   def unsubscribeDyn(subscriber: Tellable, from: Iterable[Channel]) =
     from.foreach:

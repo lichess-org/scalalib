@@ -53,11 +53,9 @@ object ConcurrentMap:
 
   given [V]: ThreadSafeMutableMapOps[Backend, V] with
     private type DS = Backend[V]
-    def computeIfAbsent(ds: DS, key: String, f: => V): V =
-      ds.computeIfAbsent(key)(Option(f)).get
-    def computeIfPresent(ds: DS, key: String, f: V => V): Option[V] =
-      // we just wrapped it in Some
-      ds.computeIfPresent(key)((v) => Some(f(v)))
-    def compute(ds: DS, key: String, f: Option[V] => V): V =
-      // we just wrapped it in Some
-      ds.compute(key)((vOpt) => Some(f(vOpt))).get
+    def computeIfAbsent(ds: DS, key: String, f: => Option[V]): Option[V] =
+      ds.computeIfAbsent(key)(f)
+    def computeIfPresent(ds: DS, key: String, f: V => Option[V]): Option[V] =
+      ds.computeIfPresent(key)(f)
+    def compute(ds: DS, key: String, f: Option[V] => Option[V]): Option[V] =
+      ds.compute(key)(f)
