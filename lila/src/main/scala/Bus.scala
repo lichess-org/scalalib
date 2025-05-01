@@ -169,7 +169,7 @@ final class Bus(initialCapacity: Int = 4096):
 
     promise.future.withTimeout(timeout, s"Bus.safeAsk ${typeName[T]} $msg")
 
-  private val entries: MutableTypeMap[Set[Tellable], ConcurrentMap.Backend] =
+  private[scalalib] val entries: MutableTypeMap[Set[Tellable], ConcurrentMap.Backend] =
     MutableTypeMap.make(initialCapacity)
 
   def size() = entries.unsafeMap.size()
