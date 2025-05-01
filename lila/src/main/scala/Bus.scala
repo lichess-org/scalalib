@@ -54,14 +54,17 @@ final class Bus(initialCapacity: Int = 4096):
 
   inline def sub[T <: Payload: Typeable](f: PartialFunction[T, Unit])(using
       NotGiven[T <:< NotBuseable]
-  ): Unit =
+  ): TypedTellable[T] =
     val buseableFunction: SubscriberFunction = buseableFunctionBuilder[T](f)
     subTellable[T](Tellable(buseableFunction))
 
   // LOGIC : It is up to the caller to make sure `T`'s channel is relevant to the `tellable`
-  inline def subTellable[T <: Payload](tellable: Tellable)(using NotGiven[T <:< NotBuseable]): Unit =
+  inline def subTellable[T <: Payload](tellable: Tellable)(using
+      NotGiven[T <:< NotBuseable]
+  ): TypedTellable[T] =
     assertBuseable[T]
     entries.compute[T](subs => Some(subs.fold(Set(tellable))(_ + tellable)))
+    TypedTellable[T](tellable)
 
   // extracted from `subscribe` to avoid warning about definition being duplicated at each callsite
   private def buseableFunctionBuilder[T <: Payload: Typeable](
@@ -96,30 +99,33 @@ final class Bus(initialCapacity: Int = 4096):
   // LOGIC : It is up to the caller to make sure `tellable` is expecting payload of type `T`
   inline def subscribeActor[T <: Payload](ref: scalalib.actor.SyncActor)(using
       NotGiven[T <:< NotBuseable]
-  ): Unit =
+  ): TypedTellable[T] =
     subTellable[T](Tellable.SyncActor(ref))
 
   // BC
-  def subscribeFun(to: Channel*)(f: SubscriberFunction): Unit =
+  def subscribeFun(to: Channel*)(f: SubscriberFunction): Tellable =
     subscribeFunDyn(to*)(f)
 
-  def subscribeFunDyn(to: Channel*)(f: SubscriberFunction): Unit =
+  def subscribeFunDyn(to: Channel*)(f: SubscriberFunction): Tellable =
     val t = Tellable(f)
     subscribeDyn(t, to*)
+    t
 
   // BC
   def subscribeFuns(subscriptions: (Channel, SubscriberFunction)*): Unit =
     subscriptions.foreach: (channel, subscriber) =>
       subscribeFun(channel)(subscriber)
 
-  inline def unsub[T <: Payload](subscriber: TypedTellable[T])(using NotGiven[T <:< NotBuseable]): Unit =
+  inline def unsub[T <: Payload](subscriber: TypedTellable[T])(using
+      NotGiven[T <:< NotBuseable]
+  ): Option[Set[Tellable]] =
     assertBuseable[T]
     unsubUnchecked[T](subscriber.tellable)
 
   // LOGIC : It is up to the caller to maka sure `tellable` was subscribed in `T` channel in the first place
   inline def unsubUnchecked[T <: Payload](subscriber: Tellable)(using
       NotGiven[T <:< NotBuseable]
-  ): Unit =
+  ): Option[Set[Tellable]] =
     assertBuseable[T]
     entries.computeIfPresent[T]: subs =>
       val subsLeft = subs - subscriber
@@ -142,12 +148,18 @@ final class Bus(initialCapacity: Int = 4096):
   // BC
   def ask[A](channel: Channel, timeout: FiniteDuration = 2.second)(
       makeMsg: Promise[A] => Matchable
-  )(using ExecutionContext, FutureAfter): Future[A] =
+  )(using
+      ExecutionContext,
+      FutureAfter
+  ): Future[A] =
     askDyn[A](channel, timeout)(makeMsg)
 
   def askDyn[A](channel: Channel, timeout: FiniteDuration = 2.second)(
       makeMsg: Promise[A] => Matchable
-  )(using ExecutionContext, FutureAfter): Future[A] =
+  )(using
+      ExecutionContext,
+      FutureAfter
+  ): Future[A] =
     val promise = Promise[A]()
     val msg     = makeMsg(promise)
     publishDyn(msg, channel)
