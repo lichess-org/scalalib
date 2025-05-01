@@ -29,8 +29,7 @@ trait NotBuseable
 trait Tellable extends Any:
   def !(msg: Matchable): Unit
 
-final case class TypedTellable[T](private val inner: Tellable) extends NotBuseable:
-  val tellable = inner
+final case class TypedTellable[T](val tellable: Tellable) extends NotBuseable
 
 object Tellable:
 
