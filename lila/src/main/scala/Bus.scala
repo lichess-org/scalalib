@@ -74,8 +74,8 @@ final class Bus(initialCapacity: Int = 4096):
     case x: T =>
       // it's not always error when type T is enum, and matching only one variant
       f.applyOrElse(x, _ => ())
-    // error because events are based by types
-    case y => println(s"Subscribe error: Incorrect message type, wanted: ${typeName[T]}, received: $y")
+    // logic error in `scalalib`, because events are based by types
+    case y => println(s"Subscribe error: Incorrect message type, wanted: ${typeName[T]}, received: $y. This is a bug, report to scalalib")
 
   // BC
   def publish = publishDyn
@@ -96,7 +96,7 @@ final class Bus(initialCapacity: Int = 4096):
   def subscribe(ref: scalalib.actor.SyncActor, to: Channel*) =
     subscribeDyn(Tellable.SyncActor(ref), to*)
 
-  // LOGIC : It is up to the caller to make sure `T`'s channel is relevant to the `tellable`
+  // LOGIC : It is up to the caller to make sure `tellable` is expecting payload of type `T`
   inline def subscribeActor[T <: Payload](ref: scalalib.actor.SyncActor)(using NotGiven[T <:< NotBuseable]) =
     subTellable[T](Tellable.SyncActor(ref))
 
@@ -118,6 +118,7 @@ final class Bus(initialCapacity: Int = 4096):
     assertBuseable[T]
     unsubUnchecked[T](subscriber.tellable)
 
+  // LOGIC : It is up to the caller to maka sure `tellable` was subscribed in `T` channel in the first place
   inline def unsubUnchecked[T <: Payload](subscriber: Tellable)(using NotGiven[T <:< NotBuseable]) =
     assertBuseable[T]
     entries.computeIfPresent[T]: subs =>
