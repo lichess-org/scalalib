@@ -29,7 +29,9 @@ trait NotBuseable
 trait Tellable extends Any:
   def !(msg: Matchable): Unit
 
-final case class TypedTellable[T](val tellable: Tellable) extends NotBuseable
+final class TypedTellable[T] private[bus] (val tellable: Tellable) extends NotBuseable
+
+private def makeTypedTellable[T](tellable: Tellable): TypedTellable[T] = TypedTellable(tellable)
 
 object Tellable:
 
@@ -64,7 +66,7 @@ final class Bus(initialCapacity: Int = 4096):
   ): TypedTellable[T] =
     assertBuseable[T]
     entries.compute[T](subs => Some(subs.fold(Set(tellable))(_ + tellable)))
-    TypedTellable[T](tellable)
+    makeTypedTellable[T](tellable)
 
   // extracted from `subscribe` to avoid warning about definition being duplicated at each callsite
   private def buseableFunctionBuilder[T <: Payload: Typeable](
