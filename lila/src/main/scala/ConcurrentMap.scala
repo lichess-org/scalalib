@@ -44,14 +44,16 @@ final class ConcurrentMap[K, V](initialCapacity: Int):
   def keySet: Set[K] = underlying.keySet.asScala.toSet
 
 object ConcurrentMap:
+
   type Backend = [X] =>> ConcurrentMap[String, X]
-  given [V]: MutableMapOps[Backend, V] with
+
+  given [V] => MutableMapOps[Backend, V]:
     private type DS = Backend[V]
     def make(length: Int): DS                    = new DS(length)
     def get(ds: DS, key: String): Option[V]      = ds.get(key)
     def put(ds: DS, key: String, value: V): Unit = ds.put(key, value)
 
-  given [V]: ThreadSafeMutableMapOps[Backend, V] with
+  given [V] => ThreadSafeMutableMapOps[Backend, V]:
     private type DS = Backend[V]
     def computeIfAbsent(ds: DS, key: String, f: => Option[V]): Option[V] =
       ds.computeIfAbsent(key)(f)
