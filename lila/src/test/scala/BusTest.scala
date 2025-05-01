@@ -1,6 +1,6 @@
 package scalalib
 
-import scala.concurrent.{ Future, Promise, ExecutionContext, ExecutionContextExecutor as Executor }
+import scala.concurrent.{ Future, Promise, ExecutionContext }
 export scala.concurrent.duration.FiniteDuration
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -12,7 +12,7 @@ def dummyFutureAfter(using ec: ExecutionContext): FutureAfter =
     (duration: FiniteDuration) =>
       (thunk: () => Future[T]) =>
         Future {
-          // don't care abour duration for tests
+          // don't care about duration for tests
           thunk()
         }.flatten
 
