@@ -1,7 +1,6 @@
 package scalalib
 
 import java.util.concurrent.ConcurrentHashMap
-import scala.concurrent.ExecutionContext
 
 /* Runs f(id)` immediately the first time `push(id)` is called for a given id.
  * Then if further calls to `push(id)` are made, they're discarded
@@ -10,9 +9,7 @@ import scala.concurrent.ExecutionContext
 final class Debouncer[Id](
     scheduleOnce: Runnable => Unit, // scheduler.scheduleOnce(duration, _)
     initialCapacity: Int = 64
-)(
-    f: Id => Unit
-)(using ExecutionContext):
+)(f: Id => Unit):
 
   // can't use a boolean or int,
   // the ConcurrentHashMap uses weird defaults instead of null for missing values

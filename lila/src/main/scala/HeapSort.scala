@@ -25,14 +25,14 @@ object HeapSort:
       ord: Ordering[T],
       bf: BuildFrom[xs.type, T, C]
   ): C =
-    val p = PriorityQueue.from(xs)(ord)
+    val p = PriorityQueue.from(xs)(using ord)
     val b = bf.newBuilder(xs)
     b.sizeHint(math.min(p.length, nb))
     moveN(p, b, nb)
     b.result()
 
   def topNToList[T](xs: IterableOnce[T], nb: Int)(using ord: Ordering[T]): List[T] =
-    val p = PriorityQueue.from(xs)(ord)
+    val p = PriorityQueue.from(xs)(using ord)
     val b = List.newBuilder[T]
     moveN(p, b, nb)
     b.result()

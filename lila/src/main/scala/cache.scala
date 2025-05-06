@@ -75,7 +75,7 @@ object OnceEvery:
       if isNew then cache.put(key)
       isNew
 
-final class FrequencyThreshold[K](count: Int, duration: FiniteDuration)(using Executor):
+final class FrequencyThreshold[K](count: Int, duration: FiniteDuration):
 
   private val cache = Scaffeine()
     .expireAfter[K, Int](

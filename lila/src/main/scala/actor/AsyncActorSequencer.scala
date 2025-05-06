@@ -15,7 +15,7 @@ final class AsyncActorSequencer(
     timeout: FiniteDuration,
     name: String,
     monitor: AsyncActorBounded.Monitor
-)(using Executor, ExecutionContext, FutureAfter):
+)(using ExecutionContext, FutureAfter):
 
   import AsyncActorSequencer.*
 
