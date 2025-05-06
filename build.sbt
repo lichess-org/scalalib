@@ -30,7 +30,7 @@ lazy val core: Project = Project("core", file("core")).settings(
   libraryDependencies ++= List(
     "org.typelevel" %% "cats-core"      % "2.13.0",
     "org.typelevel" %% "alleycats-core" % "2.13.0",
-    "com.lihaoyi"   %% "pprint"         % "0.9.0",
+    "com.lihaoyi"   %% "pprint"         % "0.9.0"
   )
 )
 
@@ -60,7 +60,7 @@ lazy val lila: Project = Project("lila", file("lila"))
       "com.github.ben-manes.caffeine" % "caffeine"  % "3.2.0" % "compile",
       "com.github.blemale"           %% "scaffeine" % "5.3.0" % "compile",
       "org.scalameta"                %% "munit"     % "1.1.0" % Test,
-      "org.lichess"   %% "typemap"         % "0.1.0",
+      "org.lichess"                  %% "typemap"   % "0.1.0"
     ),
     resolvers += "lila-maven".at("https://raw.githubusercontent.com/lichess-org/lila-maven/master")
   )
