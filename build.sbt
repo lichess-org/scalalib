@@ -19,7 +19,7 @@ val commonSettings = Seq(
     "-language:postfixOps",
     "-indent",
     "-rewrite",
-    "-source:future-migration",
+    // "-source:future-migration",
     "-release:21",
     "-Wunused:all"
   )
