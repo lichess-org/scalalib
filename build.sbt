@@ -10,6 +10,7 @@ inThisBuild(
 )
 
 val commonSettings = Seq(
+  javacOptions ++= Seq("--release", "21"),
   scalacOptions := Seq(
     "-encoding",
     "utf-8",
