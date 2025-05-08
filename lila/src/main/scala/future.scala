@@ -23,8 +23,8 @@ object extensions:
 
   extension [A](fua: Future[A])
 
-    inline def dmap[B](f: A => B): Future[B]   = fua.map(f)(EC.parasitic)
-    inline def dforeach[B](f: A => Unit): Unit = fua.foreach(f)(EC.parasitic)
+    inline def dmap[B](f: A => B): Future[B]   = fua.map(f)(using EC.parasitic)
+    inline def dforeach[B](f: A => Unit): Unit = fua.foreach(f)(using EC.parasitic)
 
     def andDo(sideEffect: => Unit)(using EC): Future[A] =
       fua.andThen:
@@ -118,10 +118,10 @@ object extensions:
           Future.successful(Some(x))
 
     def getOrElse(other: => Future[A])(using EC): Future[A] = fua.flatMap { _.fold(other)(Future.successful) }
-    def orZeroFu(using z: Zero[A]): Future[A]               = fua.map(_.getOrElse(z.zero))(EC.parasitic)
+    def orZeroFu(using z: Zero[A]): Future[A]               = fua.map(_.getOrElse(z.zero))(using EC.parasitic)
 
     def map2[B](f: A => B)(using EC): Future[Option[B]] = fua.map(_.map(f))
-    def dmap2[B](f: A => B): Future[Option[B]]          = fua.map(_.map(f))(EC.parasitic)
+    def dmap2[B](f: A => B): Future[Option[B]]          = fua.map(_.map(f))(using EC.parasitic)
 
     def getIfPresent: Option[A] =
       fua.value match

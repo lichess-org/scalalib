@@ -1,7 +1,6 @@
 package scalalib
 package bus
 
-import scala.jdk.CollectionConverters.*
 import scala.reflect.Typeable
 import scala.util.NotGiven
 import scala.concurrent.duration.*

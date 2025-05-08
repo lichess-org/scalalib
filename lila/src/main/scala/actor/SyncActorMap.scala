@@ -27,5 +27,5 @@ final class SyncActorMap[Id, T <: SyncActor](
   private val actors: LoadingCache[Id, T] =
     cache.scaffeine
       .expireAfterAccess(accessTimeout)
-      .removalListener((id: Id, actor: T, cause: RemovalCause) => actor.stop())
+      .removalListener((_: Id, actor: T, _: RemovalCause) => actor.stop())
       .build[Id, T](mkActor)

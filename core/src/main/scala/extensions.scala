@@ -60,7 +60,7 @@ object extensions:
     infix def so[B: Zero](f: A => B): B = self.fold(Zero[B].zero)(f)
 
     def soFu[B](f: A => Future[B]): Future[Option[B]] = self match
-      case Some(x) => f(x).map(Some(_))(ExecutionContext.parasitic)
+      case Some(x) => f(x).map(Some(_))(using ExecutionContext.parasitic)
       case None    => Future.successful(None)
 
     inline def ifTrue(b: Boolean): Option[A]  = self.filter(_ => b)
