@@ -170,7 +170,8 @@ final class Bus(initialCapacity: Int = 4096):
   // TODO rename to `ask` once migration is complete
   inline def safeAsk[A, T <: Payload](makeMsg: Promise[A] => T, timeout: FiniteDuration = 2.second)(using
       ExecutionContext,
-      FutureAfter
+      FutureAfter,
+      NotGiven[T <:< NotBuseable]
   ): Future[A] =
     val promise = Promise[A]()
     val msg     = makeMsg(promise)

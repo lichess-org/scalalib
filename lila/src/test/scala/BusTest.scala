@@ -24,6 +24,8 @@ case class C(i: Int, s: String, f: Float)
 case class D(init: Int, p: Promise[Int])
 case class E(zombo: String)
 case class Impossible(x: String) extends NotBuseable
+case class NoAsk(init: Int, p: Promise[Int]) extends NotBuseable
+
 enum Foo:
   case Bar(i: Int)
   case Baz(s: String)
@@ -102,3 +104,17 @@ class BusTest extends munit.FunSuite:
 Bus.pub(Impossible("not buseable!!"))
                                     ^""".stripMargin
     )
+    assertNoDiff(
+      compileErrors("Bus.safeAsk[Int, NoAsk](NoAsk(6, _))"),
+      """error: No given instance of type scala.util.NotGiven[scalalib.NoAsk <:< scalalib.bus.NotBuseable] was found
+Bus.safeAsk[Int, NoAsk](NoAsk(6, _))
+                      ^"""
+    )
+
+
+
+
+
+
+
+
