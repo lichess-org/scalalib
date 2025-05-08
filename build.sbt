@@ -2,7 +2,7 @@ inThisBuild(
   Seq(
     scalaVersion  := "3.6.4",
     versionScheme := Some("early-semver"),
-    version       := "11.8.2",
+    version       := "11.8.3",
     organization  := "org.lichess",
     licenses += ("MIT" -> url("https://opensource.org/licenses/MIT")),
     publishTo     := Option(Resolver.file("file", new File(sys.props.getOrElse("publishTo", ""))))
@@ -61,7 +61,7 @@ lazy val lila: Project = Project("lila", file("lila"))
       "com.github.ben-manes.caffeine" % "caffeine"  % "3.2.0" % "compile",
       "com.github.blemale"           %% "scaffeine" % "5.3.0" % "compile",
       "org.scalameta"                %% "munit"     % "1.1.0" % Test,
-      "org.lichess"                  %% "typemap"   % "0.1.0"
+      "org.lichess"                  %% "typemap"   % "0.2.1"
     ),
     resolvers += "lila-maven".at("https://raw.githubusercontent.com/lichess-org/lila-maven/master")
   )
