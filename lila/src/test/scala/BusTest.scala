@@ -23,7 +23,7 @@ case class B(s: String)
 case class C(i: Int, s: String, f: Float)
 case class D(init: Int, p: Promise[Int])
 case class E(zombo: String)
-case class Impossible(x: String) extends NotBuseable
+case class Impossible(x: String)             extends NotBuseable
 case class NoAsk(init: Int, p: Promise[Int]) extends NotBuseable
 
 enum Foo:
@@ -110,11 +110,3 @@ Bus.pub(Impossible("not buseable!!"))
 Bus.safeAsk[Int, NoAsk](NoAsk(6, _))
                       ^"""
     )
-
-
-
-
-
-
-
-
