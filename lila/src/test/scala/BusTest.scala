@@ -106,7 +106,7 @@ Bus.pub(Impossible("not buseable!!"))
     )
     assertNoDiff(
       compileErrors("Bus.safeAsk[Int, NoAsk](NoAsk(6, _))"),
-      """error: No given instance of type scala.util.NotGiven[scalalib.NoAsk <:< scalalib.bus.NotBuseable] was found
+      """error: No given instance of type scala.util.NotGiven[scalalib.NoAsk <:< scalalib.bus.NotBuseable] was found for parameter x$5 of method safeAsk in class Bus
 Bus.safeAsk[Int, NoAsk](NoAsk(6, _))
-                      ^"""
+                                   ^"""
     )
