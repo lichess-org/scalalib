@@ -1,7 +1,6 @@
 package scalalib
 
 import java.util.concurrent.ConcurrentHashMap
-import scala.concurrent.ExecutionContext
 
 /* Like Debouncer, but a function is passed to `push(id)(f)`.
  * Runs f()` immediately the first time `push(id)` is called for a given id.
@@ -11,7 +10,7 @@ import scala.concurrent.ExecutionContext
 final class DebouncerFunction[Id](
     scheduleOnce: Runnable => Unit, // scheduler.scheduleOnce(duration, _)
     initialCapacity: Int = 64
-)(using ExecutionContext):
+):
 
   private enum Queued:
     case Another(f: () => Unit)

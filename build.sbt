@@ -1,6 +1,6 @@
 inThisBuild(
   Seq(
-    scalaVersion  := "3.6.4",
+    scalaVersion  := "3.7.0",
     versionScheme := Some("early-semver"),
     version       := "11.8.3",
     organization  := "org.lichess",
@@ -19,7 +19,7 @@ val commonSettings = Seq(
     "-language:postfixOps",
     "-indent",
     "-rewrite",
-    "-source:future-migration",
+    // "-source:future-migration",
     "-release:21",
     "-Wunused:all"
   )
