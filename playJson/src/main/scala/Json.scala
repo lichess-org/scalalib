@@ -1,9 +1,10 @@
 package scalalib
 package json
 
+import scala.annotation.nowarn
+import scala.util.NotGiven
 import play.api.libs.json.{ Json as PlayJson, * }
 import java.time.Instant
-import scala.util.NotGiven
 import alleycats.Zero
 
 import scalalib.newtypes.SameRuntime
@@ -16,6 +17,7 @@ object Json:
   given Zero[JsObject]:
     def zero = JsObject(Seq.empty)
 
+  @nowarn("msg=unused implicit parameter")
   given [A, T] => (
       bts: SameRuntime[A, T],
       stb: SameRuntime[T, A],

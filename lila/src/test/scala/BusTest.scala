@@ -9,7 +9,7 @@ import scalalib.bus.{ Bus as BusClass, NotBuseable }
 
 def dummyFutureAfter(using ec: ExecutionContext): FutureAfter =
   [T] =>
-    (duration: FiniteDuration) =>
+    (_: FiniteDuration) =>
       (thunk: () => Future[T]) =>
         Future {
           // don't care about duration for tests
@@ -48,7 +48,7 @@ class BusTest extends munit.FunSuite:
     var eResult: Option[E] = None
 
     Bus.sub[A] { case x: A => aResult = Some(x) }
-    Bus.sub[B] { case y: B => bResult = Some(b) }
+    Bus.sub[B] { case _: B => bResult = Some(b) }
     Bus.sub[C] { case C(i, s, f) => cResult = Some(C(i, s, f)) }
     Bus.sub[D] { case D(init, p) => p.completeWith(Future.successful(init + 42)) }
     Bus.sub[Foo] { case Foo.Bar(i) => fooResult = Some(Foo.Bar(i)) }

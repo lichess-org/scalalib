@@ -1,5 +1,6 @@
 package scalalib
 
+import scala.annotation.nowarn
 import cats.kernel.Eq
 import cats.Show
 import alleycats.Zero
@@ -52,11 +53,11 @@ object newtypes:
     inline final def raw(inline a: Newtype): Impl              = a.asInstanceOf[Impl]
     inline final def apply(inline s: Impl): Newtype            = s.asInstanceOf[Newtype]
     inline final def from[M[_]](inline f: M[Impl]): M[Newtype] = f.asInstanceOf[M[Newtype]]
-    inline final def from[M[_], B](using sr: SameRuntime[B, Impl])(inline f: M[B]): M[Newtype] =
-      f.asInstanceOf[M[Newtype]]
-    inline final def from[M[_], B](inline other: TotalWrapper[B, Impl])(inline f: M[B]): M[Newtype] =
-      f.asInstanceOf[M[Newtype]]
-    inline final def raw[M[_]](inline f: M[Newtype]): M[Impl] = f.asInstanceOf[M[Impl]]
+    @nowarn("msg=unused implicit parameter")
+    def from[M[_], B](using SameRuntime[B, Impl])(f: M[B]): M[Newtype] = f.asInstanceOf[M[Newtype]]
+    @nowarn("msg=unused explicit parameter")
+    final def from[M[_], B](other: TotalWrapper[B, Impl])(f: M[B]): M[Newtype] = f.asInstanceOf[M[Newtype]]
+    inline final def raw[M[_]](inline f: M[Newtype]): M[Impl]                  = f.asInstanceOf[M[Impl]]
 
     given SameRuntime[Newtype, Impl] = raw(_)
     given SameRuntime[Impl, Newtype] = apply(_)

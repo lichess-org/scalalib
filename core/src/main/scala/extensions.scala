@@ -3,6 +3,7 @@ package scalalib
 import alleycats.Zero
 import cats.Eq
 import cats.syntax.all.*
+import scala.annotation.nowarn
 import scala.util.matching.Regex
 import scala.concurrent.{ ExecutionContext, Future }
 import java.lang.Math.{ max, min }
@@ -51,6 +52,7 @@ object extensions:
   extension [A](as: Iterable[A]) def mapBy[B](f: A => B): Map[B, A] = as.view.map { a => f(a) -> a }.toMap
 
   extension [A](seq: Seq[A])
+    @nowarn("msg=unused implicit parameter")
     def has(b: A)(using Eq[A]): Boolean = seq.contains(b)
 
     def indexOption(a: A) = Option(seq.indexOf(a)).filter(0 <= _)
