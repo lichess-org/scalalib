@@ -87,7 +87,7 @@ object extensions:
     infix def atLeast(bottomValue: Long): Long = max(self, bottomValue)
     infix def atMost(topValue: Long): Long     = min(self, topValue)
     def squeeze(bottom: Long, top: Long): Long = max(min(self, top), bottom)
-    def toSaturatedInt: Int =
+    def toSaturatedInt: Int                    =
       if self.toInt == self then self.toInt
       else if self > 0 then Integer.MAX_VALUE
       else Integer.MIN_VALUE
