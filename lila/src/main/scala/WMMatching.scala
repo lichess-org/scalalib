@@ -102,9 +102,9 @@ object WMMatching:
 
   private class BlossomIdAllocator(n: Int):
     import scala.collection.immutable.SortedSet
-    private var usedIds = SortedSet.empty[Int]
-    private var freeIds = SortedSet.empty[Int]
-    private var top     = n
+    private var usedIds   = SortedSet.empty[Int]
+    private var freeIds   = SortedSet.empty[Int]
+    private var top       = n
     def allocateId(): Int =
       val i = if freeIds.isEmpty then
         top += 1
@@ -120,7 +120,7 @@ object WMMatching:
       usedIds -= i
       usedIds.lastOption.getOrElse(n) + 1
   private class DuelDelta(val tp: Int, var delta: Int):
-    var extra = -1
+    var extra                        = -1
     def update(d: Int, e: Int): Unit =
       if delta > d then
         delta = d
@@ -463,9 +463,9 @@ object WMMatching:
       // Recursively deal with the first sub-blossom.
       if t >= nvertex then augmentBlossom(t, v)
       // Decide in which direction we will go round the blossom.
-      val l1 = blossomchilds(b).length - 1
-      val i  = blossomchilds(b).indexOf(t)
-      var j  = i
+      val l1                 = blossomchilds(b).length - 1
+      val i                  = blossomchilds(b).indexOf(t)
+      var j                  = i
       val (jstep, endptrick) =
         if (j & 1) != 0 then ((j: Int) => if j == l1 then 0 else j + 1, 0)
         else ((j: Int) => if j == 0 then l1 else j - 1, 1)

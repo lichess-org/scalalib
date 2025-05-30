@@ -12,7 +12,7 @@ import scalalib.time.*
 final class SimpleMemo[A](ttl: Option[FiniteDuration])(compute: () => A):
   private var value: A                     = compute()
   private var recomputeAt: Option[Instant] = ttl.map(nowInstant.plus(_))
-  def get(): A =
+  def get(): A                             =
     if recomputeAt.exists(_.isBeforeNow) then
       recomputeAt = ttl.map(nowInstant.plus(_))
       value = compute()
@@ -27,7 +27,7 @@ object Preload:
 
 /* A lazily evaluated future */
 final class LazyFu[A](run: () => Future[A]):
-  lazy val value: Future[A] = run()
+  lazy val value: Future[A]         = run()
   def dmap[B](f: A => B): LazyFu[B] =
     LazyFu(() => value.map(f)(using scala.concurrent.ExecutionContext.parasitic))
 object LazyFu:
