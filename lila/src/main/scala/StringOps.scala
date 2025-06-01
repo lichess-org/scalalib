@@ -16,8 +16,8 @@ object StringOps:
       val slug         = slugR.replaceAllIn(normalized, "")
       slug.toLowerCase
 
-  private val onelineR                           = """\s+""".r
-  def shorten(text: String, length: Int): String = shorten(text, length, "…")
+  private val onelineR                                        = """\s+""".r
+  def shorten(text: String, length: Int): String              = shorten(text, length, "…")
   def shorten(text: String, length: Int, sep: String): String =
     val oneline = onelineR.replaceAllIn(text, " ")
     if oneline.lengthIs > length + sep.length then oneline.take(length) ++ sep
