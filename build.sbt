@@ -1,6 +1,6 @@
 inThisBuild(
   Seq(
-    scalaVersion  := "3.7.0",
+    scalaVersion  := "3.7.1",
     versionScheme := Some("early-semver"),
     version       := "11.8.7",
     organization  := "org.lichess",
