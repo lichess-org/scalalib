@@ -47,7 +47,7 @@ lazy val playJson: Project = Project("playJson", file("playJson"))
     commonSettings,
     name := "scalalib-play-json",
     libraryDependencies ++= List(
-      "org.playframework" %% "play-json" % "3.0.4"
+      "org.playframework" %% "play-json" % "3.0.5"
     )
   )
   .dependsOn(core)
