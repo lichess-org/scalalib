@@ -14,15 +14,6 @@ import scalalib.future.FutureAfter
 
 type Channel = String
 
-// BC
-// constructor is private so instances can only be created by extending the `GivenChannel` trait
-final class WithChannel[T](private val key: Channel):
-  def channel: Channel = key
-
-// BC
-transparent trait GivenChannel[T](val channel: Channel):
-  given WithChannel[T] = WithChannel[T](channel)
-
 // Marker trait to implement on types you specifically do not want to Bus
 trait NotBuseable
 
@@ -80,24 +71,13 @@ final class Bus(initialCapacity: Int = 4096):
     case y =>
       println(s"Subscribe error: wanted ${typeName[T]}, received: $y. This is a bug, report to scalalib")
 
-  // BC
-  def publish = publishDyn
-
   def publishDyn(payload: Payload, channel: Channel): Unit =
     entries.unsafeMap.get(channel).foreach(_.foreach(_ ! payload))
-
-  // BC
-  def subscribe(subscriber: Tellable, to: Channel*): Unit =
-    subscribeDyn(subscriber, to*)
 
   def subscribeDyn(subscriber: Tellable, to: Channel*): Unit =
     to.foreach:
       entries.unsafeMap.compute(_): prev =>
         Some(prev.fold(Set(subscriber))(_ + subscriber))
-
-  // BC
-  def subscribe(ref: scalalib.actor.SyncActor, to: Channel*): Unit =
-    subscribeDyn(Tellable.SyncActor(ref), to*)
 
   // LOGIC : It is up to the caller to make sure `tellable` is expecting payload of type `T`
   inline def subscribeActor[T <: Payload](ref: scalalib.actor.SyncActor)(using
@@ -105,19 +85,10 @@ final class Bus(initialCapacity: Int = 4096):
   ): TypedTellable[T] =
     subTellable[T](Tellable.SyncActor(ref))
 
-  // BC
-  def subscribeFun(to: Channel*)(f: SubscriberFunction): Tellable =
-    subscribeFunDyn(to*)(f)
-
   def subscribeFunDyn(to: Channel*)(f: SubscriberFunction): Tellable =
     val t = Tellable(f)
     subscribeDyn(t, to*)
     t
-
-  // BC
-  def subscribeFuns(subscriptions: (Channel, SubscriberFunction)*): Unit =
-    subscriptions.foreach: (channel, subscriber) =>
-      subscribeFun(channel)(subscriber)
 
   inline def unsub[T <: Payload](subscriber: TypedTellable[T])(using
       NotGiven[T <:< NotBuseable]
@@ -140,23 +111,6 @@ final class Bus(initialCapacity: Int = 4096):
         val newSubs = subs - subscriber
         Option.when(newSubs.nonEmpty)(newSubs)
 
-  // BC
-  def unsubscribe(subscriber: Tellable, from: Channel*): Unit =
-    unsubscribeDyn(subscriber, from)
-
-  // BC
-  def unsubscribe(subscriber: Tellable, from: Iterable[Channel]): Unit =
-    unsubscribeDyn(subscriber, from)
-
-  // BC
-  def ask[A](channel: Channel, timeout: FiniteDuration = 2.second)(
-      makeMsg: Promise[A] => Matchable
-  )(using
-      ExecutionContext,
-      FutureAfter
-  ): Future[A] =
-    askDyn[A](channel, timeout)(makeMsg)
-
   def askDyn[A](channel: Channel, timeout: FiniteDuration = 2.second)(
       makeMsg: Promise[A] => Matchable
   )(using
@@ -168,8 +122,7 @@ final class Bus(initialCapacity: Int = 4096):
     publishDyn(msg, channel)
     promise.future.withTimeout(timeout, s"Bus.askDyn $channel $msg")
 
-  // TODO rename to `ask` once migration is complete
-  inline def safeAsk[A, T <: Payload](makeMsg: Promise[A] => T, timeout: FiniteDuration = 2.second)(using
+  inline def ask[A, T <: Payload](makeMsg: Promise[A] => T, timeout: FiniteDuration = 2.second)(using
       ExecutionContext,
       FutureAfter,
       NotGiven[T <:< NotBuseable]
@@ -184,3 +137,5 @@ final class Bus(initialCapacity: Int = 4096):
     MutableTypeMap.make(initialCapacity)
 
   def size(): Int = entries.unsafeMap.size()
+
+  def exists(channel: Channel): Boolean = entries.unsafeMap.contains(channel)
