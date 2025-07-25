@@ -6,3 +6,6 @@
 
 # Scala Steward: Reformat with scalafmt 3.9.7
 3b740d43def1dcb00220ad3ab2707c4b1f155c9e
+
+# scalafmt align none
+bd6583b5e4aabd02b0064650f20bd1c057962e0d
