@@ -9,3 +9,6 @@
 
 # scalafmt align none
 bd6583b5e4aabd02b0064650f20bd1c057962e0d
+
+# scalafmt align.preset = none
+727251a11b0e36ee43fdafb4f11c0ac526405e77
