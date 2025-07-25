@@ -49,7 +49,7 @@ final class AskPipeline[A](
 
   private def complete(res: Either[Exception, A]) =
     state match
-      case State.Idle                      => // shouldn't happen
+      case State.Idle => // shouldn't happen
       case State.Processing(current, next) =>
         res.fold(
           err => current.foreach(_.failure(err)),
@@ -66,7 +66,7 @@ final class AskPipeline[A](
   private case class Fail(err: Exception)
 
   private enum State:
-    case Idle                                                          extends State
+    case Idle extends State
     case Processing(current: List[Promise[A]], next: List[Promise[A]]) extends State
 
 // Distributes tasks to many pipelines

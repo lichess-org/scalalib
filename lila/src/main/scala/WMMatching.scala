@@ -102,9 +102,9 @@ object WMMatching:
 
   private class BlossomIdAllocator(n: Int):
     import scala.collection.immutable.SortedSet
-    private var usedIds   = SortedSet.empty[Int]
-    private var freeIds   = SortedSet.empty[Int]
-    private var top       = n
+    private var usedIds = SortedSet.empty[Int]
+    private var freeIds = SortedSet.empty[Int]
+    private var top = n
     def allocateId(): Int =
       val i = if freeIds.isEmpty then
         top += 1
@@ -120,7 +120,7 @@ object WMMatching:
       usedIds -= i
       usedIds.lastOption.getOrElse(n) + 1
   private class DuelDelta(val tp: Int, var delta: Int):
-    var extra                        = -1
+    var extra = -1
     def update(d: Int, e: Int): Unit =
       if delta > d then
         delta = d
@@ -233,7 +233,7 @@ object WMMatching:
     // problem; if allowedge(k) is false, the edge's slack may or may not
     // be zero.
 
-    private val allowedge        = Array.ofDim[Boolean](weights.length)
+    private val allowedge = Array.ofDim[Boolean](weights.length)
     private var queue: List[Int] = Nil
 
     // Return 2 * slack of edge k (does not work inside blossoms).
@@ -299,7 +299,7 @@ object WMMatching:
       p.foreach(label(_) = 1)
       base
     private val blossomIdAllocator = new BlossomIdAllocator(nvertex - 1)
-    private var allocatedvertex    = nvertex
+    private var allocatedvertex = nvertex
     /*
     Construct a new blossom with given base, containing edge k which
     connects a pair of S vertices. Label the new blossom as S; set its dual
@@ -324,8 +324,8 @@ object WMMatching:
         traceBack(b, bb, endpoint(labelend(bv)), d, bv :: path, (labelend(bv) ^ d) :: endps)
     private def addBlossom(base: Int, l: Int) =
       val ll = 2 * l
-      val v  = endpoint(ll)
-      val w  = endpoint(ll + 1)
+      val v = endpoint(ll)
+      val w = endpoint(ll + 1)
       val bb = inblossom(base)
       // Create blossom.
       val b = blossomIdAllocator.allocateId()
@@ -362,7 +362,7 @@ object WMMatching:
           else blossombestedges(bv).iterator
         for k <- nblists do
           val kk = 2 * k
-          val j  = if inblossom(endpoint(kk + 1)) == b then endpoint(kk) else endpoint(kk + 1)
+          val j = if inblossom(endpoint(kk + 1)) == b then endpoint(kk) else endpoint(kk + 1)
           val bj = inblossom(j)
           if bj != b && label(bj) == 1 then
             val i = bestedgeto(bj)
@@ -395,7 +395,7 @@ object WMMatching:
         // obtained its label initially.
         val entrychild = inblossom(endpoint(labelend(b) ^ 1))
         // Decide in which direction we will go round the blossom.
-        var j  = blossomchilds(b).indexOf(entrychild)
+        var j = blossomchilds(b).indexOf(entrychild)
         val l1 = blossomchilds(b).length - 1
         val (jstep, endptrick) =
           // Start index is odd; go forward and wrap.
@@ -463,9 +463,9 @@ object WMMatching:
       // Recursively deal with the first sub-blossom.
       if t >= nvertex then augmentBlossom(t, v)
       // Decide in which direction we will go round the blossom.
-      val l1                 = blossomchilds(b).length - 1
-      val i                  = blossomchilds(b).indexOf(t)
-      var j                  = i
+      val l1 = blossomchilds(b).length - 1
+      val i = blossomchilds(b).indexOf(t)
+      var j = i
       val (jstep, endptrick) =
         if (j & 1) != 0 then ((j: Int) => if j == l1 then 0 else j + 1, 0)
         else ((j: Int) => if j == 0 then l1 else j - 1, 1)
@@ -485,7 +485,7 @@ object WMMatching:
         mate(endpoint(p ^ 1)) = p
       // Rotate the list of sub-blossoms to put the new base at the front.
       if i > 0 then
-        val n  = blossomchilds(b).length
+        val n = blossomchilds(b).length
         val t1 = new Array[Int](n)
         Impl.rotate(blossomchilds(b), t1, n, i)
         val t2 = blossomchilds(b)
@@ -510,11 +510,11 @@ object WMMatching:
         if labelend(bs) == -1 then {
           // Reached single vertex; stop.
         } else
-          val t  = endpoint(labelend(bs))
+          val t = endpoint(labelend(bs))
           val bt = inblossom(t)
           // Trace one step back.
           val ns = endpoint(labelend(bt))
-          val j  = endpoint(labelend(bt) ^ 1)
+          val j = endpoint(labelend(bt) ^ 1)
           // Augment through the T-blossom from j to base.
           if bt >= nvertex then augmentBlossom(bt, j)
           // Update mate(j)

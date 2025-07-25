@@ -5,8 +5,8 @@ import scala.jdk.CollectionConverters.*
 object Jvm:
 
   case class ThreadGroup(name: String, states: Map[Thread.State, Int]):
-    def total             = states.values.sum
-    def running           = states.getOrElse(Thread.State.RUNNABLE, 0)
+    def total = states.values.sum
+    def running = states.getOrElse(Thread.State.RUNNABLE, 0)
     override def toString = s"$name total: $total runnable: $running"
 
   def threadGroups(): List[ThreadGroup] = threadList()

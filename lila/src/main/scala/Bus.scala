@@ -34,7 +34,7 @@ object Tellable:
 
 object Bus:
 
-  type Payload            = Matchable
+  type Payload = Matchable
   type SubscriberFunction = PartialFunction[Payload, Unit]
 
 @nowarn("msg=unused implicit parameter")
@@ -118,7 +118,7 @@ final class Bus(initialCapacity: Int = 4096):
       FutureAfter
   ): Future[A] =
     val promise = Promise[A]()
-    val msg     = makeMsg(promise)
+    val msg = makeMsg(promise)
     publishDyn(msg, channel)
     promise.future.withTimeout(timeout, s"Bus.askDyn $channel $msg")
 
@@ -128,7 +128,7 @@ final class Bus(initialCapacity: Int = 4096):
       NotGiven[T <:< NotBuseable]
   ): Future[A] =
     val promise = Promise[A]()
-    val msg     = makeMsg(promise)
+    val msg = makeMsg(promise)
     pub[T](msg)
 
     promise.future.withTimeout(timeout, s"Bus.safeAsk ${typeName[T]} $msg")

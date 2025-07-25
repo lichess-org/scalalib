@@ -6,18 +6,18 @@ import java.lang.Character.UnicodeBlock as Block
 object StringOps:
 
   object slug:
-    private val slugR              = """[^\w-]""".r
+    private val slugR = """[^\w-]""".r
     private val slugMultiDashRegex = """-{2,}""".r
 
     def apply(input: String) =
       val nowhitespace = input.trim.replace(' ', '-')
       val singleDashes = slugMultiDashRegex.replaceAllIn(nowhitespace, "-")
-      val normalized   = Normalizer.normalize(singleDashes, Normalizer.Form.NFD)
-      val slug         = slugR.replaceAllIn(normalized, "")
+      val normalized = Normalizer.normalize(singleDashes, Normalizer.Form.NFD)
+      val slug = slugR.replaceAllIn(normalized, "")
       slug.toLowerCase
 
-  private val onelineR                                        = """\s+""".r
-  def shorten(text: String, length: Int): String              = shorten(text, length, "…")
+  private val onelineR = """\s+""".r
+  def shorten(text: String, length: Int): String = shorten(text, length, "…")
   def shorten(text: String, length: Int, sep: String): String =
     val oneline = onelineR.replaceAllIn(text, " ")
     if oneline.lengthIs > length + sep.length then oneline.take(length) ++ sep
@@ -96,8 +96,8 @@ object StringOps:
           str,
           _.group(0)(0) match
             case 'º' | '°' => "\u0001".toString
-            case 'ª'       => '\u0002'.toString
-            case '½'       => '\u0003'.toString
+            case 'ª' => '\u0002'.toString
+            case '½' => '\u0003'.toString
         ),
         Normalizer.Form.NFKC
       )

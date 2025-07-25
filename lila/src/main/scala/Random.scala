@@ -24,13 +24,13 @@ final class TestableRandom(seed: Long) extends RandomApi:
 sealed abstract class RandomApi:
   protected def impl: java.util.Random
 
-  final def nextBoolean()     = impl.nextBoolean
-  final def nextDouble()      = impl.nextDouble
-  final def nextFloat()       = impl.nextFloat
-  final def nextGaussian()    = impl.nextGaussian
-  final def nextInt()         = impl.nextInt
-  final def nextInt(n: Int)   = impl.nextInt(n)
-  final def nextLong()        = impl.nextLong
+  final def nextBoolean() = impl.nextBoolean
+  final def nextDouble() = impl.nextDouble
+  final def nextFloat() = impl.nextFloat
+  final def nextGaussian() = impl.nextGaussian
+  final def nextInt() = impl.nextInt
+  final def nextInt(n: Int) = impl.nextInt(n)
+  final def nextLong() = impl.nextLong
   final def nextLong(l: Long) = impl.nextLong(l)
 
   final def nextBytes(len: Int): Array[Byte] =
@@ -40,8 +40,8 @@ sealed abstract class RandomApi:
 
   final def nextString(len: Int): String =
     val randomImpl = impl
-    val chars      = RandomApi.chars
-    val arr        = new Array[Char](len)
+    val chars = RandomApi.chars
+    val arr = new Array[Char](len)
 
     var i = 0
     while i < len do

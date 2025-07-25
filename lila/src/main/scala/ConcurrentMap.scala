@@ -49,8 +49,8 @@ object ConcurrentMap:
 
   given [V] => MutableMapOps[Backend, V]:
     private type DS = Backend[V]
-    def make(length: Int): DS                    = new DS(length)
-    def get(ds: DS, key: String): Option[V]      = ds.get(key)
+    def make(length: Int): DS = new DS(length)
+    def get(ds: DS, key: String): Option[V] = ds.get(key)
     def put(ds: DS, key: String, value: V): Unit = ds.put(key, value)
 
   given [V] => ThreadSafeMutableMapOps[Backend, V]:

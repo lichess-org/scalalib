@@ -14,7 +14,7 @@ object Maths:
       val arr = a.toArray
       Sorting.stableSort(arr)
       val size = arr.length
-      val mid  = size / 2
+      val mid = size / 2
       if size % 2 == 0
       then n.toDouble(arr(mid) + arr(mid - 1)) / 2
       else n.toDouble(arr(mid))
@@ -31,7 +31,7 @@ object Maths:
 
   def arithmeticAndHarmonicMean(a: Iterable[Double]): Option[Double] = for
     arithmetic <- mean(a)
-    harmonic   <- harmonicMean(a)
+    harmonic <- harmonicMean(a)
   yield (arithmetic + harmonic) / 2
 
   def roundAt(n: Double, p: Int): BigDecimal =

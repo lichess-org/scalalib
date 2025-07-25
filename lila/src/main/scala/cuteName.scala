@@ -44,7 +44,7 @@ object CuteNameGenerator:
 
   private lazy val combinations: Map[Language, Combinations] = Map(
     defaultLang -> defaultCombinations,
-    "fr"        -> {
+    "fr" -> {
       import CuteNameDicts.fr.*
       val beings = animals ++ pieces ++ CuteNameDicts.any.players
       Vector(

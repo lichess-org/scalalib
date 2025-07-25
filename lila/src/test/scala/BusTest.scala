@@ -23,7 +23,7 @@ case class B(s: String)
 case class C(i: Int, s: String, f: Float)
 case class D(init: Int, p: Promise[Int])
 case class E(zombo: String)
-case class Impossible(x: String)             extends NotBuseable
+case class Impossible(x: String) extends NotBuseable
 case class NoAsk(init: Int, p: Promise[Int]) extends NotBuseable
 
 enum Foo:
@@ -34,17 +34,17 @@ class BusTest extends munit.FunSuite:
   import typemap.typeName
 
   test("Bus"):
-    val Bus                    = BusClass(64)
-    val a                      = A(1)
-    var aResult: Option[A]     = None
-    val b                      = B("This is a B")
-    var bResult: Option[B]     = None
-    val c                      = C(3, "4", 5.0f)
-    var cResult: Option[C]     = None
-    val foo                    = Foo.Baz("baz")
+    val Bus = BusClass(64)
+    val a = A(1)
+    var aResult: Option[A] = None
+    val b = B("This is a B")
+    var bResult: Option[B] = None
+    val c = C(3, "4", 5.0f)
+    var cResult: Option[C] = None
+    val foo = Foo.Baz("baz")
     var fooResult: Option[Foo] = None
 
-    val e                  = E("zombo")
+    val e = E("zombo")
     var eResult: Option[E] = None
 
     Bus.sub[A] { case x: A => aResult = Some(x) }

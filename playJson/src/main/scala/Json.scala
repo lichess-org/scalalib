@@ -29,18 +29,18 @@ object Json:
     def writeKey(key: A) = sr(key)
 
   private val stringFormatBase: Format[String] = Format(Reads.StringReads, Writes.StringWrites)
-  private val intFormatBase: Format[Int]       = Format(Reads.IntReads, Writes.IntWrites)
+  private val intFormatBase: Format[Int] = Format(Reads.IntReads, Writes.IntWrites)
 
   def stringFormat[A <: String](f: String => A): Format[A] = stringFormatBase.bimap(f, identity)
-  def intFormat[A <: Int](f: Int => A): Format[A]          = intFormatBase.bimap(f, identity)
+  def intFormat[A <: Int](f: Int => A): Format[A] = intFormatBase.bimap(f, identity)
 
   def writeAs[O, A: Writes](f: O => A) = Writes[O](o => PlayJson.toJson(f(o)))
 
   def writeWrap[A, B](fieldName: String)(get: A => B)(using writes: Writes[B]): OWrites[A] = OWrites: a =>
     PlayJson.obj(fieldName -> writes.writes(get(a)))
 
-  def stringIsoWriter[O](using iso: Iso[String, O]): Writes[O]    = writeAs[O, String](iso.to)
-  def intIsoWriter[O](using iso: Iso[Int, O]): Writes[O]          = writeAs[O, Int](iso.to)
+  def stringIsoWriter[O](using iso: Iso[String, O]): Writes[O] = writeAs[O, String](iso.to)
+  def intIsoWriter[O](using iso: Iso[Int, O]): Writes[O] = writeAs[O, Int](iso.to)
   def anyIsoWriter[A: Writes, O](using iso: Iso[A, O]): Writes[O] = writeAs[O, A](iso.to)
 
   def stringIsoReader[O](using iso: Iso[String, O]): Reads[O] = Reads.of[String].map(iso.from)

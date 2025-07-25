@@ -7,7 +7,7 @@ object Levenshtein:
     def f(a: String, b: String): Boolean =
       /* dd : destination diagonal */
       val dd = b.length - a.length
-      val t  = (threshold - 1) >> 1
+      val t = (threshold - 1) >> 1
       def rowRange(j: Int) =
         // j - i == dd
         val i = j - dd

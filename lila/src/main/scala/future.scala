@@ -23,7 +23,7 @@ object extensions:
 
   extension [A](fua: Future[A])
 
-    inline def dmap[B](f: A => B): Future[B]   = fua.map(f)(using EC.parasitic)
+    inline def dmap[B](f: A => B): Future[B] = fua.map(f)(using EC.parasitic)
     inline def dforeach[B](f: A => Unit): Unit = fua.foreach(f)(using EC.parasitic)
 
     def andDo(sideEffect: => Unit)(using EC): Future[A] =
@@ -50,8 +50,8 @@ object extensions:
     def addEffects(fail: Exception => Unit, succ: A => Unit)(using EC): Future[A] =
       fua.onComplete:
         case scala.util.Failure(e: Exception) => fail(e)
-        case scala.util.Failure(e)            => throw e // Throwables
-        case scala.util.Success(e)            => succ(e)
+        case scala.util.Failure(e) => throw e // Throwables
+        case scala.util.Success(e) => succ(e)
       fua
 
     def addEffects(f: Try[A] => Unit)(using EC): Future[A] =
@@ -63,9 +63,9 @@ object extensions:
         inAnyCase
       fua
 
-    private def recoverDefaultMonitor: Exception => Unit      = e => println(s"Future.recoverDefault $e")
+    private def recoverDefaultMonitor: Exception => Unit = e => println(s"Future.recoverDefault $e")
     def recoverDefault(using EC)(using z: Zero[A]): Future[A] = recoverDefault(z.zero)
-    def recoverDefault(using EC)(default: => A): Future[A]    = recoverDefault(default)(recoverDefaultMonitor)
+    def recoverDefault(using EC)(default: => A): Future[A] = recoverDefault(default)(recoverDefaultMonitor)
     def recoverDefault(monitor: Exception => Unit)(using EC)(using z: Zero[A]): Future[A] =
       recoverDefault(z.zero)(monitor)
     def recoverDefault(default: => A)(monitor: Exception => Unit)(using EC): Future[A] =
@@ -118,15 +118,15 @@ object extensions:
           Future.successful(Some(x))
 
     def getOrElse(other: => Future[A])(using EC): Future[A] = fua.flatMap { _.fold(other)(Future.successful) }
-    def orZeroFu(using z: Zero[A]): Future[A]               = fua.map(_.getOrElse(z.zero))(using EC.parasitic)
+    def orZeroFu(using z: Zero[A]): Future[A] = fua.map(_.getOrElse(z.zero))(using EC.parasitic)
 
     def map2[B](f: A => B)(using EC): Future[Option[B]] = fua.map(_.map(f))
-    def dmap2[B](f: A => B): Future[Option[B]]          = fua.map(_.map(f))(using EC.parasitic)
+    def dmap2[B](f: A => B): Future[Option[B]] = fua.map(_.map(f))(using EC.parasitic)
 
     def getIfPresent: Option[A] =
       fua.value match
         case Some(scala.util.Success(v)) => v
-        case _                           => None
+        case _ => None
 
-    def mapz[B: Zero](fb: A => B)(using EC): Future[B]                    = fua.map { _.so(fb) }
+    def mapz[B: Zero](fb: A => B)(using EC): Future[B] = fua.map { _.so(fb) }
     infix def flatMapz[B: Zero](fub: A => Future[B])(using EC): Future[B] = fua.flatMap { _.so(fub) }

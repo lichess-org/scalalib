@@ -7,7 +7,7 @@ object LevenshteinTest:
     val d = StringUtils.levenshtein(a, b)
     !Levenshtein.isDistanceLessThan(a, b, d) &&
     Levenshtein.isDistanceLessThan(a, b, d + 1)
-  def check(a: String, b: String)                   = check0(a, b) && check0(b, a)
+  def check(a: String, b: String) = check0(a, b) && check0(b, a)
   def rndStr(r: Random, l: Int, sigma: Int): String =
     val sb = new StringBuilder(l)
     for _ <- 0 until l do sb.append((48 + r.nextInt(sigma)).toChar)
