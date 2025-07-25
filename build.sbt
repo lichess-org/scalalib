@@ -1,11 +1,11 @@
 inThisBuild(
   Seq(
-    scalaVersion  := "3.7.1",
+    scalaVersion := "3.7.1",
     versionScheme := Some("early-semver"),
-    version       := "11.9.0",
-    organization  := "org.lichess",
+    version := "11.9.0",
+    organization := "org.lichess",
     licenses += ("MIT" -> url("https://opensource.org/licenses/MIT")),
-    publishTo     := Option(Resolver.file("file", new File(sys.props.getOrElse("publishTo", ""))))
+    publishTo := Option(Resolver.file("file", new File(sys.props.getOrElse("publishTo", ""))))
   )
 )
 
@@ -29,9 +29,9 @@ lazy val core: Project = Project("core", file("core")).settings(
   commonSettings,
   name := "scalalib-core",
   libraryDependencies ++= List(
-    "org.typelevel" %% "cats-core"      % "2.13.0",
+    "org.typelevel" %% "cats-core" % "2.13.0",
     "org.typelevel" %% "alleycats-core" % "2.13.0",
-    "com.lihaoyi"   %% "pprint"         % "0.9.0"
+    "com.lihaoyi" %% "pprint" % "0.9.1"
   )
 )
 
@@ -58,10 +58,10 @@ lazy val lila: Project = Project("lila", file("lila"))
     commonSettings,
     name := "scalalib-lila",
     libraryDependencies ++= List(
-      "com.github.ben-manes.caffeine" % "caffeine"  % "3.2.2" % "compile",
-      "com.github.blemale"           %% "scaffeine" % "5.3.0" % "compile",
-      "org.scalameta"                %% "munit"     % "1.1.0" % Test,
-      "com.github.lichess-org"        % "TypeMap"   % "0.2.2"
+      "com.github.ben-manes.caffeine" % "caffeine" % "3.2.2" % "compile",
+      "com.github.blemale" %% "scaffeine" % "5.3.0" % "compile",
+      "org.scalameta" %% "munit" % "1.1.0" % Test,
+      "com.github.lichess-org" % "TypeMap" % "0.2.2"
     ),
     resolvers += "jitpack".at("https://jitpack.io")
   )
