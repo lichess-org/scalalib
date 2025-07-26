@@ -131,7 +131,7 @@ final class Bus(initialCapacity: Int = 4096):
     val msg = makeMsg(promise)
     pub[T](msg)
 
-    promise.future.withTimeout(timeout, s"Bus.safeAsk ${typeName[T]} $msg")
+    promise.future.withTimeout(timeout, s"Bus.ask ${typeName[T]} $msg")
 
   private[scalalib] val entries: MutableTypeMap[Set[Tellable], ConcurrentMap.Backend] =
     MutableTypeMap.make(initialCapacity)

@@ -82,7 +82,7 @@ class BusTest extends munit.FunSuite:
     Bus.sub[Foo] { case Foo.Baz(s) => fooResult = Some(Foo.Baz(s)) }
     Bus.pub(foo)
     assertEquals(fooResult, Some(foo))
-    Bus.safeAsk[Int, D](D(6, _)).foreach { x => assertEquals(x, 48) }
+    Bus.ask[Int, D](D(6, _)).foreach { x => assertEquals(x, 48) }
 
     assertNoDiff(
       compileErrors(
@@ -105,8 +105,8 @@ Bus.pub(Impossible("not buseable!!"))
                                     ^""".stripMargin
     )
     assertNoDiff(
-      compileErrors("Bus.safeAsk[Int, NoAsk](NoAsk(6, _))"),
-      """error: No given instance of type scala.util.NotGiven[scalalib.NoAsk <:< scalalib.bus.NotBuseable] was found for parameter x$5 of method safeAsk in class Bus
-Bus.safeAsk[Int, NoAsk](NoAsk(6, _))
-                                   ^"""
+      compileErrors("Bus.ask[Int, NoAsk](NoAsk(6, _))"),
+      """error: No given instance of type scala.util.NotGiven[scalalib.NoAsk <:< scalalib.bus.NotBuseable] was found for parameter x$5 of method ask in class Bus
+Bus.ask[Int, NoAsk](NoAsk(6, _))
+                               ^"""
     )
