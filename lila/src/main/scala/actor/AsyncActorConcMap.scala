@@ -1,6 +1,7 @@
 package scalalib
 package actor
 
+import cats.syntax.all.*
 import alleycats.Zero
 import scala.concurrent.{ ExecutionContext, Future, Promise }
 import java.util.concurrent.ConcurrentHashMap
@@ -31,11 +32,13 @@ final class AsyncActorConcMap[Id, D <: AsyncActor](
 
   def ask[A](id: Id)(makeMsg: Promise[A] => Matchable): Future[A] = getOrMake(id).ask(makeMsg)
 
-  def askIfPresent[A](id: Id)(makeMsg: Promise[A] => Matchable): Future[Option[A]] =
-    getIfPresent(id).soFu:
+  def askIfPresent[A](id: Id)(makeMsg: Promise[A] => Matchable)(using ExecutionContext): Future[Option[A]] =
+    getIfPresent(id).traverse:
       _.ask(makeMsg)
 
-  def askIfPresentOrZero[A: Zero](id: Id)(makeMsg: Promise[A] => Matchable): Future[A] =
+  def askIfPresentOrZero[A: Zero](id: Id)(makeMsg: Promise[A] => Matchable)(using
+      ExecutionContext
+  ): Future[A] =
     askIfPresent(id)(makeMsg).dmap(_.orZero)
 
   def exists(id: Id): Boolean = asyncActors.get(id) != null
