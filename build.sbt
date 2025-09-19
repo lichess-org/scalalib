@@ -60,7 +60,7 @@ lazy val lila: Project = Project("lila", file("lila"))
     libraryDependencies ++= List(
       "com.github.ben-manes.caffeine" % "caffeine" % "3.2.2" % "compile",
       "com.github.blemale" %% "scaffeine" % "5.3.0" % "compile",
-      "org.scalameta" %% "munit" % "1.1.2" % Test,
+      "org.scalameta" %% "munit" % "1.2.0" % Test,
       "com.github.lichess-org" % "TypeMap" % "0.2.2"
     ),
     resolvers += "jitpack".at("https://jitpack.io")
