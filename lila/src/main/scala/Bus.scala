@@ -1,7 +1,6 @@
 package scalalib
 package bus
 
-import scala.annotation.nowarn
 import scala.reflect.Typeable
 import scala.util.NotGiven
 import scala.concurrent.duration.*
@@ -37,7 +36,6 @@ object Bus:
   type Payload = Matchable
   type SubscriberFunction = PartialFunction[Payload, Unit]
 
-@nowarn("msg=unused implicit parameter")
 final class Bus(initialCapacity: Int = 4096):
 
   import Bus.*

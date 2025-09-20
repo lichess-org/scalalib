@@ -1,8 +1,6 @@
 package scalalib
 package json
 
-import scala.annotation.nowarn
-import scala.util.NotGiven
 import play.api.libs.json.{ Json as PlayJson, * }
 import java.time.Instant
 import alleycats.Zero
@@ -17,12 +15,11 @@ object Json:
   given Zero[JsObject]:
     def zero = JsObject(Seq.empty)
 
-  @nowarn("msg=unused implicit parameter")
   given [A, T] => (
       bts: SameRuntime[A, T],
       stb: SameRuntime[T, A],
       format: Format[A]
-  ) => NotGiven[NoJsonHandler[T]] => Format[T] =
+  ) => scala.util.NotGiven[NoJsonHandler[T]] => Format[T] =
     format.bimap(bts.apply, stb.apply)
 
   given [A] => (sr: SameRuntime[A, String]) => KeyWrites[A]:
