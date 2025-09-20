@@ -14,7 +14,7 @@ import scalalib.extensions.so
   */
 type FutureAfter = [T] => (FiniteDuration) => (() => Future[T]) => Future[T]
 
-final class TimeoutException(msg: String) extends Exception(msg) with NoStackTrace
+final case class TimeoutException(msg: String) extends Exception(msg) with NoStackTrace
 
 given [A: Zero] => Zero[Future[A]]:
   def zero = Future.successful(Zero[A].zero)
