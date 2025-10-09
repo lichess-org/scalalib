@@ -110,3 +110,12 @@ Bus.pub(Impossible("not buseable!!"))
 Bus.ask[Int, NoAsk](NoAsk(6, _))
                                ^"""
     )
+
+  test("Bus.exists"):
+    val Bus = BusClass(64)
+    val chan = "subscribeFunDyn:test:exists"
+    assert(!Bus.exists(chan))
+    Bus.subscribeFunDyn(chan):
+      case _ =>
+    assert(Bus.exists(chan))
+    assert(!Bus.exists("subscribeFunDyn:test:not-exists"))
