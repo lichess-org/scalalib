@@ -136,4 +136,4 @@ final class Bus(initialCapacity: Int = 4096):
 
   def size(): Int = entries.unsafeMap.size()
 
-  def exists(channel: Channel): Boolean = entries.unsafeMap.get(channel).isDefined
+  def exists(channel: Channel): Boolean = entries.unsafeMap.containsKey(channel)
