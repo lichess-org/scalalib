@@ -99,6 +99,8 @@ object newtypes:
       inline infix def -(inline o: A): A = a - raw(o)
       inline def atLeast(inline bot: A): A = atLeast(raw(bot))
       inline def atMost(inline top: A): A = atMost(raw(top))
+      inline def isZero: Boolean = raw(a) == 0
+      inline def nonZero: Boolean = raw(a) != 0
   end RelaxedOpaqueInt
 
   abstract class RichOpaqueInt[A](using A =:= Int) extends TotalWrapper[A, Int]:
@@ -112,6 +114,8 @@ object newtypes:
       inline infix def -(inline o: A): A = apply(raw(a) - raw(o))
       inline def atLeast(inline bot: A): A = apply(Math.max(raw(a), raw(bot)))
       inline def atMost(inline top: A): A = apply(Math.min(raw(a), raw(top)))
+      inline def isZero: Boolean = raw(a) == 0
+      inline def nonZero: Boolean = raw(a) != 0
   end RichOpaqueInt
 
   abstract class OpaqueInt[A](using A =:= Int) extends TotalWrapper[A, Int]
