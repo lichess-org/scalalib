@@ -8,13 +8,13 @@ object model:
   object Max extends RelaxedOpaqueInt[Max]
 
   opaque type MaxPerPage = Int
-  object MaxPerPage extends RelaxedOpaqueInt[MaxPerPage]
+  object MaxPerPage extends RichOpaqueInt[MaxPerPage]
 
   opaque type MaxPerSecond = Int
-  object MaxPerSecond extends RelaxedOpaqueInt[MaxPerSecond]
+  object MaxPerSecond extends RichOpaqueInt[MaxPerSecond]
 
   opaque type Days = Int
-  object Days extends RelaxedOpaqueInt[Days]
+  object Days extends RichOpaqueInt[Days]
 
   opaque type Seconds = Int
   object Seconds extends RelaxedOpaqueInt[Seconds]
