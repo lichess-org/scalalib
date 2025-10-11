@@ -7,6 +7,9 @@ object model:
   opaque type Max = Int
   object Max extends RelaxedOpaqueInt[Max]
 
+  opaque type Page = Int
+  object Page extends RichOpaqueInt[Page]
+
   opaque type MaxPerPage = Int
   object MaxPerPage extends RichOpaqueInt[MaxPerPage]
 
@@ -17,7 +20,13 @@ object model:
   object Days extends RichOpaqueInt[Days]
 
   opaque type Seconds = Int
-  object Seconds extends RelaxedOpaqueInt[Seconds]
+  object Seconds extends RichOpaqueInt[Seconds]
+
+  opaque type Minutes = Int
+  object Minutes extends RichOpaqueInt[Minutes]
+
+  opaque type Pixels = Int
+  object Pixels extends RichOpaqueInt[Pixels]
 
   trait Percent[A]:
     def value(a: A): Double
