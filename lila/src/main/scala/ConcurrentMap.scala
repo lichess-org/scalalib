@@ -41,7 +41,7 @@ final class ConcurrentMap[K, V](initialCapacity: Int):
   /* better than ConcurrentHashMap.getOrDefault because our default is lazy */
   def getOrDefault(key: K, default: => V): V = get(key).getOrElse(default)
 
-  def keySet: Set[K] = underlying.keySet.asScala.toSet
+  def keySet: Set[K] = underlying.keys.asScala.toSet
 
 object ConcurrentMap:
 
