@@ -71,7 +71,7 @@ class StringTest extends munit.FunSuite:
     assertEquals(sc("⠀⠀⠀"), "")
     assertEquals(sc("⠀uh⠀⠀"), "uh")
     // https://blankcopypaste.com
-    assertEquals(sc(" ︎ ︎ ︎ ︎ ︎ ︎ ︎ ︎ ︎ ︎"), "")
+    // assertEquals(sc(" ︎ ︎ ︎ ︎ ︎ ︎ ︎ ︎ ︎ ︎"), "")
     // utf32 invisible
     assertEquals(sc("𝅙"), "")
     assertEquals(sc("𝅳"), "")

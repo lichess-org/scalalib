@@ -39,7 +39,7 @@ object StringOps:
   private def removeChars(str: String, isRemoveable: Int => Boolean): String =
     if str.chars.anyMatch(isRemoveable(_)) then str.filterNot(isRemoveable(_)) else str
 
-  private def isGarbageChar(c: Int) = c >= '\u0250' && (isOffensiveChar(c) || isInvisibleChar(c) ||
+  private def isGarbageChar(c: Int) = c >= '\u0250' && (isOffensiveChar(c) || isSafeToStripInvisible(c) ||
     // bunch of probably useless blocks https://www.compart.com/en/unicode/block/U+2100
     // but keep maths operators cause maths are cool https://www.compart.com/en/unicode/block/U+2200
     // and chess symbols https://www.compart.com/en/unicode/block/U+2600
@@ -60,7 +60,9 @@ object StringOps:
     // svastikas
     c == '\u534d' || c == '\u5350'
 
-  private inline def isInvisibleChar(c: Int) = invisibleChars.contains(c.toChar)
+  private inline def isSafeToStripInvisible(c: Int) = (c < 0x200b || c > 0x200d) && // carve out for
+    (c < 0xfe00 || c > 0xfe0f) && // zero-width characters with structural significance (for emojis)
+    invisibleChars.contains(c)
 
   private val invisibleChars: Set[Int] =
     // blankcopypaste.com
@@ -134,7 +136,9 @@ object StringOps:
 
   // for inner text like study chapter names, possibly forum posts and team descriptions
   def softCleanUp(str: String) =
-    removeMultibyteInvisible(removeChars(normalize(str), c => isOffensiveChar(c) || isInvisibleChar(c))).trim
+    removeMultibyteInvisible(
+      removeChars(normalize(str), c => isOffensiveChar(c) || isSafeToStripInvisible(c))
+    ).trim
 
   object base64:
     import java.util.Base64
