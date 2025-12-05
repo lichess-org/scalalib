@@ -87,3 +87,28 @@ class StringTest extends munit.FunSuite:
 line"""),
       "multi\nline"
     )
+
+  test("addQueryParam"):
+    assertEquals(
+      addQueryParam("https://example.com/path", "key", "value"),
+      "https://example.com/path?key=value"
+    )
+
+  test("addQueryParams"):
+    assertEquals(
+      addQueryParams("https://example.com/path", Map.empty),
+      "https://example.com/path"
+    )
+    assertEquals(
+      addQueryParams("https://example.com/path", Map("key1" -> "value1", "key2" -> "value2")),
+      "https://example.com/path?key1=value1&key2=value2"
+    )
+    assertEquals(
+      addQueryParams("https://example.com/path?key1=value1", Map("key2" -> "value2")),
+      "https://example.com/path?key1=value1&key2=value2"
+    )
+    assertEquals(
+      addQueryParams("https://example.com/path?key1=value1&key2=value2", Map("key3" -> "value3")),
+      "https://example.com/path?key1=value1&key2=value2&key3=value3"
+    )
+
