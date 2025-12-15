@@ -93,6 +93,10 @@ line"""),
       addQueryParam("https://example.com/path", "key", "value"),
       "https://example.com/path?key=value"
     )
+    assertEquals(
+      addQueryParam("https://example.com/path?key1", "key2", "value"),
+      "https://example.com/path?key1&key2=value"
+    )
 
   test("addQueryParams"):
     assertEquals(
@@ -122,5 +126,9 @@ line"""),
   test("addQueryParams - replace existing param of same key"):
     assertEquals(
       addQueryParams("https://example.com/path?key=value1", Map("key" -> "value2")),
+      "https://example.com/path?key=value2"
+    )
+    assertEquals(
+      addQueryParams("https://example.com/path?key", Map("key" -> "value2")),
       "https://example.com/path?key=value2"
     )

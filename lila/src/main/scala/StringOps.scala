@@ -45,7 +45,7 @@ object StringOps:
       val mergedParams = existingParams ++ params.map { (k, v) => k -> urlencode(v) }
 
       val queryString = mergedParams // we could encode the key, and we should, but is it really necessary?
-        .map { (key, value) => s"$key=$value" }
+        .map { (key, value) => if value.isEmpty then key else s"$key=$value" }
         .mkString("&")
       s"$baseUrl?$queryString"
 
