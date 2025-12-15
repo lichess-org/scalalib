@@ -33,11 +33,10 @@ object StringOps:
         case Array(base, query) =>
           val parsed = query
             .split("&")
-            .map { param =>
-              param.split("=", 2) match
+            .map:
+              _.split("=", 2) match
                 case Array(k, v) => k -> Some(v)
                 case Array(k) => k -> None
-            }
             .toMap
           (base, parsed)
         case Array(base) => (base, Map.empty[String, Option[String]])
@@ -45,11 +44,8 @@ object StringOps:
       val mergedParams = existingParams ++ params.map { (k, v) => k -> Some(urlencode(v)) }
 
       val queryString = mergedParams // we could encode the key, and we should, but is it really necessary?
-        .map { (key, value) =>
-          value match
-            case Some(v) => s"$key=$v"
-            case None => key
-        }
+        .map: (key, value) =>
+          value.fold(key)(v => s"$key=$v")
         .mkString("&")
       s"$baseUrl?$queryString"
 
