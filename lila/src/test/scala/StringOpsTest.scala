@@ -132,3 +132,13 @@ line"""),
       addQueryParams("https://example.com/path?key", Map("key" -> "value2")),
       "https://example.com/path?key=value2"
     )
+
+  test("addQueryParams - parse malformed params"):
+    assertEquals(
+      addQueryParams("https://example.com/path?&&&", Map("key1" -> "value1")),
+      "https://example.com/path?key1=value1"
+    )
+    assertEquals(
+      addQueryParams("https://example.com/path?=value1&key2=&=&&key3=value3", Map("key1" -> "value1")),
+      "https://example.com/path?&key2=&key3=value3&key1=value1"
+    )
