@@ -140,5 +140,5 @@ line"""),
     )
     assertEquals(
       addQueryParams("https://example.com/path?=value1&key2=&=&&key3=value3", Map("key1" -> "value1")),
-      "https://example.com/path?&key2=&key3=value3&key1=value1"
+      "https://example.com/path?key2=&key3=value3&key1=value1"
     )
