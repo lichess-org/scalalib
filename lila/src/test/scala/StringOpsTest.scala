@@ -111,4 +111,16 @@ line"""),
       addQueryParams("https://example.com/path?key1=value1&key2=value2", Map("key3" -> "value3")),
       "https://example.com/path?key1=value1&key2=value2&key3=value3"
     )
+    assertEquals(
+      addQueryParams(
+        "https://example.com/path?encoded1=test%40example.com",
+        Map("encoded2" -> "multiple words")
+      ),
+      "https://example.com/path?encoded1=test%40example.com&encoded2=multiple+words"
+    )
 
+  test("addQueryParams - replace existing param of same key"):
+    assertEquals(
+      addQueryParams("https://example.com/path?key=value1", Map("key" -> "value2")),
+      "https://example.com/path?key=value2"
+    )

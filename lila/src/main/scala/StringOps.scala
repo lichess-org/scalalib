@@ -29,10 +29,25 @@ object StringOps:
   def addQueryParams(url: String, params: Map[String, String]): String =
     if params.isEmpty then url
     else
-      val queryString = params // we could encode the key, and we should, but is it really necessary?
-        .map { (key, value) => s"$key=${urlencode(value)}" }
+      val (baseUrl, existingParams) = url.split("\\?", 2) match
+        case Array(base, query) =>
+          val parsed = query
+            .split("&")
+            .map { param =>
+              param.split("=", 2) match
+                case Array(k, v) => k -> v
+                case Array(k) => k -> ""
+            }
+            .toMap
+          (base, parsed)
+        case Array(base) => (base, Map.empty[String, String])
+
+      val mergedParams = existingParams ++ params.map { (k, v) => k -> urlencode(v) }
+
+      val queryString = mergedParams // we could encode the key, and we should, but is it really necessary?
+        .map { (key, value) => s"$key=$value" }
         .mkString("&")
-      s"$url${if url.contains("?") then "&" else "?"}$queryString"
+      s"$baseUrl?$queryString"
 
   def removeGarbageChars(str: String) = removeChars(str, isGarbageChar)
 
