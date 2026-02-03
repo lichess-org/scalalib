@@ -43,6 +43,8 @@ final class ConcurrentMap[K, V](initialCapacity: Int):
 
   def keySet: Set[K] = underlying.keys.asScala.toSet
 
+  def values: Iterable[V] = underlying.values.asScala
+
 object ConcurrentMap:
 
   type Backend = [X] =>> ConcurrentMap[String, X]
