@@ -11,7 +11,7 @@ import typemap.{ MutableMapOps, ThreadSafeMutableMapOps }
  **/
 final class ConcurrentMap[K, V](initialCapacity: Int):
 
-  private val underlying = new java.util.concurrent.ConcurrentHashMap[K, V](initialCapacity)
+  val underlying = new java.util.concurrent.ConcurrentHashMap[K, V](initialCapacity)
 
   export underlying.{ put, size, contains, remove, containsKey, forEach as foreach }
 
@@ -42,8 +42,6 @@ final class ConcurrentMap[K, V](initialCapacity: Int):
   def getOrDefault(key: K, default: => V): V = get(key).getOrElse(default)
 
   def keySet: Set[K] = underlying.keys.asScala.toSet
-
-  def values: Iterable[V] = underlying.values.asScala
 
 object ConcurrentMap:
 
