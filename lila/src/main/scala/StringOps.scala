@@ -56,6 +56,8 @@ object StringOps:
     if str.chars.anyMatch(isRemoveable(_)) then str.filterNot(isRemoveable(_)) else str
 
   private def isGarbageChar(c: Int) = c >= '\u0250' && (isOffensiveChar(c) || isSafeToStripInvisible(c) ||
+    // zero-width space https://en.wikipedia.org/wiki/Zero-width_space
+    (c == '\u200b') ||
     // bunch of probably useless blocks https://www.compart.com/en/unicode/block/U+2100
     // but keep maths operators cause maths are cool https://www.compart.com/en/unicode/block/U+2200
     // and chess symbols https://www.compart.com/en/unicode/block/U+2600
