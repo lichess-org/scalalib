@@ -29,6 +29,7 @@ class StringTest extends munit.FunSuite:
     assertEquals(rms("🥹"), "")
     assertEquals(rms("🥹🥹🥹 xxx 🥹"), " xxx ")
     assertEquals(rms("🌈"), "")
+    assertEquals(rms("🫟"), "")
     assertEquals(rms("𓏼"), "")
     assertEquals(rms("𝅙"), "")
     assertEquals(rms("𝅳"), "")
