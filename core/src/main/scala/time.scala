@@ -132,3 +132,9 @@ object time:
 
   val isoDateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(utc_)
   val isoInstantFormatter = DateTimeFormatter.ISO_INSTANT.withZone(utc_)
+
+  trait AtInstant[A]:
+    def apply(a: A): Instant
+    extension (a: A) inline def atInstant: Instant = apply(a)
+  object AtInstant:
+    given atInstantOrdering: [A: AtInstant] => Ordering[A] = Ordering.by[A, Instant](_.atInstant)
