@@ -7,6 +7,7 @@ import alleycats.Zero
 
 import scalalib.newtypes.SameRuntime
 import scalalib.time.toMillis
+import cats.data.NonEmptyList
 
 object Json:
 
@@ -77,3 +78,5 @@ object Json:
   )
 
   given Writes[Instant] = writeAs(_.toMillis)
+
+  given [A: Writes]: Writes[NonEmptyList[A]] = writeAs(_.toList)
