@@ -29,6 +29,7 @@ class StringTest extends munit.FunSuite:
     assertEquals(rms("🥹"), "")
     assertEquals(rms("🥹🥹🥹 xxx 🥹"), " xxx ")
     assertEquals(rms("🌈"), "")
+    assertEquals(rms("🫟"), "")
     assertEquals(rms("𓏼"), "")
     assertEquals(rms("𝅙"), "")
     assertEquals(rms("𝅳"), "")
@@ -82,11 +83,15 @@ class StringTest extends munit.FunSuite:
     assertEquals(sc("󠀁"), "")
     assertEquals(sc("󠀠"), "")
     assertEquals(sc("󠀰"), "")
+    assertEquals(sc("​"), "​") // zero-width space, keep in soft cleanup
     assertEquals(
       sc("""multi
 line"""),
       "multi\nline"
     )
+
+  test("full cleanup"):
+    assertEquals(fullCleanUp("​"), "")
 
   test("addQueryParam"):
     assertEquals(

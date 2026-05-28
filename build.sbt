@@ -1,8 +1,8 @@
 inThisBuild(
   Seq(
-    scalaVersion := "3.7.4",
+    scalaVersion := "3.8.3",
     versionScheme := Some("early-semver"),
-    version := "11.9.5",
+    version := "11.10.5",
     organization := "org.lichess",
     licenses += ("MIT" -> url("https://opensource.org/licenses/MIT")),
     publishTo := Option(Resolver.file("file", new File(sys.props.getOrElse("publishTo", ""))))
@@ -58,9 +58,9 @@ lazy val lila: Project = Project("lila", file("lila"))
     commonSettings,
     name := "scalalib-lila",
     libraryDependencies ++= List(
-      "com.github.ben-manes.caffeine" % "caffeine" % "3.2.3" % "compile",
+      "com.github.ben-manes.caffeine" % "caffeine" % "3.2.4" % "compile",
       "com.github.blemale" %% "scaffeine" % "5.3.0" % "compile",
-      "org.scalameta" %% "munit" % "1.2.1" % Test,
+      "org.scalameta" %% "munit" % "1.3.0" % Test,
       "com.github.lichess-org" % "TypeMap" % "0.2.2"
     ),
     resolvers += "jitpack".at("https://jitpack.io")

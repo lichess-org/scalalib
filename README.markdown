@@ -14,3 +14,9 @@ Projects using scalalib include:
 - [lichess-db](https://github.com/lichess-org/database)
 
 [![](https://jitpack.io/v/lichess-org/scalalib.svg)](https://jitpack.io/#lichess-org/scalalib)
+
+## Release
+
+1. Bump version in `build.sbt`.
+2. Commit the version bump and push to master.
+3. `gh release create X.Y.Z`

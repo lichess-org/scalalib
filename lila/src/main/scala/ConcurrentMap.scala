@@ -11,7 +11,7 @@ import typemap.{ MutableMapOps, ThreadSafeMutableMapOps }
  **/
 final class ConcurrentMap[K, V](initialCapacity: Int):
 
-  private val underlying = new java.util.concurrent.ConcurrentHashMap[K, V](initialCapacity)
+  val underlying = new java.util.concurrent.ConcurrentHashMap[K, V](initialCapacity)
 
   export underlying.{ put, size, contains, remove, containsKey, forEach as foreach }
 
