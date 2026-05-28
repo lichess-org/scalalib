@@ -1,7 +1,7 @@
 package scalalib
 package actor
 
-import com.github.blemale.scaffeine.{ LoadingCache, Scaffeine }
+import com.github.blemale.scaffeine.LoadingCache
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ ExecutionContext, Future, Promise }
 
