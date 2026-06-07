@@ -8,13 +8,17 @@ object StringOps:
   object slug:
     private val slugR = """[^\w-]""".r
     private val slugMultiDashRegex = """-{2,}""".r
+    private val mdash = '—'
+    private val ndash = '–'
+    private val specialDashChars = s"[$mdash$ndash]".r
 
     def apply(input: String) =
-      val nowhitespace = input.trim.replace(' ', '-')
-      val singleDashes = slugMultiDashRegex.replaceAllIn(nowhitespace, "-")
-      val normalized = Normalizer.normalize(singleDashes, Normalizer.Form.NFD)
-      val slug = slugR.replaceAllIn(normalized, "")
-      slug.toLowerCase
+      val noSpecialDashes = specialDashChars.replaceAllIn(input.trim, "-")
+      val noWhitespace = noSpecialDashes.replace(' ', '-')
+      val normalized = Normalizer.normalize(noWhitespace, Normalizer.Form.NFD)
+      val noSpecial = slugR.replaceAllIn(normalized, "")
+      val slug = slugMultiDashRegex.replaceAllIn(noSpecial, "-")
+      slug.toLowerCase.dropWhile(_ == '-').reverse.dropWhile(_ == '-').reverse
 
   private val onelineR = """\s+""".r
   def shorten(text: String, length: Int): String = shorten(text, length, "…")

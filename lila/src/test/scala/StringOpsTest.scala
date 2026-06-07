@@ -8,6 +8,31 @@ class StringTest extends munit.FunSuite:
     assert(!slug("hello \" world").contains("\""))
     assert(!slug("<<<").contains("<"))
 
+  test("slugs"):
+    val expected = "hello-world"
+    assertEquals(slug("hello world"), expected)
+    assertEquals(slug("  hello world  "), expected)
+    assertEquals(slug("hello   world"), expected)
+    assertEquals(slug("hello | world"), expected)
+    assertEquals(slug("hello - - - world"), expected)
+    assertEquals(slug("héllö wörld"), expected)
+    assertEquals(slug("héllö   wörld"), expected)
+    assertEquals(slug("héllö   wörld!"), expected)
+    assertEquals(slug("héllö   wörld!  "), expected)
+    assertEquals(slug("héllö   wörld!  !!!"), expected)
+    assertEquals(slug("héllö   wörld!  !!!   "), expected)
+
+  test("slugs with mdash and ndash"):
+    val mdash = '—'
+    val ndash = '–'
+    val expected = "hello-world"
+    assertEquals(slug(s"hello ${mdash} world"), expected)
+    assertEquals(slug(s"hello ${ndash} world"), expected)
+    assertEquals(slug(s"hello${mdash}world"), expected)
+    assertEquals(slug(s"hello${ndash}world"), expected)
+    assertEquals(slug(s"hello ${mdash} - ${ndash} world"), expected)
+    assertEquals(slug(s"hello ${mdash} - ${ndash} | world"), expected)
+
   val i18nValidStrings = List(
     """éâòöÌÒÒçÇ""",
     """صارف اپنا نام تبدیل کریں۔ یہ صرف ایک دفعہ ہو سکتا ہے اور صرف انگریزی حروف چھوٹے یا بڑے کرنے کی اجازت ہے۔.""",

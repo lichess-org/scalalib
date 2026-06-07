@@ -1,2 +1,7 @@
 target/
 boot/
+
+.bloop
+.bsp
+.metals
+.vscode
