@@ -21,6 +21,7 @@ class StringTest extends munit.FunSuite:
     assertEquals(slug("héllö   wörld!  "), expected)
     assertEquals(slug("héllö   wörld!  !!!"), expected)
     assertEquals(slug("héllö   wörld!  !!!   "), expected)
+    assertEquals(slug("HeLlO WoRlD"), expected)
 
   test("slugs with mdash and ndash"):
     val mdash = '—'

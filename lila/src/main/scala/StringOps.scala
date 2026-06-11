@@ -18,7 +18,7 @@ object StringOps:
       val normalized = Normalizer.normalize(noWhitespace, Normalizer.Form.NFD)
       val noSpecial = slugR.replaceAllIn(normalized, "")
       val slug = slugMultiDashRegex.replaceAllIn(noSpecial, "-")
-      slug.stripPrefix("-").stripSuffix("-")
+      slug.stripPrefix("-").stripSuffix("-").toLowerCase
 
   private val onelineR = """\s+""".r
   def shorten(text: String, length: Int): String = shorten(text, length, "…")
