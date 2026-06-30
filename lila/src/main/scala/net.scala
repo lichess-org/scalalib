@@ -1,7 +1,7 @@
 package scalalib
 package net
 
-import scalalib.newtypes.{ YesNo, OpaqueString }
+import scalalib.newtypes.OpaqueString
 
 opaque type IpAddressStr = String
 object IpAddressStr extends OpaqueString[IpAddressStr]
@@ -27,6 +27,3 @@ object Bearer extends OpaqueString[Bearer]:
 opaque type UserAgent = String
 object UserAgent extends OpaqueString[UserAgent]:
   val zero: UserAgent = ""
-
-opaque type Crawler = Boolean
-object Crawler extends YesNo[Crawler]
