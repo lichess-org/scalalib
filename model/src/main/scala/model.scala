@@ -1,5 +1,6 @@
 package scalalib
 
+import scala.concurrent.duration.{ FiniteDuration, DurationInt }
 import scalalib.newtypes.*
 
 object model:
@@ -17,13 +18,16 @@ object model:
   object MaxPerSecond extends RichOpaqueInt[MaxPerSecond]
 
   opaque type Days = Int
-  object Days extends RichOpaqueInt[Days]
+  object Days extends RichOpaqueInt[Days]:
+    def duration: FiniteDuration = DurationInt(1).days
 
   opaque type Seconds = Int
-  object Seconds extends RichOpaqueInt[Seconds]
+  object Seconds extends RichOpaqueInt[Seconds]:
+    def duration: FiniteDuration = DurationInt(1).seconds
 
   opaque type Minutes = Int
-  object Minutes extends RichOpaqueInt[Minutes]
+  object Minutes extends RichOpaqueInt[Minutes]:
+    def duration: FiniteDuration = DurationInt(1).minutes
 
   opaque type Pixels = Int
   object Pixels extends RichOpaqueInt[Pixels]
