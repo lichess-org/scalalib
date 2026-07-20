@@ -19,15 +19,15 @@ object model:
 
   opaque type Days = Int
   object Days extends RichOpaqueInt[Days]:
-    def duration: FiniteDuration = DurationInt(1).days
+    extension (d: Days) def duration: FiniteDuration = DurationInt(d).days
 
   opaque type Seconds = Int
   object Seconds extends RichOpaqueInt[Seconds]:
-    def duration: FiniteDuration = DurationInt(1).seconds
+    extension (s: Seconds) def duration: FiniteDuration = DurationInt(s).seconds
 
   opaque type Minutes = Int
   object Minutes extends RichOpaqueInt[Minutes]:
-    def duration: FiniteDuration = DurationInt(1).minutes
+    extension (m: Minutes) def duration: FiniteDuration = DurationInt(m).minutes
 
   opaque type Pixels = Int
   object Pixels extends RichOpaqueInt[Pixels]
