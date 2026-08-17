@@ -132,9 +132,12 @@ object StringOps:
   private def unicodeBlocksRegex(blocks: List[Character.UnicodeBlock]) =
     blocks.map(b => s"\\p{block=$b}").mkString
 
+  // https://www.compart.com/en/unicode/category/Cc
+  private val controlCategory = "\\p{Cc}&&[^\\n]"
+
   private val multibyteInvisibleRegex =
     val blocks = List(Block.MUSICAL_SYMBOLS, Block.TAGS)
-    s"[${unicodeBlocksRegex(blocks)}]".r
+    s"[${unicodeBlocksRegex(blocks)}$controlCategory]".r
   def removeMultibyteInvisible(str: String): String = multibyteInvisibleRegex.replaceAllIn(str, "")
 
   // https://www.compart.com/en/unicode/block/U+1F300
@@ -150,7 +153,7 @@ object StringOps:
       Block.MUSICAL_SYMBOLS,
       Block.TAGS
     )
-    s"[\\p{So}${unicodeBlocksRegex(blocks)}]".r
+    s"[\\p{So}${unicodeBlocksRegex(blocks)}$controlCategory]".r
   def removeMultibyteSymbols(str: String): String = multibyteSymbolsRegex.replaceAllIn(str, "")
 
   // for publicly listed text like team names, study names, forum topics...

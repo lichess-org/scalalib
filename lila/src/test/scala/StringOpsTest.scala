@@ -118,6 +118,9 @@ line"""),
 
   test("full cleanup"):
     assertEquals(fullCleanUp("​"), "")
+    val filename = """lichess_pgn_2022.03.25_HikmIt_Fliyev_vs_grandmastersarah.nXzH5TgH.pgna"""
+    val clean = """lichess_pgn_2022.03.25_HikmIt_Fliyev_vs_grandmastersarah.nXzH5TgH.pgna"""
+    assertEquals(fullCleanUp(filename), clean)
 
   test("addQueryParam"):
     assertEquals(
