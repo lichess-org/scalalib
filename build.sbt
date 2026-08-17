@@ -1,4 +1,4 @@
-version := "11.10.11"
+version := "11.10.12"
 organization := "org.lichess"
 scalaVersion := "3.8.4"
 versionScheme := Some("early-semver")
