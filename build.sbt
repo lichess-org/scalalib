@@ -43,7 +43,7 @@ lazy val lila: Project = Project("lila", file("lila"))
   .settings(
     name := "scalalib-lila",
     libraryDependencies ++= List(
-      "com.github.ben-manes.caffeine" % "caffeine" % "3.2.4" % "compile",
+      "com.github.ben-manes.caffeine" % "caffeine" % "3.3.0" % "compile",
       "com.github.blemale" %% "scaffeine" % "5.3.0" % "compile",
       "org.scalameta" %% "munit" % "1.3.6" % Test,
       "com.github.lichess-org" % "TypeMap" % "0.2.2"
