@@ -20,6 +20,7 @@ object extensions:
     def replaceIf(t: CharSequence, r: CharSequence): String =
       if s.contains(t) then s.replace(t, r) else s
     def replaceAllIn(regex: Regex, replacement: String) = regex.replaceAllIn(s, replacement)
+    def nonEmptyOption: Option[String] = Option.when(s.nonEmpty)(s)
 
   private def pprintlnBoth(x: Any, y: Any): Unit =
     (pprint.tokenize(x) ++ Seq(fansi.Str(" ")) ++ pprint.tokenize(y)).foreach(print)
