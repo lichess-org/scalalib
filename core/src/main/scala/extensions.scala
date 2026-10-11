@@ -48,8 +48,11 @@ object extensions:
     def mapKeys[C](f: A => C): Map[C, B] = m.map { (a, b) => (f(a), b) }
     // Add Map.filterValues, similar to Map.filterKeys
     def filterValues(p: B => Boolean): Map[A, B] = m.filter { x => p(x._2) }
+    def nonEmptyOption: Option[Map[A, B]] = Option.when(m.nonEmpty)(m)
 
-  extension [A](as: Iterable[A]) def mapBy[B](f: A => B): Map[B, A] = as.view.map { a => f(a) -> a }.toMap
+  extension [A, M <: Iterable](self: M[A])
+    def nonEmptyOption: Option[M[A]] = Option.when(self.nonEmpty)(self)
+    def mapBy[B](f: A => B): Map[B, A] = self.view.map { a => f(a) -> a }.toMap
 
   extension [A](seq: Seq[A])
     @nowarn("msg=unused implicit parameter")
