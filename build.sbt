@@ -1,6 +1,6 @@
 version := "11.12.1"
 organization := "com.github.lichess-org.scalalib"
-scalaVersion := "3.8.4"
+scalaVersion := "3.10.0"
 versionScheme := Some("early-semver")
 licenses += ("MIT" -> url("https://opensource.org/licenses/MIT"))
 publishTo := Option(Resolver.file("file", new File(sys.props.getOrElse("publishTo", ""))))
