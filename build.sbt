@@ -1,8 +1,9 @@
 version := "11.12.1"
 organization := "com.github.lichess-org.scalalib"
-scalaVersion := "3.8.4"
+scalaVersion := "3.10.0"
 versionScheme := Some("early-semver")
 licenses += ("MIT" -> url("https://opensource.org/licenses/MIT"))
+resolvers ++= Seq("lila-maven".at("https://raw.githubusercontent.com/lichess-org/lila-maven/master"))
 publishTo := Option(Resolver.file("file", new File(sys.props.getOrElse("publishTo", ""))))
 javacOptions ++= Seq("--release", "21")
 scalacOptions := Seq(
@@ -43,10 +44,10 @@ lazy val lila: Project = Project("lila", file("lila"))
   .settings(
     name := "scalalib-lila",
     libraryDependencies ++= List(
-      "com.github.ben-manes.caffeine" % "caffeine" % "3.2.4" % "compile",
+      "com.github.ben-manes.caffeine" % "caffeine" % "3.3.1" % "compile",
       "com.github.blemale" %% "scaffeine" % "5.3.0" % "compile",
       "org.scalameta" %% "munit" % "1.3.6" % Test,
-      "com.github.lichess-org" % "TypeMap" % "0.2.2"
+      "com.github.lichess-org.typemap" %% "typemap" % "0.3.1"
     ),
     resolvers += "jitpack".at("https://jitpack.io")
   )
