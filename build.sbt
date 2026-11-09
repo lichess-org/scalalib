@@ -1,4 +1,4 @@
-version := "11.12.1"
+version := "11.13.0"
 organization := "com.github.lichess-org.scalalib"
 scalaVersion := "3.10.0"
 versionScheme := Some("early-semver")
