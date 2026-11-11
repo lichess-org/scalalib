@@ -1,6 +1,6 @@
 version := "11.13.0"
 organization := "com.github.lichess-org.scalalib"
-scalaVersion := "3.10.0"
+scalaVersion := "3.10.1"
 versionScheme := Some("early-semver")
 licenses += ("MIT" -> url("https://opensource.org/licenses/MIT"))
 resolvers ++= Seq("lila-maven".at("https://raw.githubusercontent.com/lichess-org/lila-maven/master"))
